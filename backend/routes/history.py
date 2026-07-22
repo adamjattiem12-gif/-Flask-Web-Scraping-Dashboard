@@ -1,20 +1,41 @@
 """
-History endpoints.
+Search endpoints.
+
+Provides an API endpoint for searching stored items.
 """
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
+from services.storage import load_items
 
-from services.storage import load_history
+# Create a Blueprint for search routes
+search_bp = Blueprint("search", __name__)
 
-history_bp = Blueprint("history", __name__)
+# GET /api/search?q=<search_term>
+@search_bp.route("/api/search", methods=["GET"])
+def search_items():
 
+    # Get the search query from the URL
+    # Example: /api/search?q=laptop
+    query = request.args.get("q", "").lower()
 
-@history_bp.route("/api/history", methods=["GET"])
-def get_history():
-    """
-    Return scrape history.
-    """
+    # Load all stored items
+    items = load_items()
 
-    history = load_history()
+    # If no search term is entered, return every item
+    if query == "":
+        return jsonify(items)
 
-    return jsonify(history)
+    # Store matching results
+    results = []
+
+    # Search through each item
+    for item in items:
+
+        # Check if the search term appears in the item's name
+        if query in item.get("name", "").lower():
+
+            # Add matching item to the results
+            results.append(item)
+
+    # Return the matching items as JSON
+    return jsonify(results)
