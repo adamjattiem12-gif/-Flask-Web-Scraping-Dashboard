@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from utils.cleaners import clean_items
 
 def scrape_ecommerce():
     """Scrape electronics from WebScraper.io E-Commerce Sandbox"""
@@ -35,7 +36,7 @@ def scrape_ecommerce():
         }
         items.append(item)
     
-    return items
+    return clean_items(items)
 
 
 if __name__ == '__main__':
