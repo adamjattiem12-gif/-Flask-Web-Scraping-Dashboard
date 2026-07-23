@@ -1,14 +1,72 @@
 <template>
   <div class="app-container">
-    <Sidebar />
-    <main class="main-content">
+    <!-- Mobile Hamburger Button -->
+    <button 
+      class="hamburger-btn" 
+      @click="toggleSidebar" 
+      :class="{ active: sidebarOpen }"
+      aria-label="Toggle menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Overlay for mobile -->
+    <div 
+      class="sidebar-overlay" 
+      v-if="sidebarOpen" 
+      @click="closeSidebar"
+    ></div>
+
+    <Sidebar :is-open="sidebarOpen" @close="closeSidebar" />
+    
+    <main class="main-content" :class="{ 'sidebar-open': sidebarOpen }">
       <router-view />
     </main>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
+
+const sidebarOpen = ref(false)
+
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+  document.body.style.overflow = sidebarOpen.value ? 'hidden' : ''
+}
+
+const closeSidebar = () => {
+  sidebarOpen.value = false
+  document.body.style.overflow = ''
+}
+
+// Close sidebar on escape key
+const handleEscape = (event) => {
+  if (event.key === 'Escape' && sidebarOpen.value) {
+    closeSidebar()
+  }
+}
+
+// Close sidebar on window resize (if going to desktop)
+const handleResize = () => {
+  if (window.innerWidth > 768 && sidebarOpen.value) {
+    closeSidebar()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape)
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+  window.removeEventListener('resize', handleResize)
+  document.body.style.overflow = ''
+})
 </script>
 
 <style>
@@ -33,12 +91,88 @@ body {
   flex: 1;
   margin-left: 240px;
   min-height: 100vh;
-  /* REMOVED: padding and background - now handled by individual pages */
+  transition: margin-left 0.3s ease;
 }
 
+/* --- HAMBURGER BUTTON --- */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  background: #2D2A3E;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 24px;
+  height: 2.5px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.hamburger-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.hamburger-btn:hover {
+  background: #3D3A4E;
+}
+
+/* --- SIDEBAR OVERLAY --- */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
   .main-content {
     margin-left: 0;
+    padding-top: 70px;
+  }
+
+  .main-content.sidebar-open {
+    overflow: hidden;
   }
 }
 </style>

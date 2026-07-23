@@ -1,9 +1,14 @@
 <template>
-  <aside class="sidebar">
+  <aside class="sidebar" :class="{ open: isOpen }">
     <div class="sidebar-header">
       <h1 class="logo">Market Pulse</h1>
       <p class="subtitle">PRICE MONITOR</p>
     </div>
+    
+    <!-- Close button for mobile -->
+    <button class="sidebar-close" @click="$emit('close')" aria-label="Close menu">
+      ✕
+    </button>
     
     <nav class="sidebar-nav">
       <p class="nav-label">NAVIGATION</p>
@@ -14,6 +19,7 @@
         class="nav-link"
         active-class="active"
         exact
+        @click="$emit('close')"
       >
         <span class="nav-icon">{{ item.icon }}</span>
         <span>{{ item.label }}</span>
@@ -23,6 +29,15 @@
 </template>
 
 <script setup>
+defineProps({
+  isOpen: {
+    type: Boolean,
+    default: false
+  }
+})
+
+defineEmits(['close'])
+
 const navItems = [
   { path: '/', label: 'Dashboard', icon: '📊' },
   { path: '/retail-goods', label: 'Retail Goods', icon: '🛍️' },
@@ -46,6 +61,7 @@ const navItems = [
   display: flex;
   flex-direction: column;
   z-index: 100;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-header {
@@ -115,14 +131,41 @@ const navItems = [
   text-align: center;
 }
 
+/* --- SIDEBAR CLOSE BUTTON (mobile only) --- */
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #9E9BB0;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.sidebar-close:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    width: 280px;
   }
-  
+
   .sidebar.open {
     transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar-close {
+    display: block;
   }
 }
 </style>

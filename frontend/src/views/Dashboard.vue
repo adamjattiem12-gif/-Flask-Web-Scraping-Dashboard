@@ -1,12 +1,12 @@
 <template>
   <div class="dashboard-page">
-    <!-- WHITE BACKGROUND CONTAINER - CONNECTS TO SIDEBAR -->
-    <div class="dashboard-content">
-      <!-- HEADER -->
-      <div class="dashboard-header">
-        <h1>Dashboard</h1>
-      </div>
+    <!-- WHITE HEADER BAR - CONNECTS TO SIDEBAR -->
+    <div class="dashboard-header-bar">
+      <h1>Dashboard</h1>
+    </div>
 
+    <!-- CONTENT BELOW - ORIGINAL BACKGROUND -->
+    <div class="dashboard-content">
       <!-- STAT CARDS -->
       <div class="stats-grid">
         <StatCard
@@ -94,7 +94,6 @@ import { ref } from 'vue'
 import StatCard from '@/components/StatCard.vue'
 import MarketOverviewCard from '@/components/MarketOverviewCard.vue'
 
-// Mock Data
 const stats = ref({
   totalItems: 24,
   activeSources: 2,
@@ -122,27 +121,27 @@ const cryptoRecentItems = [
   padding: 0;
 }
 
-/* WHITE BACKGROUND CONTAINER - CONNECTS TO SIDEBAR */
-.dashboard-content {
+/* WHITE HEADER BAR */
+.dashboard-header-bar {
   background: #FFFFFF;
-  min-height: 100vh;
-  padding: 32px 40px 40px 40px;
+  padding: 24px 40px;
   margin: 0;
-  /* NO margin-left - connects directly to sidebar */
+  border-bottom: 1px solid #E5E2DD;
 }
 
-/* HEADER */
-.dashboard-header {
-  margin-bottom: 32px;
-}
-
-.dashboard-header h1 {
+.dashboard-header-bar h1 {
   color: #2D2A3E;
   font-size: 28px;
   font-weight: 600;
+  margin: 0;
 }
 
-/* SECTION HEADER */
+/* CONTENT BELOW */
+.dashboard-content {
+  padding: 32px 40px 40px 40px;
+  max-width: 100%;
+}
+
 .section-header {
   margin-bottom: 20px;
   margin-top: 8px;
@@ -161,7 +160,6 @@ const cryptoRecentItems = [
   margin-top: 4px;
 }
 
-/* STAT CARDS */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -169,7 +167,6 @@ const cryptoRecentItems = [
   margin-bottom: 32px;
 }
 
-/* MARKET CARDS */
 .markets-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -177,7 +174,6 @@ const cryptoRecentItems = [
   margin-bottom: 32px;
 }
 
-/* ROW 2 COL */
 .row-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -185,9 +181,8 @@ const cryptoRecentItems = [
   margin-bottom: 32px;
 }
 
-/* PLACEHOLDERS */
 .placeholder-card {
-  background: #F7F5F2;
+  background: #FFFFFF;
   border: 1px solid #E5E2DD;
   border-radius: 12px;
   padding: 20px 24px;
@@ -201,7 +196,6 @@ const cryptoRecentItems = [
   margin-bottom: 12px;
 }
 
-/* ACTION BAR */
 .action-bar {
   display: flex;
   justify-content: space-between;
@@ -252,9 +246,8 @@ const cryptoRecentItems = [
   box-shadow: 0 4px 12px rgba(91, 140, 90, 0.3);
 }
 
-/* RECENT ITEMS TABLE */
 .placeholder-table {
-  background: #F7F5F2;
+  background: #FFFFFF;
   border: 1px solid #E5E2DD;
   border-radius: 12px;
   padding: 20px 24px;
@@ -268,7 +261,7 @@ const cryptoRecentItems = [
   margin-bottom: 12px;
 }
 
-/* RESPONSIVE */
+/* --- RESPONSIVE --- */
 @media (max-width: 1200px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -285,6 +278,10 @@ const cryptoRecentItems = [
 }
 
 @media (max-width: 768px) {
+  .dashboard-header-bar {
+    padding: 16px 20px;
+  }
+  
   .dashboard-content {
     padding: 20px;
   }
@@ -294,7 +291,7 @@ const cryptoRecentItems = [
     gap: 12px;
   }
   
-  .dashboard-header h1 {
+  .dashboard-header-bar h1 {
     font-size: 24px;
   }
   
@@ -311,6 +308,10 @@ const cryptoRecentItems = [
 }
 
 @media (max-width: 375px) {
+  .dashboard-header-bar {
+    padding: 12px 16px;
+  }
+  
   .dashboard-content {
     padding: 16px;
   }
@@ -319,7 +320,7 @@ const cryptoRecentItems = [
     grid-template-columns: 1fr;
   }
   
-  .dashboard-header h1 {
+  .dashboard-header-bar h1 {
     font-size: 20px;
   }
 }
