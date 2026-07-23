@@ -1,87 +1,127 @@
 <template>
-  <div class="market-card">
-    <h3>{{ title }}</h3>
-    <div class="market-stats">
-      <p>{{ itemCount }} items</p>
-      <p>Avg Price: ${{ avgPrice.toFixed(2) }}</p>
-      <p class="last-updated">Last: 2 min ago</p>
+  <div class="market-card" :style="{ borderTopColor: accentColor }">
+    <h3 class="market-title">{{ title }}</h3>
+    
+    <div class="market-price-row">
+      <div class="price-block">
+        <span class="price-label">AVG PRICE</span>
+        <span class="price-value">${{ avgPrice.toFixed(2) }}</span>
+      </div>
+      <div class="price-block">
+        <span class="price-label">ITEMS</span>
+        <span class="price-value">{{ itemsCount }}</span>
+      </div>
     </div>
-    <div class="market-sources">
-      <span class="source-badge" :class="market">
-        {{ market === 'retail' ? '🟧' : '🟦' }} {{ source }} - {{ sourceItems }} items
-      </span>
+
+    <div class="market-activity">
+      <p class="activity-label">RECENT ACTIVITY</p>
+      <div v-for="item in recentItems" :key="item.name" class="activity-item">
+        <span class="activity-name">{{ item.name }}</span>
+        <span class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
+          {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-/**
- * MarketOverviewCard - Displays market summary for Retail or Digital Assets
- * 
- * Props:
- *   - title: '🛒 Retail Goods' or '₿ Digital Assets'
- *   - itemCount: number of items in this market
- *   - avgPrice: average price in this market
- *   - source: website name (e.g., 'WebScraper.io')
- *   - sourceItems: number of items from this source
- *   - market: 'retail' or 'crypto' (determines badge color)
- * 
- * Used by: Dashboard.vue
- */
 defineProps({
-  title: String,
-  itemCount: Number,
-  avgPrice: Number,
-  source: String,
-  sourceItems: String,
-  market: String // 'retail' or 'crypto'
+  title: { type: String, required: true },
+  accentColor: { type: String, default: '#D4914A' },
+  avgPrice: { type: Number, required: true },
+  itemsCount: { type: Number, default: 0 },
+  recentItems: { type: Array, default: () => [] }
 })
 </script>
 
 <style scoped>
 .market-card {
-  background: white;
+  background: #FFFFFF;
   border: 1px solid #E5E2DD;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px;
+  border-top: 4px solid #D4914A;
 }
 
-.market-card h3 {
+.market-title {
   color: #2D2A3E;
-  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.market-price-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #F0EDEA;
+}
+
+.price-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  color: #9E9BB0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.price-value {
+  color: #2D2A3E;
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.activity-label {
+  color: #9E9BB0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
-.market-stats p {
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #F7F5F2;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-name {
   color: #5C5A6B;
-  margin: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.last-updated {
-  color: #9E9BB0;
-  font-size: 13px;
+.activity-change {
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.market-sources {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #F7F5F2;
+.activity-change.positive {
+  color: #5B8C5A;
 }
 
-.source-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 13px;
+.activity-change.negative {
+  color: #C1666B;
 }
 
-.source-badge.retail {
-  background: #FFF0E6;
-  color: #D4914A;
-}
-
-.source-badge.crypto {
-  background: #E6F4F4;
-  color: #4A8C8C;
+@media (max-width: 768px) {
+  .market-card {
+    padding: 16px;
+  }
 }
 </style>
