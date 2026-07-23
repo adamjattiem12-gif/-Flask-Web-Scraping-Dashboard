@@ -1,0 +1,296 @@
+[
+    {
+        "id": 1,
+        "name": "Lenovo IdeaTab",
+        "price": 69.99,
+        "price_display": "$69.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837502",
+        "extra": {
+            "rating": 3,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 2,
+        "name": "IdeaTab A3500L",
+        "price": 88.99,
+        "price_display": "$88.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837547",
+        "extra": {
+            "rating": 4,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 3,
+        "name": "Acer Iconia",
+        "price": 96.99,
+        "price_display": "$96.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837571",
+        "extra": {
+            "rating": 1,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 4,
+        "name": "Galaxy Tab 3",
+        "price": 97.99,
+        "price_display": "$97.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837590",
+        "extra": {
+            "rating": 2,
+            "review_count": 2
+        }
+    },
+    {
+        "id": 5,
+        "name": "Iconia B1-730H...",
+        "price": 99.99,
+        "price_display": "$99.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837608",
+        "extra": {
+            "rating": 3,
+            "review_count": 1
+        }
+    },
+    {
+        "id": 6,
+        "name": "Memo Pad HD 7",
+        "price": 101.99,
+        "price_display": "$101.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837626",
+        "extra": {
+            "rating": 2,
+            "review_count": 10
+        }
+    },
+    {
+        "id": 7,
+        "name": "Asus MeMO Pad",
+        "price": 102.99,
+        "price_display": "$102.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837645",
+        "extra": {
+            "rating": 4,
+            "review_count": 14
+        }
+    },
+    {
+        "id": 8,
+        "name": "Amazon Kindle",
+        "price": 103.99,
+        "price_display": "$103.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837663",
+        "extra": {
+            "rating": 4,
+            "review_count": 3
+        }
+    },
+    {
+        "id": 9,
+        "name": "Galaxy Tab 3",
+        "price": 107.99,
+        "price_display": "$107.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837681",
+        "extra": {
+            "rating": 2,
+            "review_count": 14
+        }
+    },
+    {
+        "id": 10,
+        "name": "IdeaTab A8-50",
+        "price": 121.99,
+        "price_display": "$121.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837699",
+        "extra": {
+            "rating": 2,
+            "review_count": 13
+        }
+    },
+    {
+        "id": 11,
+        "name": "MeMO Pad 7",
+        "price": 130.99,
+        "price_display": "$130.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837717",
+        "extra": {
+            "rating": 1,
+            "review_count": 11
+        }
+    },
+    {
+        "id": 12,
+        "name": "IdeaTab A3500-...",
+        "price": 148.99,
+        "price_display": "$148.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837750",
+        "extra": {
+            "rating": 2,
+            "review_count": 9
+        }
+    },
+    {
+        "id": 13,
+        "name": "IdeaTab S5000",
+        "price": 172.99,
+        "price_display": "$172.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837769",
+        "extra": {
+            "rating": 3,
+            "review_count": 8
+        }
+    },
+    {
+        "id": 14,
+        "name": "Galaxy Tab 4",
+        "price": 233.99,
+        "price_display": "$233.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837787",
+        "extra": {
+            "rating": 4,
+            "review_count": 1
+        }
+    },
+    {
+        "id": 15,
+        "name": "Galaxy Tab",
+        "price": 251.99,
+        "price_display": "$251.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837803",
+        "extra": {
+            "rating": 3,
+            "review_count": 14
+        }
+    },
+    {
+        "id": 16,
+        "name": "MeMo PAD FHD 1...",
+        "price": 320.99,
+        "price_display": "$320.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837819",
+        "extra": {
+            "rating": 2,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 17,
+        "name": "Galaxy Note",
+        "price": 399.99,
+        "price_display": "$399.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837836",
+        "extra": {
+            "rating": 4,
+            "review_count": 12
+        }
+    },
+    {
+        "id": 18,
+        "name": "Galaxy Note",
+        "price": 489.99,
+        "price_display": "$489.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837852",
+        "extra": {
+            "rating": 3,
+            "review_count": 9
+        }
+    },
+    {
+        "id": 19,
+        "name": "iPad Mini Reti...",
+        "price": 537.99,
+        "price_display": "$537.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837868",
+        "extra": {
+            "rating": 2,
+            "review_count": 8
+        }
+    },
+    {
+        "id": 20,
+        "name": "Galaxy Note 10...",
+        "price": 587.99,
+        "price_display": "$587.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837883",
+        "extra": {
+            "rating": 2,
+            "review_count": 6
+        }
+    },
+    {
+        "id": 21,
+        "name": "Apple iPad Air",
+        "price": 603.99,
+        "price_display": "$603.99",
+        "currency": "USD",
+        "source": "WebScraper.io",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-23T15:32:40.837902",
+        "extra": {
+            "rating": 3,
+            "review_count": 7
+        }
+    }
+]

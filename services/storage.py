@@ -23,7 +23,7 @@ DATA_FOLDER = "data"
 ITEMS_FILE = os.path.join(DATA_FOLDER, "items.json")
 WEBSITES_FILE = os.path.join(DATA_FOLDER, "websites.json")
 HISTORY_FILE = os.path.join(DATA_FOLDER, "history.json")
-
+STATISTICS_FILE = os.path.join(DATA_FOLDER, "statistics.json")
 
 def ensure_data_folder():
     """
@@ -39,22 +39,15 @@ def ensure_data_folder():
 # ==========================
 
 def load_items():
-    """
-    Load all stored items from items.json.
 
-    Returns:
-        list: A list of stored items.
-        Returns an empty list if the file does not exist.
-    """
-
-    # Make sure the data folder exists
     ensure_data_folder()
 
-    # If no items have been saved yet, return an empty list
     if not os.path.exists(ITEMS_FILE):
         return []
 
-    # Open the JSON file and return its contents
+    if os.path.getsize(ITEMS_FILE) == 0:
+        return []
+
     with open(ITEMS_FILE, "r") as file:
         return json.load(file)
 
@@ -80,40 +73,25 @@ def save_items(items):
 # ==========================
 
 def load_websites():
-    """
-    Load all registered websites.
-
-    If the websites file does not exist, create it with
-    the default registered websites.
-    """
-
-    # Ensure the data folder exists
     ensure_data_folder()
 
-    # Create the websites file if it does not exist
-    if not os.path.exists(WEBSITES_FILE):
+    default_websites = [
+    {
+        "name": "WebScraper E-Commerce Sandbox",
+        "url": "https://webscraper.io/test-sites/e-commerce/allinone",
+        "market": "E-Commerce"
+    },
+    {
+        "name": "CoinGecko",
+        "url": "https://www.coingecko.com/",
+        "market": "Cryptocurrency"
+    }
+]
 
-        # Default websites available when the application starts
-        websites = [
-            {
-                "name": "Takealot",
-                "url": "https://www.takealot.com",
-                "market": "South Africa"
-            },
-            {
-                "name": "Blueprint",
-                "url": "https://www.blueprint.co.za",
-                "market": "South Africa"
-            }
-        ]
+    if not os.path.exists(WEBSITES_FILE) or os.path.getsize(WEBSITES_FILE) == 0:
+        save_websites(default_websites)
+        return default_websites
 
-        # Save the default websites
-        save_websites(websites)
-
-        # Return the default website list
-        return websites
-
-    # Load and return the saved websites
     with open(WEBSITES_FILE, "r") as file:
         return json.load(file)
 
@@ -140,21 +118,18 @@ def save_websites(websites):
 
 def load_history():
     """
-    Load the scraping history from history.json.
-
-    Returns:
-        list: A list of previous scrape records.
-        Returns an empty list if no history exists.
+    Load the scraping history.
     """
 
-    # Ensure the data folder exists
     ensure_data_folder()
 
-    # Return an empty list if the history file does not exist
     if not os.path.exists(HISTORY_FILE):
         return []
 
-    # Load and return the history records
+    # If the file exists but is empty, return an empty list
+    if os.path.getsize(HISTORY_FILE) == 0:
+        return []
+
     with open(HISTORY_FILE, "r") as file:
         return json.load(file)
 
@@ -193,3 +168,26 @@ def add_history(record):
 
     # Save the updated history back to the JSON file
     save_history(history)
+
+
+    STATISTICS_FILE = os.path.join(DATA_FOLDER, "statistics.json")
+
+
+def load_statistics():
+    ensure_data_folder()
+
+    if not os.path.exists(STATISTICS_FILE):
+        return {}
+
+    if os.path.getsize(STATISTICS_FILE) == 0:
+        return {}
+
+    with open(STATISTICS_FILE, "r") as file:
+        return json.load(file)
+
+
+def save_statistics(statistics):
+    ensure_data_folder()
+
+    with open(STATISTICS_FILE, "w") as file:
+        json.dump(statistics, file, indent=4)
