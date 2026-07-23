@@ -22,7 +22,7 @@ def scrape_crypto():
     items = []
     
     # Loop through each cryptocurrency
-    for crypto in data:
+    for i, crypto in enumerate(data):
         item = {
             "id": crypto.get('id'),
             "name": crypto.get('name'),
@@ -33,8 +33,8 @@ def scrape_crypto():
             "market": "Digital Assets",
             "scraped_at": datetime.now().isoformat(),
             "extra": {
-                "rating": crypto.get('market_cap_rank', 0),
-                "review_count": 0  # Cryptos don't have reviews like products
+                "rating": i + 1,
+                "review_count": 0
             }
         }
         items.append(item)
