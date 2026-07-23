@@ -248,3 +248,4 @@ tr:hover td {
   font-size: 18px;
   color: #2D2
 }
+</style>
