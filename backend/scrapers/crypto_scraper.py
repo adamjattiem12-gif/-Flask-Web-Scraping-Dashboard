@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from utils.cleaners import clean_items
+from backend.utils.cleaners import clean_items
 
 def scrape_crypto():
     """Scrape cryptocurrencies from CoinGecko API"""
