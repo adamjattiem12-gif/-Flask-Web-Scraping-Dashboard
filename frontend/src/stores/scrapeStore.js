@@ -1,51 +1,31 @@
 import { defineStore } from 'pinia'
 
-/**
- * scrapeStore - Manages scraping status and history
- * Used by: ScrapeButton, History page
- * 
- * MOCK DATA NOTE: Week 1 simulates scraping with random success/fail.
- * Week 2 will call the real POST /api/scrape endpoint.
- */
 export const useScrapeStore = defineStore('scrape', {
   state: () => ({
-    status: 'idle',        // Possible: idle | loading | success | error
-    message: '',           // Status message to show user
-    lastScrape: null,      // When the last scrape happened
-    error: null,           // Error message if scrape fails
-    scrapeHistory: []      // List of all past scrapes (for History page)
+    status: 'idle',        // idle | loading | success | error
+    message: '',
+    lastScrape: null,
+    error: null,
+    scrapeHistory: []
   }),
 
   actions: {
-    /**
-     * triggerScrape - Runs the scraping process
-     * 
-     * Week 1: Simulates scraping (2 second delay, random success)
-     * Week 2: Will POST to /api/scrape
-     * 
-     * Used by: ScrapeButton.vue when clicked
-     */
+  
     async triggerScrape() {
-      // 1. Set state to loading
       this.status = 'loading'
       this.message = 'Scraping in progress...'
       this.error = null
 
-      // 2. Simulate scraping delay (remove in Week 2)
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      // 3. Simulate success/failure (80% success rate)
-      // Week 2: Replace with real API call
       const success = Math.random() > 0.2
 
       if (success) {
-        // ✅ SUCCESS
         const itemsFound = Math.floor(Math.random() * 15) + 10
         this.status = 'success'
         this.message = `✓ Successfully scraped ${itemsFound} items!`
         this.lastScrape = new Date()
         
-        // Add to history
         this.scrapeHistory.unshift({
           timestamp: new Date(),
           market: 'All',
@@ -54,12 +34,10 @@ export const useScrapeStore = defineStore('scrape', {
           success: true
         })
       } else {
-        // ❌ FAILURE
         this.status = 'error'
         this.error = 'Scrape failed: Connection timeout'
         this.message = '✗ Scrape failed - try again'
         
-        // Add to history
         this.scrapeHistory.unshift({
           timestamp: new Date(),
           market: 'All',
@@ -70,30 +48,24 @@ export const useScrapeStore = defineStore('scrape', {
       }
     },
 
-    /**
-     * resetStatus - Resets button to idle state
-     * Used by: ScrapeButton after 5 seconds (auto-reset)
-     */
     resetStatus() {
       this.status = 'idle'
       this.message = ''
       this.error = null
     },
 
-    /**
-     * generateMockHistory - Creates sample history for display
-     * Used by: History.vue on page load (Week 1 only)
-     * 
-     * Week 2: This will be replaced with real data from /api/history
-     */
     generateMockHistory() {
-      const markets = ['Retail Goods', 'Digital Assets']
-      const statuses = [true, true, true, true, false] // 80% success rate
+      // Only generate if history is empty
+      if (this.scrapeHistory.length > 0) {
+        return
+      }
       
-      // Generate 10 history entries
+      const markets = ['Retail Goods', 'Digital Assets']
+      const statuses = [true, true, true, true, false]
+      
       for (let i = 0; i < 10; i++) {
         const date = new Date()
-        date.setHours(date.getHours() - (i * 2)) // Each entry 2 hours apart
+        date.setHours(date.getHours() - (i * 2))
         
         const success = statuses[i % statuses.length]
         this.scrapeHistory.push({
@@ -106,6 +78,13 @@ export const useScrapeStore = defineStore('scrape', {
           success: success
         })
       }
+    },
+
+    async fetchHistory() {
+      // Week 2: Replace with real API call
+      // const response = await fetch('/api/history')
+      // this.scrapeHistory = await response.json()
+      console.log('Week 2: Real history will be fetched from API')
     }
   }
 })
