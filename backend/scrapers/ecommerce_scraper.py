@@ -2,7 +2,11 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-from utils.cleaners import clean_items, clean_price, clean_rating
+
+try:
+    from utils.cleaners import clean_items, clean_price, clean_rating
+except ImportError:  # pragma: no cover - fallback for package execution
+    from backend.utils.cleaners import clean_items, clean_price, clean_rating
 
 logger = logging.getLogger(__name__)
 

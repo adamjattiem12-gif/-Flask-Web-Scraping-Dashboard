@@ -3,12 +3,14 @@ from flask import Blueprint, jsonify
 from datetime import datetime
 import time
 
-# Import your scrapers
-from backend.scrapers.ecommerce_scraper import scrape_ecommerce
-from backend.scrapers.crypto_scraper import scrape_crypto
-
-# Import Purrity's storage functions
-from backend.services.storage import save_items, add_history, load_items
+try:
+    from ..scrapers.ecommerce_scraper import scrape_ecommerce
+    from ..scrapers.crypto_scraper import scrape_crypto
+    from ..services.storage import save_items, add_history, load_items
+except ImportError:  # pragma: no cover - fallback for direct package execution
+    from backend.scrapers.ecommerce_scraper import scrape_ecommerce
+    from backend.scrapers.crypto_scraper import scrape_crypto
+    from backend.services.storage import save_items, add_history, load_items
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
