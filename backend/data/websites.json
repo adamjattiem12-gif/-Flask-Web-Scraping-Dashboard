@@ -1,0 +1,12 @@
+[
+    {
+        "name": "WebScraper E-Commerce Sandbox",
+        "url": "https://webscraper.io/test-sites/e-commerce/allinone",
+        "market": "E-Commerce"
+    },
+    {
+        "name": "CoinGecko",
+        "url": "https://www.coingecko.com/",
+        "market": "Cryptocurrency"
+    }
+]
