@@ -3,7 +3,6 @@
     <!-- PAGE HEADER -->
     <div class="history-header">
       <h2>📜 Scrape History</h2>
-      <!-- Refresh button to reload history -->
       <button 
         @click="refreshHistory" 
         class="refresh-btn"
@@ -20,7 +19,7 @@
       <p>Loading history...</p>
     </div>
 
-    <!-- EMPTY STATE - No history yet -->
+    <!-- EMPTY STATE -->
     <div v-else-if="history.length === 0" class="empty-state">
       <p>📭 No history yet</p>
       <p class="empty-sub">Run a scrape to see results here</p>
@@ -39,11 +38,9 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Loop through history records -->
           <tr v-for="record in history" :key="record.timestamp">
             <td>{{ formatDate(record.timestamp) }}</td>
             <td>
-              <!-- Market badge -->
               <span 
                 class="badge" 
                 :class="record.market === 'Retail Goods' ? 'badge-retail' : 'badge-crypto'"
@@ -54,7 +51,6 @@
             <td>{{ record.target }}</td>
             <td>{{ record.items_found }}</td>
             <td>
-              <!-- Status: Success (green) or Failed (red) -->
               <span :class="record.success ? 'status-success' : 'status-error'">
                 {{ record.success ? '✅ Success' : '❌ Failed' }}
               </span>
@@ -62,11 +58,6 @@
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <!-- WEEK 1 NOTE - Remove in Week 2 -->
-    <div class="week1-note">
-      <strong>Week 1:</strong> This shows mock history data. In Week 2, this will show real scrape logs from the backend.
     </div>
   </div>
 </template>
@@ -76,32 +67,28 @@ import { ref, onMounted } from 'vue'
 import { useScrapeStore } from '../stores/scrapeStore'
 
 const scrapeStore = useScrapeStore()
-const history = ref([])   // Local copy of history data
+const history = ref([])
 const loading = ref(false)
 
 /**
  * refreshHistory - Loads history from the store
- * Week 1: Uses mock data from scrapeStore
- * Week 2: Will fetch from /api/history
  */
 const refreshHistory = async () => {
   loading.value = true
-  // ⚠️ Week 1: Using mock data
-  // Week 2: Replace with: await scrapeStore.fetchHistory()
   await new Promise(resolve => setTimeout(resolve, 300))
   history.value = scrapeStore.scrapeHistory
   loading.value = false
 }
 
-// Helper: Format date for display
 const formatDate = (timestamp) => {
   return new Date(timestamp).toLocaleString()
 }
 
-// Load history when page loads
 onMounted(() => {
-  // Generate mock history (Week 1 only)
-  scrapeStore.generateMockHistory()
+  // Only generate if history is empty
+  if (scrapeStore.scrapeHistory.length === 0) {
+    scrapeStore.generateMockHistory()
+  }
   history.value = scrapeStore.scrapeHistory
 })
 </script>
@@ -132,7 +119,6 @@ h2 {
   margin-bottom: 32px;
 }
 
-/* Refresh button */
 .refresh-btn {
   background: #5B8C5A;
   color: white;
@@ -152,7 +138,6 @@ h2 {
   cursor: not-allowed;
 }
 
-/* Table styles */
 .table-container {
   background: white;
   border: 1px solid #E5E2DD;
@@ -184,7 +169,6 @@ tr:hover td {
   background: #FAF9F7;
 }
 
-/* Market badges in table */
 .badge {
   padding: 4px 12px;
   border-radius: 4px;
@@ -202,7 +186,6 @@ tr:hover td {
   color: white;
 }
 
-/* Status colors */
 .status-success {
   color: #5B8C5A;
   font-weight: 500;
@@ -213,7 +196,6 @@ tr:hover td {
   font-weight: 500;
 }
 
-/* Loading state */
 .loading-state {
   text-align: center;
   padding: 40px;
@@ -235,7 +217,6 @@ tr:hover td {
   100% { transform: rotate(360deg); }
 }
 
-/* Empty state */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -246,6 +227,23 @@ tr:hover td {
 
 .empty-state p {
   font-size: 18px;
-  color: #2D2
+  color: #2D2A3E;
+  margin: 0;
+}
+
+.empty-sub {
+  color: #9E9BB0 !important;
+  font-size: 14px !important;
+  margin-top: 8px !important;
+}
+
+.week1-note {
+  margin-top: 32px;
+  padding: 16px 20px;
+  background: #FFF8E7;
+  border: 1px solid #F0E6D0;
+  border-radius: 8px;
+  color: #5C5A6B;
+  font-size: 14px;
 }
 </style>

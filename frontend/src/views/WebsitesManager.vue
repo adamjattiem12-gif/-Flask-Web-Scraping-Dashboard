@@ -44,12 +44,7 @@
           <span class="last-scraped">Last scraped: {{ formatDate() }}</span>
         </div>
       </div>
-    </div>
-
-    <!-- WEEK 1 NOTE - Remove this in Week 2 -->
-    <div class="week1-note">
-      💡 <strong>Week 1:</strong> This is mock data. In Week 2, this will connect to the real backend API.
-    </div>
+    </div> 
   </div>
 </template>
 
