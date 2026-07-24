@@ -1,9 +1,9 @@
 {
     "total_items": 21,
     "total_websites": 2,
-    "successful_scrapes": 2,
+    "successful_scrapes": 3,
     "failed_scrapes": 0,
-    "last_scrape": "2026-07-23T15:32:40.842835",
+    "last_scrape": "2026-07-24T14:25:16.678599",
     "markets": {
         "Retail Goods": 21
     }

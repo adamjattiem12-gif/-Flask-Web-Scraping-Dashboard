@@ -10,5 +10,12 @@
         "target": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
         "items_found": 21,
         "status": "Success"
+    },
+    {
+        "timestamp": "2026-07-24T14:25:16.680591",
+        "target": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods",
+        "items_found": 21,
+        "status": "Success"
     }
 ]

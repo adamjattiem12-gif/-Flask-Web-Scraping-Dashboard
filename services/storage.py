@@ -15,15 +15,19 @@ import json
 
 # Import os to work with folders and file paths
 import os
+from pathlib import Path
 
-# Folder where all application data will be stored
-DATA_FOLDER = "data"
+# Make storage paths relative to the repository root rather than the current
+# working directory, so scraper runs from any folder still write to the same
+# data files.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_FOLDER = PROJECT_ROOT / "data"
 
 # File paths for each type of stored data
-ITEMS_FILE = os.path.join(DATA_FOLDER, "items.json")
-WEBSITES_FILE = os.path.join(DATA_FOLDER, "websites.json")
-HISTORY_FILE = os.path.join(DATA_FOLDER, "history.json")
-STATISTICS_FILE = os.path.join(DATA_FOLDER, "statistics.json")
+ITEMS_FILE = DATA_FOLDER / "items.json"
+WEBSITES_FILE = DATA_FOLDER / "websites.json"
+HISTORY_FILE = DATA_FOLDER / "history.json"
+STATISTICS_FILE = DATA_FOLDER / "statistics.json"
 
 def ensure_data_folder():
     """
@@ -31,7 +35,7 @@ def ensure_data_folder():
 
     This prevents file errors when attempting to save data.
     """
-    os.makedirs(DATA_FOLDER, exist_ok=True)
+    DATA_FOLDER.mkdir(parents=True, exist_ok=True)
 
 
 # ==========================
@@ -42,13 +46,13 @@ def load_items():
 
     ensure_data_folder()
 
-    if not os.path.exists(ITEMS_FILE):
+    if not ITEMS_FILE.exists():
         return []
 
-    if os.path.getsize(ITEMS_FILE) == 0:
+    if ITEMS_FILE.stat().st_size == 0:
         return []
 
-    with open(ITEMS_FILE, "r") as file:
+    with ITEMS_FILE.open("r") as file:
         return json.load(file)
 
 
@@ -64,7 +68,7 @@ def save_items(items):
     ensure_data_folder()
 
     # Save the items as formatted JSON
-    with open(ITEMS_FILE, "w") as file:
+    with ITEMS_FILE.open("w") as file:
         json.dump(items, file, indent=4)
 
 
@@ -88,11 +92,11 @@ def load_websites():
     }
 ]
 
-    if not os.path.exists(WEBSITES_FILE) or os.path.getsize(WEBSITES_FILE) == 0:
+    if not WEBSITES_FILE.exists() or WEBSITES_FILE.stat().st_size == 0:
         save_websites(default_websites)
         return default_websites
 
-    with open(WEBSITES_FILE, "r") as file:
+    with WEBSITES_FILE.open("r") as file:
         return json.load(file)
 
 
@@ -108,7 +112,7 @@ def save_websites(websites):
     ensure_data_folder()
 
     # Save the website list as formatted JSON
-    with open(WEBSITES_FILE, "w") as file:
+    with WEBSITES_FILE.open("w") as file:
         json.dump(websites, file, indent=4)
 
 
@@ -123,14 +127,14 @@ def load_history():
 
     ensure_data_folder()
 
-    if not os.path.exists(HISTORY_FILE):
+    if not HISTORY_FILE.exists():
         return []
 
     # If the file exists but is empty, return an empty list
-    if os.path.getsize(HISTORY_FILE) == 0:
+    if HISTORY_FILE.stat().st_size == 0:
         return []
 
-    with open(HISTORY_FILE, "r") as file:
+    with HISTORY_FILE.open("r") as file:
         return json.load(file)
 
 
@@ -146,7 +150,7 @@ def save_history(history):
     ensure_data_folder()
 
     # Save the history records as formatted JSON
-    with open(HISTORY_FILE, "w") as file:
+    with HISTORY_FILE.open("w") as file:
         json.dump(history, file, indent=4)
 
 
@@ -170,24 +174,21 @@ def add_history(record):
     save_history(history)
 
 
-    STATISTICS_FILE = os.path.join(DATA_FOLDER, "statistics.json")
-
-
 def load_statistics():
     ensure_data_folder()
 
-    if not os.path.exists(STATISTICS_FILE):
+    if not STATISTICS_FILE.exists():
         return {}
 
-    if os.path.getsize(STATISTICS_FILE) == 0:
+    if STATISTICS_FILE.stat().st_size == 0:
         return {}
 
-    with open(STATISTICS_FILE, "r") as file:
+    with STATISTICS_FILE.open("r") as file:
         return json.load(file)
 
 
 def save_statistics(statistics):
     ensure_data_folder()
 
-    with open(STATISTICS_FILE, "w") as file:
+    with STATISTICS_FILE.open("w") as file:
         json.dump(statistics, file, indent=4)

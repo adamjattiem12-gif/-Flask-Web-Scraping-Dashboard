@@ -1,9 +1,14 @@
+import sys
+import os
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-# Import your storage functions
-from services.storage import (
+# Ensure the project root is on the path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Import storage functions from backend
+from backend.services.storage import (
     save_items,
     add_history,
     load_websites,
