@@ -67,7 +67,7 @@
         </div>
         <div class="placeholder-card">
           <h3>Watchlist</h3>
-          <p style="color: #9E9BB0; font-size: 14px;">Waiting for Chad's component</p>
+          <p style="color: #9E9BB0; font-size: 14px;">Nothing in the watchlist yet</p>
         </div>
       </div>
 
