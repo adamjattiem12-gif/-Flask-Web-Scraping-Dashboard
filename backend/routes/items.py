@@ -30,8 +30,18 @@ MOCK_ITEMS = [
 @items_bp.route('/api/items')
 def get_items():
     market = request.args.get('market')
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 20))
+
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 20))
+    except ValueError:
+        return jsonify({"error": "page and per_page must be integers"}), 400
+
+    if page < 1 or per_page < 1:
+        return jsonify({"error": "page and per_page must be positive integers"}), 400
+
+    if per_page > 100:
+        return jsonify({"error": "per_page cannot exceed 100"}), 400
 
     items = MOCK_ITEMS
     if market:
