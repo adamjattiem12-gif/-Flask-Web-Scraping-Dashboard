@@ -15,10 +15,13 @@ from utils.cleaners import clean_items, clean_price, clean_rating
 logger = logging.getLogger(__name__)
 
 
-def scrape_ecommerce():
-    """Scrape electronics from WebScraper.io E-Commerce Sandbox"""
+def scrape_ecommerce(url="https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets"):
+    """Scrape electronics from a WebScraper.io E-Commerce Sandbox URL.
 
-    url = "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets"
+    Parameters:
+        url (str): Target URL to scrape. Defaults to the tablets page.
+                   Pass a custom URL from the website registry to override.
+    """
 
     try:
         response = requests.get(url, timeout=10)
@@ -80,7 +83,7 @@ if __name__ == '__main__':
     )
 
     print("Scraping e-commerce products...")
-    products = scrape_ecommerce()
+    products = scrape_ecommerce()  # Uses default URL when run directly
 
     if products:
         print(f"\nFetched {len(products)} products:")

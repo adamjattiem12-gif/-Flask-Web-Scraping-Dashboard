@@ -3,14 +3,9 @@ from flask import Blueprint, jsonify
 from datetime import datetime
 import time
 
-try:
-    from ..scrapers.ecommerce_scraper import scrape_ecommerce
-    from ..scrapers.crypto_scraper import scrape_crypto
-    from ..services.storage import save_items, add_history, load_items
-except ImportError:  # pragma: no cover - fallback for direct package execution
-    from backend.scrapers.ecommerce_scraper import scrape_ecommerce
-    from backend.scrapers.crypto_scraper import scrape_crypto
-    from backend.services.storage import save_items, add_history, load_items
+from scrapers.ecommerce_scraper import scrape_ecommerce
+from scrapers.crypto_scraper import scrape_crypto
+from services.storage import save_items, add_history, load_items, load_websites, save_statistics
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -64,7 +59,7 @@ def calculate_statistics(items):
     
     stats = {
         "total_items": len(items),
-        "active_sites": 2,
+        "active_sites": len(load_websites()),
         "success_rate": 100.0,
         "last_scrape": datetime.now().isoformat(),
         "markets": {
@@ -110,30 +105,56 @@ def scrape():
     logger.info("=== SCRAPE ENDPOINT CALLED ===")
     
     try:
-        # ====== STEP 1: Scrape E-Commerce ======
-        logger.info("Step 1: Scraping e-commerce...")
-        ecommerce_items = scrape_ecommerce()
+        # ====== STEP 1: Resolve URLs from website registry ======
+        logger.info("Step 1: Resolving scrape URLs from website registry...")
+        websites = load_websites()
+        ecommerce_url = next(
+            (w['url'] for w in websites if w.get('market') == 'E-Commerce'),
+            None  # Falls back to scraper default if not found
+        )
+        crypto_url = next(
+            (w['url'] for w in websites if w.get('market') == 'Cryptocurrency'),
+            None  # Falls back to scraper default if not found
+        )
+        logger.info(f"  E-Commerce URL: {ecommerce_url or 'default'}")
+        logger.info(f"  Cryptocurrency URL: {crypto_url or 'default'}")
+
+        # ====== STEP 2: Scrape E-Commerce ======
+        logger.info("Step 2: Scraping e-commerce...")
+        scrape_kwargs_ec = {"url": ecommerce_url} if ecommerce_url else {}
+        ecommerce_items = scrape_ecommerce(**scrape_kwargs_ec)
         logger.info(f"✓ E-commerce scrape complete: {len(ecommerce_items)} items")
         time.sleep(2)  # Delay between requests (be respectful to APIs)
         
-        # ====== STEP 2: Scrape Crypto ======
-        logger.info("Step 2: Scraping crypto...")
-        crypto_items = scrape_crypto()
+        # ====== STEP 3: Scrape Crypto ======
+        logger.info("Step 3: Scraping crypto...")
+        scrape_kwargs_cr = {"url": crypto_url} if crypto_url else {}
+        crypto_items = scrape_crypto(**scrape_kwargs_cr)
         logger.info(f"✓ Crypto scrape complete: {len(crypto_items)} items")
         
-        # ====== STEP 3: Combine Results ======
+        # ====== STEP 4: Combine Results ======
         all_items = ecommerce_items + crypto_items
-        logger.info(f"Step 3: Combined {len(all_items)} items total")
+        logger.info(f"Step 4: Combined {len(all_items)} items total")
         
-        # ====== STEP 4: Validate Data ======
-        logger.info("Step 4: Validating data...")
+        # ====== STEP 5: Validate Data ======
+        logger.info("Step 5: Validating data...")
         is_valid, error_msg = validate_items(all_items)
         if not is_valid:
             logger.error(f"Validation failed: {error_msg}")
-            # Log the failed scrape
+            # Log one failure record per market
+            ts = datetime.now().isoformat()
             add_history({
-                "timestamp": datetime.now().isoformat(),
-                "scraper_type": "combined",
+                "timestamp": ts,
+                "scraper_type": "ecommerce",
+                "market": "Retail Goods",
+                "items_found": 0,
+                "success": False,
+                "error": error_msg
+            })
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "crypto",
+                "market": "Digital Assets",
                 "items_found": 0,
                 "success": False,
                 "error": error_msg
@@ -152,10 +173,20 @@ def scrape():
             logger.info(f"✓ Items saved: {len(all_items)}")
         except Exception as e:
             logger.error(f"Failed to save items: {str(e)}")
+            ts = datetime.now().isoformat()
             add_history({
-                "timestamp": datetime.now().isoformat(),
-                "scraper_type": "combined",
-                "items_found": len(all_items),
+                "timestamp": ts,
+                "scraper_type": "ecommerce",
+                "market": "Retail Goods",
+                "items_found": len(ecommerce_items),
+                "success": False,
+                "error": f"Failed to save items: {str(e)}"
+            })
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "crypto",
+                "market": "Digital Assets",
+                "items_found": len(crypto_items),
                 "success": False,
                 "error": f"Failed to save items: {str(e)}"
             })
@@ -170,19 +201,31 @@ def scrape():
         stats = calculate_statistics(all_items)
         logger.info("✓ Statistics calculated")
         
-        # ====== STEP 7: Log Scrape Event (using Purrity's function) ======
-        logger.info("Step 7: Logging scrape event...")
-        add_history({
-            "timestamp": datetime.now().isoformat(),
-            "scraper_type": "combined",
-            "items_found": len(all_items),
-            "success": True,
-            "ecommerce_count": len(ecommerce_items),
-            "crypto_count": len(crypto_items)
-        })
-        logger.info("✓ Scrape logged to history")
+        # ====== STEP 7: Persist Statistics ======
+        logger.info("Step 7: Saving statistics to storage...")
+        save_statistics(stats)
+        logger.info("✓ Statistics persisted to statistics.json")
         
-        # ====== STEP 8: Return Success Response ======
+        # ====== STEP 8: Log Per-Market History Records ======
+        logger.info("Step 8: Logging scrape event to history...")
+        ts = datetime.now().isoformat()
+        add_history({
+            "timestamp": ts,
+            "scraper_type": "ecommerce",
+            "market": "Retail Goods",
+            "items_found": len(ecommerce_items),
+            "success": True
+        })
+        add_history({
+            "timestamp": ts,
+            "scraper_type": "crypto",
+            "market": "Digital Assets",
+            "items_found": len(crypto_items),
+            "success": True
+        })
+        logger.info("✓ Scrape logged to history (2 market records)")
+        
+        # ====== STEP 9: Return Success Response ======
         response = {
             "status": "success",
             "message": f"Successfully scraped {len(all_items)} items",
@@ -201,9 +244,19 @@ def scrape():
         logger.error(f"✗ SCRAPE FAILED: {str(e)}", exc_info=True)
         # Log the failed scrape
         try:
+            ts = datetime.now().isoformat()
             add_history({
-                "timestamp": datetime.now().isoformat(),
-                "scraper_type": "combined",
+                "timestamp": ts,
+                "scraper_type": "ecommerce",
+                "market": "Retail Goods",
+                "items_found": 0,
+                "success": False,
+                "error": str(e)
+            })
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "crypto",
+                "market": "Digital Assets",
                 "items_found": 0,
                 "success": False,
                 "error": str(e)

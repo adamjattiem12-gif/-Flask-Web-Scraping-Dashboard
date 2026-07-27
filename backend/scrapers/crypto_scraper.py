@@ -14,11 +14,13 @@ from utils.cleaners import clean_items, clean_price, clean_rating
 logger = logging.getLogger(__name__)
 
 
-def scrape_crypto():
-    """Scrape cryptocurrencies from CoinGecko API"""
+def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
+    """Scrape cryptocurrencies from a CoinGecko-compatible API endpoint.
 
-    # API endpoint (like a URL, but returns JSON instead of HTML)
-    url = "https://api.coingecko.com/api/v3/coins/markets"
+    Parameters:
+        url (str): Target API endpoint. Defaults to the CoinGecko markets endpoint.
+                   Pass a custom URL from the website registry to override.
+    """
 
     # Parameters (filters for the API)
     params = {
@@ -87,7 +89,7 @@ if __name__ == '__main__':
     )
 
     print("Scraping crypto prices from CoinGecko...")
-    cryptos = scrape_crypto()
+    cryptos = scrape_crypto()  # Uses default URL when run directly
 
     if cryptos:
         print(f"\nFetched {len(cryptos)} cryptocurrencies:")
