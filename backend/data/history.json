@@ -94,5 +94,29 @@
         "scraper_type": "crypto",
         "items_found": 10,
         "success": true
+    },
+    {
+        "timestamp": "2026-07-24T15:59:04.918140",
+        "scraper_type": "crypto",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-24T15:59:12.763501",
+        "scraper_type": "ecommerce",
+        "items_found": 21,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-24T16:00:55.011454",
+        "scraper_type": "crypto",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-24T16:01:37.151117",
+        "scraper_type": "ecommerce",
+        "items_found": 21,
+        "success": true
     }
 ]
