@@ -5,6 +5,7 @@
       class="hamburger-btn" 
       @click="toggleSidebar" 
       :class="{ active: sidebarOpen }"
+      :aria-expanded="sidebarOpen"
       aria-label="Toggle menu"
     >
       <span></span>
@@ -111,6 +112,15 @@ body {
   transition: all 0.3s ease;
 }
 
+.hamburger-btn:hover {
+  background: #3D3A4E;
+  transform: scale(1.05);
+}
+
+.hamburger-btn:active {
+  transform: scale(0.95);
+}
+
 .hamburger-btn span {
   display: block;
   width: 24px;
@@ -122,7 +132,7 @@ body {
 }
 
 .hamburger-btn.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
+  transform: rotate(45deg) translate(6px, 6px);
 }
 
 .hamburger-btn.active span:nth-child(2) {
@@ -131,11 +141,7 @@ body {
 }
 
 .hamburger-btn.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-.hamburger-btn:hover {
-  background: #3D3A4E;
+  transform: rotate(-45deg) translate(6px, -6px);
 }
 
 /* --- SIDEBAR OVERLAY --- */
@@ -168,7 +174,7 @@ body {
 
   .main-content {
     margin-left: 0;
-    padding-top: 70px;
+    padding-top: 60px;
   }
 
   .main-content.sidebar-open {

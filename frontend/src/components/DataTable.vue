@@ -42,7 +42,9 @@
           <td>{{ formatCurrency(item.price, item.currency) }}</td>
           <td>{{ item.currency }}</td>
           <td>
-            <span class="source-badge" :class="'source-' + item.source">{{ item.source }}</span>
+            <span class="source-badge" :class="getSourceClass(item.source)">
+              {{ item.source }}
+            </span>
           </td>
           <td>{{ formatTimestamp(item.scraped_at) }}</td>
         </tr>
@@ -124,17 +126,14 @@ const sortedItems = computed(() => {
     let valA = a[key]
     let valB = b[key]
 
-    // Numeric sort for price
     if (key === 'price') {
       return (Number(valA) - Number(valB)) * dir
     }
 
-    // Date sort for scraped_at
     if (key === 'scraped_at') {
       return (new Date(valA) - new Date(valB)) * dir
     }
 
-    // Alphabetical sort for everything else (name, currency, source)
     valA = String(valA ?? '').toLowerCase()
     valB = String(valB ?? '').toLowerCase()
     if (valA < valB) return -1 * dir
@@ -149,6 +148,12 @@ const pageNumbers = computed(() => {
   return pages
 })
 
+const getSourceClass = (source) => {
+  if (source === 'WebScraper.io') return 'source-books'
+  if (source === 'CoinGecko' || source === 'CoinMarketCap') return 'source-crypto'
+  return 'source-default'
+}
+
 const goToPage = (page) => {
   if (page < 1 || page > props.totalPages || page === props.currentPage) return
   if (props.onPageChange) props.onPageChange(page)
@@ -160,11 +165,10 @@ const formatCurrency = (price, currency) => {
   try {
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
-      currency: currency || 'GBP',
+      currency: currency || 'USD',
     }).format(price)
   } catch {
-    // Fall back if currency code isn't recognized
-    return `${currency ?? ''} ${Number(price).toFixed(2)}`
+    return `${currency ?? 'USD'} ${Number(price).toFixed(2)}`
   }
 }
 
@@ -239,7 +243,11 @@ const formatTimestamp = (date) => {
   color: #2F6363;
 }
 
-/* Skeleton loading state */
+.source-default {
+  background: #F0EFF5;
+  color: #4A4762;
+}
+
 .skeleton-cell {
   height: 14px;
   border-radius: 4px;
@@ -253,7 +261,6 @@ const formatTimestamp = (date) => {
   to { background-position: -200% 0; }
 }
 
-/* Empty state */
 .empty-state {
   text-align: center;
   padding: 40px 16px;
@@ -272,7 +279,6 @@ const formatTimestamp = (date) => {
   margin: 0;
 }
 
-/* Error state */
 .table-message.error-message {
   text-align: center;
   padding: 32px 16px;
@@ -297,7 +303,6 @@ const formatTimestamp = (date) => {
   background: #A85257;
 }
 
-/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;

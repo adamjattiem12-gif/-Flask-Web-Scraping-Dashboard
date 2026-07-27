@@ -2,40 +2,40 @@
   <div class="scrape-button-wrapper">
     <button 
       @click="handleScrape" 
-      :disabled="scrapeStore.status === 'loading'"
+      :disabled="isLoading"
       :class="['scrape-btn', buttonClass]"
     >
-      <!-- Show different icons based on state -->
-      <span v-if="scrapeStore.status === 'loading'" class="spinner">⟳</span>
-      <span v-else-if="scrapeStore.status === 'success'">✓</span>
-      <span v-else-if="scrapeStore.status === 'error'">✗</span>
+      <span v-if="isLoading" class="spinner">⟳</span>
+      <span v-else-if="status === 'success'">✓</span>
+      <span v-else-if="status === 'error'">✗</span>
       {{ buttonText }}
     </button>
     
-    <!-- Status message below button -->
-    <p v-if="scrapeStore.message" :class="messageClass" class="status-message">
-      {{ scrapeStore.message }}
+    <p v-if="message" :class="messageClass" class="status-message">
+      {{ message }}
     </p>
     
-    <!-- Last scrape timestamp -->
-    <p v-if="scrapeStore.lastScrape" class="last-scrape">
-      Last scrape: {{ formatTime(scrapeStore.lastScrape) }}
+    <p v-if="lastScrapeTime" class="last-scrape">
+      Last scrape: {{ lastScrapeTime }}
     </p>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useScrapeStore } from '../stores/scrapeStore'
+import { ref, computed, onMounted } from 'vue'
+import { useScrapeStore } from '@/stores/scrapeStore'
 
+// ✅ Initialize store INSIDE setup
 const scrapeStore = useScrapeStore()
 
-/**
- * buttonText - Changes text based on current state
- * Used by: The button label
- */
+// Local state
+const isLoading = ref(false)
+const status = ref('idle') // idle | loading | success | error
+const message = ref('')
+const lastScrapeTime = ref('')
+
 const buttonText = computed(() => {
-  switch(scrapeStore.status) {
+  switch(status.value) {
     case 'loading': return 'Scraping...'
     case 'success': return 'Done!'
     case 'error': return 'Try Again'
@@ -43,12 +43,8 @@ const buttonText = computed(() => {
   }
 })
 
-/**
- * buttonClass - Changes button color based on state
- * Used by: The button styling
- */
 const buttonClass = computed(() => {
-  switch(scrapeStore.status) {
+  switch(status.value) {
     case 'loading': return 'btn-loading'
     case 'success': return 'btn-success'
     case 'error': return 'btn-error'
@@ -56,46 +52,56 @@ const buttonClass = computed(() => {
   }
 })
 
-/**
- * messageClass - Changes message color based on state
- * Used by: The status message below button
- */
 const messageClass = computed(() => {
-  switch(scrapeStore.status) {
+  switch(status.value) {
     case 'success': return 'msg-success'
     case 'error': return 'msg-error'
     default: return 'msg-info'
   }
 })
 
-/**
- * handleScrape - Triggers the scrape and auto-resets after 5 seconds
- * Used by: Button click
- */
+const emit = defineEmits(['scrape'])
+
 const handleScrape = async () => {
-  // Call the scrape action from the store
-  await scrapeStore.triggerScrape()
+  if (isLoading.value) return
   
-  // If success or error, auto-reset after 5 seconds
-  if (scrapeStore.status === 'success' || scrapeStore.status === 'error') {
+  status.value = 'loading'
+  isLoading.value = true
+  message.value = 'Scraping in progress...'
+  
+  try {
+    await scrapeStore.triggerScrape()
+    status.value = 'success'
+    message.value = 'Scrape completed successfully!'
+    lastScrapeTime.value = new Date().toLocaleString()
+    emit('scrape')
+  } catch (error) {
+    status.value = 'error'
+    message.value = error.message || 'Scrape failed. Please try again.'
+  } finally {
+    isLoading.value = false
+    
+    // Auto-reset after 5 seconds
     setTimeout(() => {
-      scrapeStore.resetStatus()
+      if (status.value !== 'loading') {
+        status.value = 'idle'
+        message.value = ''
+      }
     }, 5000)
   }
 }
 
-/**
- * formatTime - Formats a date for display
- * Used by: Last scrape timestamp
- */
-const formatTime = (date) => {
-  return new Date(date).toLocaleString()
-}
+onMounted(() => {
+  // Load last scrape time from store if available
+  if (scrapeStore.lastScrape) {
+    lastScrapeTime.value = new Date(scrapeStore.lastScrape).toLocaleString()
+  }
+})
 </script>
 
 <style scoped>
 .scrape-button-wrapper {
-  padding: 16px 0;
+  padding: 0;
 }
 
 .scrape-btn {
@@ -113,7 +119,6 @@ const formatTime = (date) => {
   justify-content: center;
 }
 
-/* 4 STATES */
 .btn-idle {
   background: #5B8C5A;
   color: white;
@@ -146,7 +151,6 @@ const formatTime = (date) => {
   background: #A85257;
 }
 
-/* Spinning animation for loading state */
 .spinner {
   display: inline-block;
   animation: spin 1s linear infinite;
@@ -158,7 +162,6 @@ const formatTime = (date) => {
   to { transform: rotate(360deg); }
 }
 
-/* Status messages */
 .status-message {
   margin: 8px 0 0;
   font-size: 14px;

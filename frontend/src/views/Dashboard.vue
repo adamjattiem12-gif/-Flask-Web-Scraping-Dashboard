@@ -1,99 +1,138 @@
 <template>
   <div class="dashboard-page">
-    <!-- WHITE HEADER BAR - CONNECTS TO SIDEBAR -->
+    <!-- WHITE HEADER BAR -->
     <div class="dashboard-header-bar">
-      <h1>Dashboard</h1>
+      <div class="header-left">
+        <h1>Dashboard</h1>
+        <span v-if="lastUpdated" class="last-updated">
+          🕐 Updated: {{ lastUpdated }}
+        </span>
+      </div>
+      <div class="header-right">
+        <button class="refresh-btn" @click="refreshData" :disabled="isRefreshing">
+          {{ isRefreshing ? '⟳ Refreshing...' : '⟳ Refresh' }}
+        </button>
+      </div>
     </div>
 
-    <!-- CONTENT BELOW - ORIGINAL BACKGROUND -->
+    <!-- CONTENT -->
     <div class="dashboard-content">
-      <!-- STAT CARDS -->
-      <div class="stats-grid">
-        <StatCard
-          icon="📦"
-          label="Total Items"
-          :value="stats.totalItems"
-          subtitle="across 2 markets"
-        />
-        <StatCard
-          icon="🌐"
-          label="Active Sources"
-          :value="stats.activeSources"
-          subtitle="WebScraper.io · CoinGecko"
-        />
-        <StatCard
-          icon="✅"
-          label="Success Rate"
-          :value="stats.successRate"
-          subtitle="last 7 days"
-        />
-        <StatCard
-          icon="🕐"
-          label="Last Scrape"
-          :value="stats.lastScrape"
-          subtitle="Jul 20, 2026"
-        />
+      <!-- LOADING STATE -->
+      <div v-if="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading dashboard data...</p>
       </div>
 
-      <!-- PRICE SNAPSHOT SECTION -->
-      <div class="section-header">
-        <h2>Price Snapshot</h2>
-        <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
-      </div>
-
-      <!-- MARKET OVERVIEW -->
-      <div class="markets-grid">
-        <MarketOverviewCard
-          title="Retail Goods"
-          accent-color="#D4914A"
-          :avg-price="473.99"
-          :items-count="12"
-          :recent-items="retailRecentItems"
-        />
-        <MarketOverviewCard
-          title="Digital Assets"
-          accent-color="#4A8C8C"
-          :avg-price="5942.24"
-          :items-count="12"
-          :recent-items="cryptoRecentItems"
-        />
-      </div>
-
-      <!-- TOP MOVERS & WATCHLIST ROW -->
-      <div class="row-2col">
-        <div class="placeholder-card">
-          <h3>Top Movers</h3>
-          <p style="color: #9E9BB0; font-size: 14px;">Waiting for Rushin's component</p>
+      <!-- ACTUAL CONTENT -->
+      <template v-else>
+        <!-- STAT CARDS -->
+        <div class="stats-grid">
+          <StatCard
+            icon="📦"
+            label="Total Items"
+            :value="stats.totalItems"
+            subtitle="across 2 markets"
+          />
+          <StatCard
+            icon="🌐"
+            label="Active Sources"
+            :value="stats.activeSources"
+            subtitle="WebScraper.io · CoinGecko"
+          />
+          <StatCard
+            icon="✅"
+            label="Success Rate"
+            :value="stats.successRate"
+            subtitle="last 7 days"
+          />
+          <StatCard
+            icon="🕐"
+            label="Last Scrape"
+            :value="stats.lastScrape"
+            subtitle="Jul 20, 2026"
+          />
         </div>
-        <div class="placeholder-card">
-          <h3>Watchlist</h3>
-          <p style="color: #9E9BB0; font-size: 14px;">Nothing in the watchlist yet</p>
-        </div>
-      </div>
 
-      <!-- SCRAPE BUTTON -->
-      <div class="action-bar">
-        <div class="source-badge">
-          <span class="badge-dot"></span>
-          WebScraper.io · CoinGecko
+        <!-- PRICE SNAPSHOT -->
+        <div class="section-header">
+          <h2>Price Snapshot</h2>
+          <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
-        <button class="scrape-btn">⚡ Scrape Now</button>
-      </div>
 
-      <!-- RECENT ITEMS TABLE -->
-      <div class="placeholder-table">
-        <h3>Recent Items</h3>
-        <p style="color: #9E9BB0; font-size: 14px;">Waiting for Rushin's DataTable component</p>
-      </div>
+        <!-- MARKET OVERVIEW -->
+        <div class="markets-grid">
+          <MarketOverviewCard
+            title="Retail Goods"
+            accent-color="#D4914A"
+            :avg-price="473.99"
+            :items-count="12"
+            :recent-items="retailRecentItems"
+          />
+          <MarketOverviewCard
+            title="Digital Assets"
+            accent-color="#4A8C8C"
+            :avg-price="5942.24"
+            :items-count="12"
+            :recent-items="cryptoRecentItems"
+          />
+        </div>
+
+        <!-- TOP MOVERS & WATCHLIST -->
+        <div class="row-2col">
+          <TopMovers :items="topMoversData" />
+          <Watchlist />
+        </div>
+
+        <!-- SCRAPE BUTTON -->
+        <div class="action-bar">
+          <div class="source-badge">
+            <span class="badge-dot"></span>
+            WebScraper.io · CoinGecko
+          </div>
+          <ScrapeButton @scrape="handleScrape" />
+        </div>
+
+        <!-- DATA TABLE -->
+        <DataTable 
+          :items="tableItems" 
+          :loading="tableLoading"
+          :error="errorMessage"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          @page-change="handlePageChange"
+          @retry="refreshData"
+        />
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+
+// YOUR COMPONENTS
 import StatCard from '@/components/StatCard.vue'
 import MarketOverviewCard from '@/components/MarketOverviewCard.vue'
 
+// RUSHIN'S COMPONENTS
+import TopMovers from '@/components/TopMovers.vue'
+import DataTable from '@/components/DataTable.vue'
+
+// ✅ CHAD'S COMPONENTS (Now fixed!)
+import Watchlist from '@/components/Watchlist.vue'
+import ScrapeButton from '@/components/ScrapeButton.vue'
+
+// STATE
+const isLoading = ref(true)
+const isRefreshing = ref(false)
+const tableLoading = ref(false)
+const lastUpdated = ref('')
+const errorMessage = ref('')
+const currentPage = ref(1)
+const totalPages = ref(1)
+let refreshInterval = null
+
+// STATS DATA
 const stats = ref({
   totalItems: 24,
   activeSources: 2,
@@ -101,6 +140,7 @@ const stats = ref({
   lastScrape: '02:33 PM'
 })
 
+// MOCK DATA
 const retailRecentItems = [
   { name: 'HP Pavilion 15.6" FHD Laptop', change: -5.1 },
   { name: 'Bose QuietComfort 45 Wireless', change: -4.2 },
@@ -112,216 +152,70 @@ const cryptoRecentItems = [
   { name: 'DOGE - Dogecoin', change: 7.2 },
   { name: 'AVAX - Avalanche', change: -6.3 }
 ]
+
+const topMoversData = ref([
+  { rank: 1, symbol: 'SOL', change: 8.7, price: 178.45, market: 'Digital' },
+  { rank: 2, symbol: 'DOGE', change: 7.2, price: 0.1600, market: 'Digital' },
+  { rank: 3, symbol: 'AVAX', change: -6.3, price: 38.91, market: 'Digital' },
+  { rank: 4, symbol: 'LINK', change: 5.6, price: 18.47, market: 'Digital' },
+  { rank: 5, name: 'HP Pavilion 15.6" FHD Laptop', change: -5.1, price: 529.99, market: 'Retail' }
+])
+
+const tableItems = ref([
+  // ... your items here
+])
+
+// METHODS
+const updateTimestamp = () => {
+  const now = new Date()
+  lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
+}
+
+const refreshData = async () => {
+  isRefreshing.value = true
+  tableLoading.value = true
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    updateTimestamp()
+    totalPages.value = Math.ceil(tableItems.value.length / 10)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = error.message || 'Failed to load data'
+  } finally {
+    isRefreshing.value = false
+    tableLoading.value = false
+  }
+}
+
+const handleScrape = async () => {
+  console.log('Scrape triggered')
+  await refreshData()
+}
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+  console.log('Page changed to:', page)
+}
+
+// LIFECYCLE
+onMounted(async () => {
+  try {
+    await refreshData()
+    refreshInterval = setInterval(refreshData, 60000)
+  } catch (error) {
+    console.error('Error loading dashboard:', error)
+  } finally {
+    isLoading.value = false
+  }
+})
+
+onUnmounted(() => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval)
+  }
+})
 </script>
 
 <style scoped>
-.dashboard-page {
-  min-height: 100vh;
-  background: #F7F5F2;
-  padding: 0;
-}
-
-/* WHITE HEADER BAR */
-.dashboard-header-bar {
-  background: #FFFFFF;
-  padding: 24px 40px;
-  margin: 0;
-  border-bottom: 1px solid #E5E2DD;
-}
-
-.dashboard-header-bar h1 {
-  color: #2D2A3E;
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* CONTENT BELOW */
-.dashboard-content {
-  padding: 32px 40px 40px 40px;
-  max-width: 100%;
-}
-
-.section-header {
-  margin-bottom: 20px;
-  margin-top: 8px;
-}
-
-.section-header h2 {
-  color: #2D2A3E;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.section-subtitle {
-  color: #9E9BB0;
-  font-size: 14px;
-  display: block;
-  margin-top: 4px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.markets-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.row-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.placeholder-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
-  border-radius: 12px;
-  padding: 20px 24px;
-  min-height: 200px;
-}
-
-.placeholder-card h3 {
-  color: #2D2A3E;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.action-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  margin-bottom: 32px;
-  border-top: 1px solid #E5E2DD;
-  border-bottom: 1px solid #E5E2DD;
-}
-
-.source-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #5C5A6B;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #5B8C5A;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.scrape-btn {
-  padding: 12px 32px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  background: #5B8C5A;
-  color: white;
-  transition: all 0.2s;
-}
-
-.scrape-btn:hover {
-  background: #4A7349;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(91, 140, 90, 0.3);
-}
-
-.placeholder-table {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
-  border-radius: 12px;
-  padding: 20px 24px;
-  min-height: 300px;
-}
-
-.placeholder-table h3 {
-  color: #2D2A3E;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 1200px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 992px) {
-  .markets-grid {
-    grid-template-columns: 1fr;
-  }
-  .row-2col {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-header-bar {
-    padding: 16px 20px;
-  }
-  
-  .dashboard-content {
-    padding: 20px;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  
-  .dashboard-header-bar h1 {
-    font-size: 24px;
-  }
-  
-  .action-bar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-  
-  .scrape-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 375px) {
-  .dashboard-header-bar {
-    padding: 12px 16px;
-  }
-  
-  .dashboard-content {
-    padding: 16px;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .dashboard-header-bar h1 {
-    font-size: 20px;
-  }
-}
+/* ... your existing styles ... */
 </style>
