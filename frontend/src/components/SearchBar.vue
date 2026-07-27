@@ -89,7 +89,6 @@ const clearSearch = () => {
   padding: 2px 4px;
   line-height: 1;
 }
-
 .clear-btn:hover {
   color: #C1666B;
 }
