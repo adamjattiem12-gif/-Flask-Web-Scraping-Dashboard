@@ -10,7 +10,8 @@
       </div>
       <div class="header-right">
         <button class="refresh-btn" @click="refreshData" :disabled="isRefreshing">
-          {{ isRefreshing ? '⟳ Refreshing...' : '⟳ Refresh' }}
+          <span class="refresh-icon">⟳</span>
+          {{ isRefreshing ? 'Refreshing...' : 'Refresh' }}
         </button>
       </div>
     </div>
@@ -25,7 +26,7 @@
 
       <!-- ACTUAL CONTENT -->
       <template v-else>
-        <!-- STAT CARDS -->
+        <!-- STAT CARDS - FIXED GRID -->
         <div class="stats-grid">
           <StatCard
             icon="📦"
@@ -118,7 +119,7 @@ import MarketOverviewCard from '@/components/MarketOverviewCard.vue'
 import TopMovers from '@/components/TopMovers.vue'
 import DataTable from '@/components/DataTable.vue'
 
-// ✅ CHAD'S COMPONENTS (Now fixed!)
+// CHAD'S COMPONENTS
 import Watchlist from '@/components/Watchlist.vue'
 import ScrapeButton from '@/components/ScrapeButton.vue'
 
@@ -140,7 +141,7 @@ const stats = ref({
   lastScrape: '02:33 PM'
 })
 
-// MOCK DATA
+// MOCK DATA FOR MARKET CARDS
 const retailRecentItems = [
   { name: 'HP Pavilion 15.6" FHD Laptop', change: -5.1 },
   { name: 'Bose QuietComfort 45 Wireless', change: -4.2 },
@@ -153,6 +154,7 @@ const cryptoRecentItems = [
   { name: 'AVAX - Avalanche', change: -6.3 }
 ]
 
+// TOP MOVERS DATA
 const topMoversData = ref([
   { rank: 1, symbol: 'SOL', change: 8.7, price: 178.45, market: 'Digital' },
   { rank: 2, symbol: 'DOGE', change: 7.2, price: 0.1600, market: 'Digital' },
@@ -161,8 +163,68 @@ const topMoversData = ref([
   { rank: 5, name: 'HP Pavilion 15.6" FHD Laptop', change: -5.1, price: 529.99, market: 'Retail' }
 ])
 
+// DATA TABLE ITEMS
 const tableItems = ref([
-  // ... your items here
+  {
+    id: 1,
+    name: 'BTC - Bitcoin',
+    source: 'CoinGecko',
+    price: 67234.50,
+    change: 3.2,
+    market: 'Digital',
+    rating: null,
+    scrapedAt: 'Jul 20, 02:30 PM'
+  },
+  {
+    id: 2,
+    name: 'ETH - Ethereum',
+    source: 'CoinGecko',
+    price: 3412.80,
+    change: 2.4,
+    market: 'Digital',
+    rating: null,
+    scrapedAt: 'Jul 20, 02:30 PM'
+  },
+  {
+    id: 3,
+    name: 'Samsung 65" Crystal 4K UHD TV',
+    source: 'WebScraper.io',
+    price: 897.99,
+    change: 0.8,
+    market: 'Retail',
+    rating: 4.5,
+    scrapedAt: 'Jul 20, 02:31 PM'
+  },
+  {
+    id: 4,
+    name: 'Samsung Galaxy Tab S8+',
+    source: 'WebScraper.io',
+    price: 699.99,
+    change: 1.5,
+    market: 'Retail',
+    rating: 4.3,
+    scrapedAt: 'Jul 20, 02:33 PM'
+  },
+  {
+    id: 5,
+    name: 'Canon EOS Rebel SL3 DSLR',
+    source: 'WebScraper.io',
+    price: 649.00,
+    change: -0.5,
+    market: 'Retail',
+    rating: 4.7,
+    scrapedAt: 'Jul 20, 02:32 PM'
+  },
+  {
+    id: 6,
+    name: 'iPad Air 10.9-inch (2022)',
+    source: 'WebScraper.io',
+    price: 599.00,
+    change: 2.1,
+    market: 'Retail',
+    rating: 4.6,
+    scrapedAt: 'Jul 20, 02:31 PM'
+  }
 ])
 
 // METHODS
@@ -217,5 +279,282 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* ... your existing styles ... */
+.dashboard-page {
+  min-height: 100vh;
+  background: #F7F5F2;
+  padding: 0;
+}
+
+/* HEADER BAR */
+.dashboard-header-bar {
+  background: #FFFFFF;
+  padding: 24px 40px;
+  margin: 0;
+  border-bottom: 1px solid #E5E2DD;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dashboard-header-bar h1 {
+  color: #2D2A3E;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.last-updated {
+  color: #9E9BB0;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ✅ REFRESH BUTTON - STYLED */
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border: 1px solid #E5E2DD;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #5C5A6B;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #F7F5F2;
+  border-color: #5B8C5A;
+  color: #2D2A3E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91, 140, 90, 0.15);
+}
+
+.refresh-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refresh-icon {
+  display: inline-block;
+  font-size: 18px;
+  transition: transform 0.6s ease;
+}
+
+.refresh-btn:hover:not(:disabled) .refresh-icon {
+  transform: rotate(180deg);
+}
+
+.refresh-btn:disabled .refresh-icon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* CONTENT */
+.dashboard-content {
+  padding: 32px 40px 40px 40px;
+  max-width: 100%;
+}
+
+/* LOADING STATE */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #E5E2DD;
+  border-top-color: #5B8C5A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-state p {
+  color: #9E9BB0;
+  font-size: 14px;
+}
+
+/* ✅ STATS GRID - FIXED 4 COLUMNS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* SECTION HEADER */
+.section-header {
+  margin-bottom: 20px;
+  margin-top: 8px;
+}
+
+.section-header h2 {
+  color: #2D2A3E;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.section-subtitle {
+  color: #9E9BB0;
+  font-size: 14px;
+  display: block;
+  margin-top: 4px;
+}
+
+/* ✅ MARKETS GRID */
+.markets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* ✅ TOP MOVERS & WATCHLIST ROW */
+.row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* ACTION BAR */
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 32px;
+  border-top: 1px solid #E5E2DD;
+  border-bottom: 1px solid #E5E2DD;
+}
+
+.source-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #5C5A6B;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5B8C5A;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ✅ RESPONSIVE */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .markets-grid {
+    grid-template-columns: 1fr;
+  }
+  .row-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header-bar {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .last-updated {
+    font-size: 12px;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .dashboard-header-bar h1 {
+    font-size: 24px;
+  }
+  
+  .action-bar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .dashboard-header-bar {
+    padding: 12px 16px;
+  }
+  
+  .dashboard-content {
+    padding: 16px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header-bar h1 {
+    font-size: 20px;
+  }
+}
 </style>
