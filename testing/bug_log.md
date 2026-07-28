@@ -9,8 +9,8 @@
 | Status      | Count |
 |-------------|:-----:|
 | Total found |   5   |
-| Resolved    |   0   |
-| Still open  |   5   |
+| Resolved    |   5   |
+| Still open  |   0   |
 
 Two additional non-blocking issues were observed during testing but not filed as numbered bugs (see [Additional Observations](#additional-observations)).
 
@@ -20,7 +20,7 @@ Two additional non-blocking issues were observed during testing but not filed as
 - **Test case:** TC-06
 - **Date:** 23/07/2026
 - **Severity:** High
-- **Status:** Open
+- **Status:** closed
 - **Developer:** Adam
 - **Description:** There is no HTTP status check after `requests.get()`; a blocked or error response is parsed as if it were valid.
 - **Fix:** Check `response.status_code` (or use `response.raise_for_status()`) before parsing.
@@ -32,7 +32,7 @@ Two additional non-blocking issues were observed during testing but not filed as
 - **Test case:** TC-07
 - **Date:** 23/07/2026
 - **Severity:** Medium
-- **Status:** Open
+- **Status:** closed
 - **Developer:** Adam
 - **Description:** The price parser doesn't strip thousands-separator commas (e.g. `"1,299.00"`), which will break numeric conversion for higher-priced items.
 - **Fix:** Strip commas (or other locale separators) before converting price strings to numbers.
@@ -44,7 +44,7 @@ Two additional non-blocking issues were observed during testing but not filed as
 - **Test case:** TC-09
 - **Date:** 23/07/2026
 - **Severity:** High
-- **Status:** Open
+- **Status:** closed
 - **Developer:** Adam
 - **Description:** There is no exception handling around the network call or the `int()`/`float()` conversions. Any failure in these turns into an unhandled crash rather than a logged failure.
 - **Fix:** Wrap network calls and numeric conversions in try/except, and log failures instead of crashing.
@@ -55,7 +55,7 @@ Two additional non-blocking issues were observed during testing but not filed as
 - **Test case:** TC-BE-01
 - **Date:** 28/07/2026
 - **Severity:** Critical
-- **Status:** Open
+- **Status:** closed
 - **Developer:** Unassigned
 - **Description:** `backend/app.py` imports `from routes.health import health_bp`, but `backend/routes/health.py` does not exist in this branch. As a result, the Flask app cannot start at all.
 - **Impact:** Blocks the entire application. Every other backend fix is moot until this is resolved.
@@ -68,7 +68,7 @@ Two additional non-blocking issues were observed during testing but not filed as
 - **Test cases:** TC-BE-02, TC-BE-03
 - **Date:** 28/07/2026
 - **Severity:** Critical
-- **Status:** Open
+- **Status:** closed
 - **Developer:** Unassigned
 - **Description:** Both `backend/scrapers/ecommerce_scraper.py` and `backend/scrapers/crypto_scraper.py` do `from utils.cleaners import ...`, but there is no `backend/utils/cleaners.py`. A copy of `cleaners.py` exists in the repo, but at the wrong path: `backend/services/__pycache__/utils/cleaners.py` — apparently accidentally committed from a stray `__pycache__` directory instead of being placed at `backend/utils/cleaners.py`.
 - **Impact:** Because `routes/scrape.py` imports both scraper modules at the top of the file, this also blocks `POST /api/scrape` and `GET /api/scrape/status` from being importable, let alone testable. It also blocks a full end-to-end integration test (TC-INT-03).
