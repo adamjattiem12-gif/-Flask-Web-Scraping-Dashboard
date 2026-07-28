@@ -1,6 +1,6 @@
 <template>
   <div class="stat-card">
-    <div class="stat-icon" :style="{ background: iconBg || '#5B8C5A' }">
+    <div class="stat-icon" :style="{ background: iconBg }">
       {{ icon }}
     </div>
     <div class="stat-content">

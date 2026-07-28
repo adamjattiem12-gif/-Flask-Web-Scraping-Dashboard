@@ -1,147 +1,474 @@
 <template>
-  <div class="dashboard">
-    <h2>:bar_chart: Dashboard</h2>
-    <p class="subtitle">Real-time market monitoring overview</p>
-
-    <!-- Stat Cards -->
-    <div class="stats-grid">
-      <StatCard
-        icon=":package:"
-        label="TOTAL ITEMS"
-        :value="statsStore.stats.total_items"
-        sub="across 2 markets"
-      />
-      <StatCard
-        icon=":globe_with_meridians:"
-        label="ACTIVE SOURCES"
-        :value="statsStore.stats.active_sites"
-        sub="All active"
-      />
-      <StatCard
-        icon=":white_check_mark:"
-        label="SUCCESS RATE"
-        :value="statsStore.stats.success_rate + '%'"
-        sub="last 7 days"
-      />
-      <StatCard
-        icon="⏱"
-        label="LAST SCRAPE"
-        value="02:33 PM"
-        sub="Jul 20, 2026"
-      />
+  <div class="dashboard-page">
+    <!-- HEADER -->
+    <div class="dashboard-header-bar">
+      <div class="header-left">
+        <h1>📊 Dashboard</h1>
+        <span v-if="lastUpdated" class="last-updated">
+          🕐 Updated: {{ lastUpdated }}
+        </span>
+      </div>
+      <div class="header-right">
+        <button class="refresh-btn" @click="refreshAllData" :disabled="isRefreshing">
+          <span class="refresh-icon">⟳</span>
+          {{ isRefreshing ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
     </div>
 
-    <!-- Market Cards -->
-    <div class="markets-grid">
-      <MarketOverviewCard
-        title=":shopping_trolley: Retail Goods"
-        :itemCount="statsStore.stats.markets['Retail Goods']?.item_count || 0"
-        :avgPrice="statsStore.stats.markets['Retail Goods']?.avg_price || 0"
-        source="WebScraper.io"
-        sourceItems="15"
-        market="retail"
-      />
-      <MarketOverviewCard
-        title="₿ Digital Assets"
-        :itemCount="statsStore.stats.markets['Digital Assets']?.item_count || 0"
-        :avgPrice="statsStore.stats.markets['Digital Assets']?.avg_price || 0"
-        source="CoinGecko"
-        sourceItems="10"
-        market="crypto"
-      />
-    </div>
+    <!-- CONTENT -->
+    <div class="dashboard-content">
+      <div v-if="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading dashboard data...</p>
+      </div>
 
-    <!-- Watchlist -->
-    <div class="watchlist-section">
-      <Watchlist />
-    </div>
+      <template v-else>
+        <!-- STAT CARDS -->
+        <div class="stats-grid">
+          <StatCard
+            icon="📦"
+            label="Total Items"
+            :value="statsStore.stats?.total_items ?? 0"
+            subtitle="across 2 markets"
+          />
+          <StatCard
+            icon="🌐"
+            label="Active Sources"
+            :value="statsStore.stats?.active_sites ?? 0"
+            subtitle="WebScraper.io · CoinGecko"
+          />
+          <StatCard
+            icon="✅"
+            label="Success Rate"
+            :value="statsStore.stats?.success_rate ?? '0%'"
+            subtitle="last 7 days"
+          />
+        </div>
 
-    <!-- Scrape Button with auto-refresh -->
-    <div class="scrape-section">
-      <ScrapeButton @scrape-complete="refreshAllData" />
+        <!-- PRICE SNAPSHOT -->
+        <div class="section-header">
+          <h2>Price Snapshot</h2>
+          <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
+        </div>
+
+        <!-- MARKET OVERVIEW -->
+        <div class="markets-grid">
+          <MarketOverviewCard
+            title="🛒 Retail Goods"
+            accent-color="#D4914A"
+            :avg-price="statsStore.stats?.markets?.['Retail Goods']?.avg_price ?? 0"
+            :items-count="statsStore.stats?.markets?.['Retail Goods']?.item_count ?? 0"
+            :recent-items="retailRecentItems"
+          />
+          <MarketOverviewCard
+            title="₿ Digital Assets"
+            accent-color="#4A8C8C"
+            :avg-price="statsStore.stats?.markets?.['Digital Assets']?.avg_price ?? 0"
+            :items-count="statsStore.stats?.markets?.['Digital Assets']?.item_count ?? 0"
+            :recent-items="cryptoRecentItems"
+          />
+        </div>
+
+        <!-- TOP MOVERS & WATCHLIST -->
+        <div class="row-2col">
+          <TopMovers :items="topMoversData" />
+          <Watchlist />
+        </div>
+
+        <!-- SCRAPE BUTTON -->
+        <div class="action-bar">
+          <div class="source-badge">
+            <span class="badge-dot"></span>
+            WebScraper.io · CoinGecko
+          </div>
+          <ScrapeButton @scrape-complete="handleScrapeComplete" />
+        </div>
+
+        <!-- DATA TABLE -->
+        <div class="table-section">
+          <DataTable 
+            :items="tableItems" 
+            :loading="tableLoading"
+            :error="errorMessage"
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            @page-change="handlePageChange"
+            @retry="refreshAllData"
+          />
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useItemsStore } from '../stores/itemsStore'
-import { useStatsStore } from '../stores/statsStore'
-import StatCard from '../components/StatCard.vue'
-import MarketOverviewCard from '../components/MarketOverviewCard.vue'
-import Watchlist from '../components/Watchlist.vue'
-import ScrapeButton from '../components/ScrapeButton.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
+// STORES
+import { useItemsStore } from '@/stores/itemsStore'
+import { useStatsStore } from '@/stores/statsStore'
+
+// COMPONENTS
+import StatCard from '@/components/StatCard.vue'
+import MarketOverviewCard from '@/components/MarketOverviewCard.vue'
+import TopMovers from '@/components/TopMovers.vue'
+import DataTable from '@/components/DataTable.vue'
+import Watchlist from '@/components/Watchlist.vue'
+import ScrapeButton from '@/components/ScrapeButton.vue'
+
+// STORE INSTANCES
 const itemsStore = useItemsStore()
 const statsStore = useStatsStore()
 
-// :white_check_mark: NEW: Refresh all data when scrape completes
-const refreshAllData = async () => {
-  await itemsStore.fetchItems()
-  await statsStore.fetchStats()
+// STATE
+const isLoading = ref(true)
+const isRefreshing = ref(false)
+const tableLoading = ref(false)
+const lastUpdated = ref('')
+const errorMessage = ref('')
+const currentPage = ref(1)
+const totalPages = ref(1)
+let refreshInterval = null
+
+// ============================================================
+// ✅ ALL DATA FROM STORES
+// ============================================================
+
+const tableItems = computed(() => itemsStore.items ?? [])
+
+const retailRecentItems = computed(() => {
+  const items = itemsStore.getRetailItems ?? []
+  return items.slice(0, 3).map(item => ({
+    name: item.name,
+    change: item.change ?? 0
+  }))
+})
+
+const cryptoRecentItems = computed(() => {
+  const items = itemsStore.getCryptoItems ?? []
+  return items.slice(0, 3).map(item => ({
+    name: item.name,
+    change: item.change ?? 0
+  }))
+})
+
+const topMoversData = computed(() => {
+  const items = itemsStore.items ?? []
+  if (items.length === 0) return []
+  
+  const sorted = [...items].sort((a, b) => (b.change ?? 0) - (a.change ?? 0))
+  return sorted.slice(0, 5).map((item, index) => ({
+    rank: index + 1,
+    symbol: item.symbol ?? item.name,
+    change: item.change ?? 0,
+    price: item.price ?? 0,
+    market: item.market ?? 'Unknown'
+  }))
+})
+
+// ============================================================
+// METHODS
+// ============================================================
+
+const updateTimestamp = () => {
+  const now = new Date()
+  lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
 }
 
-onMounted(() => {
-  itemsStore.fetchItems()
-  statsStore.fetchStats()
+const refreshAllData = async () => {
+  isRefreshing.value = true
+  tableLoading.value = true
+  try {
+    await itemsStore.fetchItems()
+    await statsStore.fetchStats()
+    updateTimestamp()
+    totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = error.message || 'Failed to load data'
+  } finally {
+    isRefreshing.value = false
+    tableLoading.value = false
+  }
+}
+
+const handleScrapeComplete = async () => {
+  await refreshAllData()
+}
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
+
+// ============================================================
+// LIFECYCLE
+// ============================================================
+
+onMounted(async () => {
+  try {
+    await refreshAllData()
+    refreshInterval = setInterval(refreshAllData, 60000)
+  } catch (error) {
+    console.error('Error loading dashboard:', error)
+  } finally {
+    isLoading.value = false
+  }
+})
+
+onUnmounted(() => {
+  if (refreshInterval) clearInterval(refreshInterval)
 })
 </script>
 
 <style scoped>
-.dashboard {
-  padding: 24px;
-  background: #F7F5F2;
+.dashboard-page {
   min-height: 100vh;
+  background: #F7F5F2;
+  padding: 0;
 }
 
-h2 {
+.dashboard-header-bar {
+  background: #FFFFFF;
+  padding: 24px 40px;
+  border-bottom: 1px solid #E5E2DD;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dashboard-header-bar h1 {
   color: #2D2A3E;
-  margin-bottom: 4px;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
 }
 
-.subtitle {
-  color: #5C5A6B;
-  margin-top: 0;
-  margin-bottom: 32px;
+.last-updated {
+  color: #9E9BB0;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #5B8C5A;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(91, 140, 90, 0.2);
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #4A7349;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(91, 140, 90, 0.35);
+}
+
+.refresh-btn:disabled {
+  background: #9E9BB0;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.refresh-icon {
+  display: inline-block;
+  font-size: 18px;
+  transition: transform 0.6s ease;
+}
+
+.refresh-btn:hover:not(:disabled) .refresh-icon {
+  transform: rotate(180deg);
+}
+
+.refresh-btn:disabled .refresh-icon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.dashboard-content {
+  padding: 32px 40px 40px 40px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #E5E2DD;
+  border-top-color: #5B8C5A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-state p {
+  color: #9E9BB0;
+  font-size: 14px;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 32px;
+}
+
+.section-header {
+  margin-bottom: 20px;
+  margin-top: 8px;
+}
+
+.section-header h2 {
+  color: #2D2A3E;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.section-subtitle {
+  color: #9E9BB0;
+  font-size: 14px;
+  display: block;
+  margin-top: 4px;
 }
 
 .markets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-bottom: 32px;
 }
 
-.watchlist-section {
-  margin-bottom: 20px;
+.row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
 }
 
-.scrape-section {
+.action-bar {
   display: flex;
-  justify-content: center;
-  margin: 20px 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 32px;
+  border-top: 1px solid #E5E2DD;
+  border-bottom: 1px solid #E5E2DD;
 }
 
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.source-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #5C5A6B;
+  font-size: 14px;
+  font-weight: 500;
+}
 
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5B8C5A;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.table-section {
+  margin-top: 8px;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
   .markets-grid {
     grid-template-columns: 1fr;
   }
+  .row-2col {
+    grid-template-columns: 1fr;
+  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .dashboard-header-bar {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .last-updated {
+    font-size: 12px;
+  }
+  .dashboard-content {
+    padding: 20px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .dashboard-header-bar h1 {
+    font-size: 24px;
+  }
+  .action-bar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .dashboard-header-bar {
+    padding: 12px 16px;
+  }
+  .dashboard-content {
+    padding: 16px;
+  }
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+  .dashboard-header-bar h1 {
+    font-size: 20px;
   }
 }
 </style>

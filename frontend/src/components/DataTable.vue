@@ -6,7 +6,7 @@
       <button class="retry-btn" @click="$emit('retry')">Retry</button>
     </div>
 
-    <!-- Loading state -->
+    <!-- Table -->
     <table v-else class="data-table">
       <thead>
         <tr>
@@ -19,7 +19,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Skeleton rows while loading -->
         <template v-if="loading">
           <tr v-for="n in 5" :key="'skeleton-' + n" class="skeleton-row">
             <td v-for="col in columns" :key="col.key">
@@ -28,7 +27,6 @@
           </tr>
         </template>
 
-        <!-- Empty state -->
         <tr v-else-if="sortedItems.length === 0">
           <td :colspan="columns.length" class="empty-state">
             <p class="empty-title">No results found</p>
@@ -36,31 +34,25 @@
           </td>
         </tr>
 
-        <!-- Real data -->
-        <tr v-else v-for="item in sortedItems" :key="item.id ?? item.name + item.scraped_at">
+        <tr v-else v-for="item in sortedItems" :key="item.id ?? item.name + (item.scraped_at || item.scrapedAt || item.updated_at)">
           <td>{{ item.name }}</td>
           <td>{{ formatCurrency(item.price, item.currency) }}</td>
-          <td>{{ item.currency }}</td>
+          <td>{{ item.currency || 'USD' }}</td>
           <td>
             <span class="source-badge" :class="getSourceClass(item.source)">
               {{ item.source }}
             </span>
           </td>
-          <td>{{ formatTimestamp(item.scraped_at) }}</td>
+          <td>{{ getScrapedTime(item) }}</td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Pagination controls -->
+    <!-- Pagination -->
     <div v-if="!error && !loading && totalPages > 1" class="pagination">
-      <button
-        class="page-btn"
-        :disabled="currentPage <= 1"
-        @click="goToPage(currentPage - 1)"
-      >
+      <button class="page-btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
         Previous
       </button>
-
       <button
         v-for="page in pageNumbers"
         :key="page"
@@ -70,12 +62,7 @@
       >
         {{ page }}
       </button>
-
-      <button
-        class="page-btn"
-        :disabled="currentPage >= totalPages"
-        @click="goToPage(currentPage + 1)"
-      >
+      <button class="page-btn" :disabled="currentPage >= totalPages" @click="goToPage(currentPage + 1)">
         Next
       </button>
     </div>
@@ -131,7 +118,9 @@ const sortedItems = computed(() => {
     }
 
     if (key === 'scraped_at') {
-      return (new Date(valA) - new Date(valB)) * dir
+      const dateA = new Date(getScrapedTimeRaw(a))
+      const dateB = new Date(getScrapedTimeRaw(b))
+      return (dateA - dateB) * dir
     }
 
     valA = String(valA ?? '').toLowerCase()
@@ -168,13 +157,26 @@ const formatCurrency = (price, currency) => {
       currency: currency || 'USD',
     }).format(price)
   } catch {
-    return `${currency ?? 'USD'} ${Number(price).toFixed(2)}`
+    return `${currency || 'USD'} ${Number(price).toFixed(2)}`
   }
 }
 
-const formatTimestamp = (date) => {
-  if (!date) return '—'
-  return new Date(date).toLocaleString()
+// ✅ NEW: Helper to get scraped time from item (supports multiple field names)
+const getScrapedTimeRaw = (item) => {
+  return item.scraped_at || item.scrapedAt || item.last_scrape || item.updated_at || null
+}
+
+// ✅ NEW: Formatted scraped time
+const getScrapedTime = (item) => {
+  const timestamp = getScrapedTimeRaw(item)
+  if (!timestamp) return '—'
+  try {
+    const date = new Date(timestamp)
+    if (isNaN(date.getTime())) return '—'
+    return date.toLocaleString()
+  } catch {
+    return '—'
+  }
 }
 </script>
 
