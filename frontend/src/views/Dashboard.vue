@@ -26,7 +26,7 @@
 
       <!-- ACTUAL CONTENT -->
       <template v-else>
-        <!-- STAT CARDS - FIXED GRID -->
+        <!-- STAT CARDS -->
         <div class="stats-grid">
           <StatCard
             icon="📦"
@@ -324,29 +324,27 @@ onUnmounted(() => {
   gap: 12px;
 }
 
-/* ✅ REFRESH BUTTON - STYLED */
+/* ✅ REFRESH BUTTON - GREEN LIKE SCRAPE BUTTON */
 .refresh-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 20px;
-  border: 1px solid #E5E2DD;
+  padding: 10px 24px;
+  border: none;
   border-radius: 8px;
-  background: #FFFFFF;
-  color: #5C5A6B;
+  background: #5B8C5A;
+  color: #FFFFFF;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 4px rgba(91, 140, 90, 0.2);
 }
 
 .refresh-btn:hover:not(:disabled) {
-  background: #F7F5F2;
-  border-color: #5B8C5A;
-  color: #2D2A3E;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(91, 140, 90, 0.15);
+  background: #4A7349;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(91, 140, 90, 0.35);
 }
 
 .refresh-btn:active:not(:disabled) {
@@ -354,8 +352,11 @@ onUnmounted(() => {
 }
 
 .refresh-btn:disabled {
-  opacity: 0.6;
+  background: #9E9BB0;
   cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 
 .refresh-icon {
@@ -406,7 +407,7 @@ onUnmounted(() => {
   font-size: 14px;
 }
 
-/* ✅ STATS GRID - FIXED 4 COLUMNS */
+/* STATS GRID */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -433,7 +434,7 @@ onUnmounted(() => {
   margin-top: 4px;
 }
 
-/* ✅ MARKETS GRID */
+/* MARKETS GRID */
 .markets-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -441,7 +442,7 @@ onUnmounted(() => {
   margin-bottom: 32px;
 }
 
-/* ✅ TOP MOVERS & WATCHLIST ROW */
+/* TOP MOVERS & WATCHLIST ROW */
 .row-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -482,7 +483,7 @@ onUnmounted(() => {
   50% { opacity: 0.3; }
 }
 
-/* ✅ RESPONSIVE */
+/* RESPONSIVE */
 @media (max-width: 1200px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
