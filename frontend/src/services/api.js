@@ -60,7 +60,7 @@ api.interceptors.response.use(
  */
 export function fetchItems(page = 1, perPage = 20) {
   return api.get('/api/items', { params: { page, per_page: perPage } })
-    .then((res) => res.data)
+    .then((res) => res.data.items)
 }
 
 /**
