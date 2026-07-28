@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- Mobile Hamburger Button -->
     <button 
       class="hamburger-btn" 
       @click="toggleSidebar" 
@@ -13,7 +12,6 @@
       <span></span>
     </button>
 
-    <!-- Overlay for mobile -->
     <div 
       class="sidebar-overlay" 
       v-if="sidebarOpen" 
@@ -44,14 +42,12 @@ const closeSidebar = () => {
   document.body.style.overflow = ''
 }
 
-// Close sidebar on escape key
 const handleEscape = (event) => {
   if (event.key === 'Escape' && sidebarOpen.value) {
     closeSidebar()
   }
 }
 
-// Close sidebar on window resize (if going to desktop)
 const handleResize = () => {
   if (window.innerWidth > 768 && sidebarOpen.value) {
     closeSidebar()
@@ -95,7 +91,6 @@ body {
   transition: margin-left 0.3s ease;
 }
 
-/* --- HAMBURGER BUTTON --- */
 .hamburger-btn {
   display: none;
   position: fixed;
@@ -144,7 +139,6 @@ body {
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* --- SIDEBAR OVERLAY --- */
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -162,21 +156,17 @@ body {
   to { opacity: 1; }
 }
 
-/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
   .hamburger-btn {
     display: flex;
   }
-
   .sidebar-overlay {
     display: block;
   }
-
   .main-content {
     margin-left: 0;
     padding-top: 60px;
   }
-
   .main-content.sidebar-open {
     overflow: hidden;
   }

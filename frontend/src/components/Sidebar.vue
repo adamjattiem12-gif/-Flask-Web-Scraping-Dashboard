@@ -5,7 +5,6 @@
       <p class="subtitle">PRICE MONITOR</p>
     </div>
     
-    <!-- Close button for mobile -->
     <button class="sidebar-close" @click="$emit('close')" aria-label="Close menu">
       ✕
     </button>
@@ -30,10 +29,7 @@
 
 <script setup>
 defineProps({
-  isOpen: {
-    type: Boolean,
-    default: false
-  }
+  isOpen: { type: Boolean, default: false }
 })
 
 defineEmits(['close'])
@@ -131,7 +127,6 @@ const navItems = [
   text-align: center;
 }
 
-/* --- SIDEBAR CLOSE BUTTON (mobile only) --- */
 .sidebar-close {
   display: none;
   position: absolute;
@@ -152,18 +147,15 @@ const navItems = [
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
     width: 280px;
   }
-
   .sidebar.open {
     transform: translateX(0);
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
   }
-
   .sidebar-close {
     display: block;
   }

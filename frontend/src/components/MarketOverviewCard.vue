@@ -15,11 +15,16 @@
 
     <div class="market-activity">
       <p class="activity-label">RECENT ACTIVITY</p>
-      <div v-for="item in recentItems" :key="item.name" class="activity-item">
-        <span class="activity-name">{{ item.name }}</span>
-        <span class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-          {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
-        </span>
+      <div v-if="recentItems && recentItems.length > 0">
+        <div v-for="item in recentItems" :key="item.name" class="activity-item">
+          <span class="activity-name">{{ item.name }}</span>
+          <span class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
+            {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
+          </span>
+        </div>
+      </div>
+      <div v-else class="activity-empty">
+        <span>No recent activity</span>
       </div>
     </div>
   </div>
@@ -117,6 +122,12 @@ defineProps({
 
 .activity-change.negative {
   color: #C1666B;
+}
+
+.activity-empty {
+  color: #9E9BB0;
+  font-size: 14px;
+  padding: 6px 0;
 }
 
 @media (max-width: 768px) {

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { fetchItems } from '../services/api'  // ✅ ADDED: Import real API function
+import { fetchItems } from '../services/api'
 
 export const useItemsStore = defineStore('items', {
   state: () => ({
@@ -21,16 +21,15 @@ export const useItemsStore = defineStore('items', {
   actions: {
     /**
      * fetchItems - Gets all items from the API
-     * 
      * ✅ Week 2: Now calls REAL backend API
-     * Falls back to mock data if API fails
+     * 🔄 Falls back to mock data if API fails (Caleb's DataTable support)
      */
     async fetchItems() {
       this.loading = true
       this.error = null
 
       try {
-        // 🟢 REAL API CALL - Get items from backend
+        // ✅ REAL API CALL - Get items from backend
         const response = await fetchItems()
         this.items = response.items || response
         this.filteredItems = this.items
@@ -48,11 +47,11 @@ export const useItemsStore = defineStore('items', {
     /**
      * loadMockData - Fallback mock data if API is down
      * Used for development and testing
+     * Includes Caleb's DataTable pagination support
      */
     async loadMockData() {
-      // Mock data for fallback
       this.items = [
-        // RETAIL GOODS (10 items)
+        // ===== RETAIL GOODS (10 items) =====
         {
           id: 1,
           name: 'Asus VivoBook X441NA-GA190',
@@ -163,7 +162,8 @@ export const useItemsStore = defineStore('items', {
           scraped_at: '2026-07-20T14:30:00',
           extra: { rating: 4.3, review_count: 28 }
         },
-        // DIGITAL ASSETS (10 items)
+
+        // ===== DIGITAL ASSETS (10 items) =====
         {
           id: 11,
           name: 'Bitcoin (BTC)',
