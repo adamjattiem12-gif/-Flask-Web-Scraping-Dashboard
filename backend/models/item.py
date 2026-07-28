@@ -6,40 +6,22 @@ This model defines the structure that every scraped item
 should follow throughout the application.
 """
 
-# Import dataclass to easily create a class for storing data
-# Import asdict to convert an Item object into a dictionary
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
+from typing import Optional, Dict, Any
 
 
-# The @dataclass decorator automatically generates
-# the constructor (__init__) and other useful methods
 @dataclass
 class Item:
-
-    # Name of the scraped product
+    id: Optional[Any]           # string for crypto, int for ecommerce
     name: str
-
-    # Price of the product
     price: float
-
-    # Currency the price is displayed in (e.g., ZAR, USD)
+    price_display: str
     currency: str
-
-    # Website where the product was scraped from
     source: str
-
-    # Market or category the product belongs to
-    # Example: South Africa, E-Commerce, Crypto
     market: str
+    scraped_at: str
+    extra: Dict[str, Any] = field(default_factory=dict)
 
-    # Direct link to the product page
-    url: str
-
-    # Date and time the product was scraped
-    timestamp: str
-
-    # Convert the Item object into a dictionary
-    # This makes it easy to save the item as JSON
     def to_dict(self):
         """Convert the Item object into a dictionary."""
         return asdict(self)

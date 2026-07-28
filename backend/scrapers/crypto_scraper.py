@@ -81,67 +81,12 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-
-    # Import storage (backend dir already on sys.path from above)
-    from services.storage import (
-        save_items, add_history,
-        load_statistics, save_statistics, load_websites
-    )
-
     print("Scraping crypto prices from CoinGecko...")
-    cryptos = scrape_crypto()  # Uses default URL when run directly
-
+    cryptos = scrape_crypto()
     if cryptos:
         print(f"\nFetched {len(cryptos)} cryptocurrencies:")
         for crypto in cryptos:
             print(f"  {crypto['name']} - {crypto['price_display']} - Rank: {crypto['extra']['rating']}")
-
-        # Save results to backend/data/items.json
-        save_items(cryptos)
-        print(f"\n[OK] Saved {len(cryptos)} items to backend/data/items.json")
-
-        # Log to backend/data/history.json
-        add_history({
-            "timestamp": datetime.now().isoformat(),
-            "scraper_type": "crypto",
-            "items_found": len(cryptos),
-            "success": True
-        })
-        print("[OK] History logged to backend/data/history.json")
-
-        # Update backend/data/statistics.json
-        stats = load_statistics()
-        if not stats:
-            stats = {
-                "total_items": 0,
-                "total_websites": 0,
-                "successful_scrapes": 0,
-                "failed_scrapes": 0,
-                "last_scrape": "",
-                "markets": {}
-            }
-        stats["total_items"] = len(cryptos)
-        stats["total_websites"] = len(load_websites())
-        stats["successful_scrapes"] = stats.get("successful_scrapes", 0) + 1
-        stats["last_scrape"] = datetime.now().isoformat()
-        stats["markets"]["Digital Assets"] = len(cryptos)
-        save_statistics(stats)
-        print("[OK] Statistics updated in backend/data/statistics.json")
-
+        print("\n[OK] Scraper test complete. Use POST /api/scrape to persist data.")
     else:
         print("No data returned — check your network connection.")
-
-        # Log the failed scrape to statistics
-        from services.storage import load_statistics, save_statistics
-        stats = load_statistics()
-        if not stats:
-            stats = {
-                "total_items": 0,
-                "total_websites": 0,
-                "successful_scrapes": 0,
-                "failed_scrapes": 0,
-                "last_scrape": "",
-                "markets": {}
-            }
-        stats["failed_scrapes"] = stats.get("failed_scrapes", 0) + 1
-        save_statistics(stats)

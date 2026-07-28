@@ -1,11 +1,1 @@
-{
-    "total_items": 21,
-    "total_websites": 2,
-    "successful_scrapes": 14,
-    "failed_scrapes": 0,
-    "last_scrape": "2026-07-24T16:01:37.155519",
-    "markets": {
-        "Retail Goods": 21,
-        "Digital Assets": 10
-    }
-}
+{}

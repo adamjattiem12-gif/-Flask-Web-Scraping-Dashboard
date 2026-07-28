@@ -43,7 +43,7 @@ def validate_items(items):
 
 def calculate_statistics(items):
     """
-    Calculate statistics from the items list
+    Calculate statistics from the items list.
     """
     if not items:
         return {
@@ -53,29 +53,36 @@ def calculate_statistics(items):
             "last_scrape": datetime.now().isoformat(),
             "markets": {}
         }
-    
-    ecommerce_items = [item for item in items if item.get('market') == 'Retail Goods']
-    crypto_items = [item for item in items if item.get('market') == 'Digital Assets']
-    
-    stats = {
+
+    # Group items by market dynamically
+    markets = {}
+    for item in items:
+        market_name = item.get('market', 'Unknown')
+        if market_name not in markets:
+            markets[market_name] = []
+        markets[market_name].append(item)
+
+    markets_stats = {}
+    for market_name, market_items in markets.items():
+        prices = [item['price'] for item in market_items if 'price' in item]
+        avg_price = round(sum(prices) / len(prices), 2) if prices else 0.0
+        last_updated = max(
+            (item.get('scraped_at', '') for item in market_items),
+            default=datetime.now().isoformat()
+        )
+        markets_stats[market_name] = {
+            "item_count": len(market_items),
+            "avg_price": avg_price,
+            "last_updated": last_updated
+        }
+
+    return {
         "total_items": len(items),
         "active_sites": len(load_websites()),
         "success_rate": 100.0,
         "last_scrape": datetime.now().isoformat(),
-        "markets": {
-            "Retail Goods": {
-                "item_count": len(ecommerce_items),
-                "avg_price": sum([item['price'] for item in ecommerce_items]) / len(ecommerce_items) if ecommerce_items else 0,
-                "last_updated": datetime.now().isoformat()
-            },
-            "Digital Assets": {
-                "item_count": len(crypto_items),
-                "avg_price": sum([item['price'] for item in crypto_items]) / len(crypto_items) if crypto_items else 0,
-                "last_updated": datetime.now().isoformat()
-            }
-        }
+        "markets": markets_stats
     }
-    return stats
 
 
 # ============================================================================
@@ -166,8 +173,8 @@ def scrape():
             }), 400
         logger.info("✓ Data validation passed")
         
-        # ====== STEP 5: Save Items (using Purrity's function) ======
-        logger.info("Step 5: Saving items...")
+        # ====== STEP 6: Save Items ======
+        logger.info("Step 6: Saving items...")
         try:
             save_items(all_items)
             logger.info(f"✓ Items saved: {len(all_items)}")
@@ -196,18 +203,18 @@ def scrape():
                 "data": None
             }), 500
         
-        # ====== STEP 6: Calculate Statistics ======
-        logger.info("Step 6: Calculating statistics...")
+        # ====== STEP 7: Calculate Statistics ======
+        logger.info("Step 7: Calculating statistics...")
         stats = calculate_statistics(all_items)
         logger.info("✓ Statistics calculated")
         
-        # ====== STEP 7: Persist Statistics ======
-        logger.info("Step 7: Saving statistics to storage...")
+        # ====== STEP 8: Persist Statistics ======
+        logger.info("Step 8: Saving statistics to storage...")
         save_statistics(stats)
         logger.info("✓ Statistics persisted to statistics.json")
         
-        # ====== STEP 8: Log Per-Market History Records ======
-        logger.info("Step 8: Logging scrape event to history...")
+        # ====== STEP 9: Log Per-Market History Records ======
+        logger.info("Step 9: Logging scrape event to history...")
         ts = datetime.now().isoformat()
         add_history({
             "timestamp": ts,
@@ -225,7 +232,7 @@ def scrape():
         })
         logger.info("✓ Scrape logged to history (2 market records)")
         
-        # ====== STEP 9: Return Success Response ======
+        # ====== STEP 10: Return Success Response ======
         response = {
             "status": "success",
             "message": f"Successfully scraped {len(all_items)} items",
