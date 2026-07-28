@@ -13,6 +13,11 @@
     </div>
     <p class="subtitle">Log of all past scraping runs</p>
 
+    <!-- ✅ NEW: Scrape Button - auto-refreshes history when scrape completes -->
+    <div class="scrape-section">
+      <ScrapeButton @scrape-complete="refreshHistory" />
+    </div>
+
     <!-- LOADING STATE -->
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
@@ -59,20 +64,25 @@
         </tbody>
       </table>
     </div>
+
+    <!-- WEEK 1 NOTE -->
+    <div class="week1-note">
+      💡 <strong>Week 1:</strong> This shows mock history data. In Week 2, this will show real scrape logs from the backend.
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useScrapeStore } from '../stores/scrapeStore'
+// ✅ NEW: Import ScrapeButton to add auto-refresh functionality
+import ScrapeButton from '../components/ScrapeButton.vue'
 
 const scrapeStore = useScrapeStore()
 const history = ref([])
 const loading = ref(false)
 
-/**
- * refreshHistory - Loads history from the store
- */
+// ✅ NEW: This function now gets called by both the Refresh button AND scrape-complete event
 const refreshHistory = async () => {
   loading.value = true
   await new Promise(resolve => setTimeout(resolve, 300))
@@ -85,7 +95,6 @@ const formatDate = (timestamp) => {
 }
 
 onMounted(() => {
-  // Only generate if history is empty
   if (scrapeStore.scrapeHistory.length === 0) {
     scrapeStore.generateMockHistory()
   }
@@ -116,7 +125,12 @@ h2 {
 .subtitle {
   color: #5C5A6B;
   margin-top: 0;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
+}
+
+/* ✅ NEW: Spacing for ScrapeButton section */
+.scrape-section {
+  margin: 16px 0 24px 0;
 }
 
 .refresh-btn {

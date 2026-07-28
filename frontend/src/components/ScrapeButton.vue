@@ -2,40 +2,37 @@
   <div class="scrape-button-wrapper">
     <button 
       @click="handleScrape" 
-      :disabled="isLoading"
+      :disabled="scrapeStore.status === 'loading'"
       :class="['scrape-btn', buttonClass]"
     >
-      <span v-if="isLoading" class="spinner">⟳</span>
-      <span v-else-if="status === 'success'">✓</span>
-      <span v-else-if="status === 'error'">✗</span>
+      <span v-if="scrapeStore.status === 'loading'" class="spinner">⟳</span>
+      <span v-else-if="scrapeStore.status === 'success'">✓</span>
+      <span v-else-if="scrapeStore.status === 'error'">✗</span>
       {{ buttonText }}
     </button>
     
-    <p v-if="message" :class="messageClass" class="status-message">
-      {{ message }}
+    <p v-if="scrapeStore.message" :class="messageClass" class="status-message">
+      {{ scrapeStore.message }}
     </p>
     
-    <p v-if="lastScrapeTime" class="last-scrape">
-      Last scrape: {{ lastScrapeTime }}
+    <p v-if="scrapeStore.lastScrape" class="last-scrape">
+      Last scrape: {{ formatTime(scrapeStore.lastScrape) }}
     </p>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useScrapeStore } from '@/stores/scrapeStore'
+import { computed, defineEmits } from 'vue'
+import { useScrapeStore } from '../stores/scrapeStore'
 
-// ✅ Initialize store INSIDE setup
+// ✅ NEW: Emit event so parent components know when scrape is complete
+// Used by: Dashboard, History, RetailGoods, DigitalAssets to auto-refresh
+const emit = defineEmits(['scrape-complete'])
+
 const scrapeStore = useScrapeStore()
 
-// Local state
-const isLoading = ref(false)
-const status = ref('idle') // idle | loading | success | error
-const message = ref('')
-const lastScrapeTime = ref('')
-
 const buttonText = computed(() => {
-  switch(status.value) {
+  switch(scrapeStore.status) {
     case 'loading': return 'Scraping...'
     case 'success': return 'Done!'
     case 'error': return 'Try Again'
@@ -44,7 +41,7 @@ const buttonText = computed(() => {
 })
 
 const buttonClass = computed(() => {
-  switch(status.value) {
+  switch(scrapeStore.status) {
     case 'loading': return 'btn-loading'
     case 'success': return 'btn-success'
     case 'error': return 'btn-error'
@@ -53,55 +50,36 @@ const buttonClass = computed(() => {
 })
 
 const messageClass = computed(() => {
-  switch(status.value) {
+  switch(scrapeStore.status) {
     case 'success': return 'msg-success'
     case 'error': return 'msg-error'
     default: return 'msg-info'
   }
 })
 
-const emit = defineEmits(['scrape'])
-
 const handleScrape = async () => {
-  if (isLoading.value) return
+  await scrapeStore.triggerScrape()
   
-  status.value = 'loading'
-  isLoading.value = true
-  message.value = 'Scraping in progress...'
+  // ✅ NEW: After successful scrape, tell parent to refresh its data
+  if (scrapeStore.status === 'success') {
+    emit('scrape-complete')
+  }
   
-  try {
-    await scrapeStore.triggerScrape()
-    status.value = 'success'
-    message.value = 'Scrape completed successfully!'
-    lastScrapeTime.value = new Date().toLocaleString()
-    emit('scrape')
-  } catch (error) {
-    status.value = 'error'
-    message.value = error.message || 'Scrape failed. Please try again.'
-  } finally {
-    isLoading.value = false
-    
-    // Auto-reset after 5 seconds
+  if (scrapeStore.status === 'success' || scrapeStore.status === 'error') {
     setTimeout(() => {
-      if (status.value !== 'loading') {
-        status.value = 'idle'
-        message.value = ''
-      }
+      scrapeStore.resetStatus()
     }, 5000)
   }
 }
 
-onMounted(() => {
-  // Load last scrape time from store if available
-  if (scrapeStore.lastScrape) {
-    lastScrapeTime.value = new Date(scrapeStore.lastScrape).toLocaleString()
-  }
-})
+const formatTime = (date) => {
+  return new Date(date).toLocaleString()
+}
 </script>
 
 <style scoped>
 .scrape-button-wrapper {
-  padding: 0;
+  padding: 16px 0;
 }
 
 .scrape-btn {
