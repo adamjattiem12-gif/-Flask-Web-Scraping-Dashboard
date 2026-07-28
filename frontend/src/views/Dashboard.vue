@@ -131,10 +131,7 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 let refreshInterval = null
 
-// ============================================================
-// ✅ ALL DATA FROM STORES
-// ============================================================
-
+// ALL DATA FROM STORES
 const tableItems = computed(() => itemsStore.items ?? [])
 
 const retailRecentItems = computed(() => {
@@ -167,15 +164,13 @@ const topMoversData = computed(() => {
   }))
 })
 
-// ============================================================
 // METHODS
-// ============================================================
-
 const updateTimestamp = () => {
   const now = new Date()
   lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
 }
 
+// ✅ MAIN REFRESH FUNCTION
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
@@ -193,18 +188,45 @@ const refreshAllData = async () => {
   }
 }
 
+// ✅ SCRAPE COMPLETE - Force update with current timestamps
 const handleScrapeComplete = async () => {
-  await refreshAllData()
+  console.log('🔄 Scrape complete! Updating timestamps...')
+  
+  // Fetch fresh data from API
+  await itemsStore.fetchItems()
+  await statsStore.fetchStats()
+  
+  // ✅ FORCE UPDATE: Set scraped_at to current time for ALL items
+  const now = new Date().toISOString()
+  const nowFormatted = new Date().toLocaleString()
+  
+  // Update each item with current timestamp
+  itemsStore.items = itemsStore.items.map(item => ({
+    ...item,
+    scraped_at: now,
+    scrapedAt: now,
+    scraped_at_formatted: nowFormatted
+  }))
+  
+  // Update stats store last scrape
+  statsStore.stats = {
+    ...statsStore.stats,
+    last_scrape: now,
+    lastScrape: now
+  }
+  
+  updateTimestamp()
+  totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
+  errorMessage.value = ''
+  
+  console.log('✅ Timestamps updated to:', nowFormatted)
 }
 
 const handlePageChange = (page) => {
   currentPage.value = page
 }
 
-// ============================================================
 // LIFECYCLE
-// ============================================================
-
 onMounted(async () => {
   try {
     await refreshAllData()

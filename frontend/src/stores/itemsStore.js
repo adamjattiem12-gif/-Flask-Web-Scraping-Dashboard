@@ -30,6 +30,39 @@ export const useItemsStore = defineStore('items', {
      */
     getCryptoItems: (state) => {
       return state.items.filter(item => item.market === 'Digital Assets')
+    },
+
+    /**
+     * getTopMovers - Returns top 5 items by price change
+     * Used by: TopMovers component (Rushin)
+     */
+    getTopMovers: (state) => {
+      const itemsWithChange = state.items.filter(item => 
+        item.extra?.change_24h !== undefined || item.change !== undefined
+      )
+      
+      const sorted = [...itemsWithChange].sort((a, b) => {
+        const changeA = a.extra?.change_24h ?? a.change ?? 0
+        const changeB = b.extra?.change_24h ?? b.change ?? 0
+        return Math.abs(changeB) - Math.abs(changeA)
+      })
+      
+      return sorted.slice(0, 5).map((item, index) => ({
+        rank: index + 1,
+        symbol: item.symbol || item.name,
+        name: item.name,
+        change: item.extra?.change_24h ?? item.change ?? 0,
+        price: item.price,
+        market: item.market
+      }))
+    },
+
+    /**
+     * getItemById - Returns a single item by ID
+     * Used by: Watchlist component (Chad)
+     */
+    getItemById: (state) => (id) => {
+      return state.items.find(item => item.id === id)
     }
   },
 
@@ -169,6 +202,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 11,
             name: 'Bitcoin (BTC)',
+            symbol: 'BTC',
             price: 29345.00,
             price_display: '$29,345.00',
             currency: 'USD',
@@ -180,6 +214,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 12,
             name: 'Ethereum (ETH)',
+            symbol: 'ETH',
             price: 1823.00,
             price_display: '$1,823.00',
             currency: 'USD',
@@ -191,6 +226,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 13,
             name: 'Binance Coin (BNB)',
+            symbol: 'BNB',
             price: 245.00,
             price_display: '$245.00',
             currency: 'USD',
@@ -202,6 +238,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 14,
             name: 'Solana (SOL)',
+            symbol: 'SOL',
             price: 24.50,
             price_display: '$24.50',
             currency: 'USD',
@@ -213,6 +250,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 15,
             name: 'Cardano (ADA)',
+            symbol: 'ADA',
             price: 0.34,
             price_display: '$0.34',
             currency: 'USD',
@@ -224,6 +262,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 16,
             name: 'Dogecoin (DOGE)',
+            symbol: 'DOGE',
             price: 0.08,
             price_display: '$0.08',
             currency: 'USD',
@@ -235,6 +274,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 17,
             name: 'Polkadot (DOT)',
+            symbol: 'DOT',
             price: 5.67,
             price_display: '$5.67',
             currency: 'USD',
@@ -246,6 +286,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 18,
             name: 'Chainlink (LINK)',
+            symbol: 'LINK',
             price: 12.34,
             price_display: '$12.34',
             currency: 'USD',
@@ -257,6 +298,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 19,
             name: 'Avalanche (AVAX)',
+            symbol: 'AVAX',
             price: 18.90,
             price_display: '$18.90',
             currency: 'USD',
@@ -268,6 +310,7 @@ export const useItemsStore = defineStore('items', {
           {
             id: 20,
             name: 'Polygon (MATIC)',
+            symbol: 'MATIC',
             price: 0.76,
             price_display: '$0.76',
             currency: 'USD',
@@ -281,10 +324,12 @@ export const useItemsStore = defineStore('items', {
         // Update filtered items to show everything initially
         this.filteredItems = this.items
         this.loading = false
+        return this.items
       } catch (error) {
         // If anything fails, show error message
         this.error = 'Failed to load items'
         this.loading = false
+        throw error
       }
     },
 
@@ -320,6 +365,70 @@ export const useItemsStore = defineStore('items', {
           item.market === market
         )
       }
+    },
+
+    /**
+     * addItem - Adds a new item to the store
+     * @param {Object} item - The item to add
+     * Used by: Scraper after successful scrape
+     */
+    addItem(item) {
+      this.items.push({
+        ...item,
+        scraped_at: new Date().toISOString()
+      })
+      this.filteredItems = this.items
+    },
+
+    /**
+     * updateItem - Updates an existing item
+     * @param {number} id - The item ID
+     * @param {Object} updates - The fields to update
+     * Used by: Scraper after successful scrape
+     */
+    updateItem(id, updates) {
+      const index = this.items.findIndex(item => item.id === id)
+      if (index !== -1) {
+        this.items[index] = {
+          ...this.items[index],
+          ...updates,
+          scraped_at: new Date().toISOString()
+        }
+        this.filteredItems = this.items
+      }
+    },
+
+    /**
+     * updateItemsAfterScrape - Updates all items with fresh data and timestamps
+     * @param {Array} newItems - The fresh items from the API
+     * Used by: Dashboard after scrape completes
+     */
+    updateItemsAfterScrape(newItems = null) {
+      if (newItems) {
+        // If new items provided, replace all items
+        this.items = newItems.map(item => ({
+          ...item,
+          scraped_at: new Date().toISOString()
+        }))
+      } else {
+        // Otherwise just update timestamps on existing items
+        this.items = this.items.map(item => ({
+          ...item,
+          scraped_at: new Date().toISOString()
+        }))
+      }
+      this.filteredItems = this.items
+      return this.items
+    },
+
+    /**
+     * resetItems - Resets items to default (empty)
+     * Used by: Testing
+     */
+    resetItems() {
+      this.items = []
+      this.filteredItems = []
+      this.error = null
     }
   }
 })
