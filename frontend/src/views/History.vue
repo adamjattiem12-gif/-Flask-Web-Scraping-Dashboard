@@ -65,10 +65,7 @@
       </table>
     </div>
 
-    <!-- WEEK 1 NOTE -->
-    <div class="week1-note">
-      💡 <strong>Week 1:</strong> This shows mock history data. In Week 2, this will show real scrape logs from the backend.
-    </div>
+  
   </div>
 </template>
 
