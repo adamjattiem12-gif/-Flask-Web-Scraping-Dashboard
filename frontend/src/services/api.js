@@ -13,8 +13,8 @@ const api = axios.create({
 // Request interceptor — simple logging so we can see every outgoing call
 api.interceptors.request.use(
   (config) => {
-    console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`, config.params || config.data || '')
-    return config
+    console.log(`[API] ${config.method.toUpperCase()} ${config.url}`, config.params || config.data || '');
+    return config;  // ✅ FIXED: Must return config!
   },
   (error) => {
     console.error('[API] Request error:', error)
@@ -60,7 +60,7 @@ api.interceptors.response.use(
  */
 export function fetchItems(page = 1, perPage = 20) {
   return api.get('/api/items', { params: { page, per_page: perPage } })
-    .then((res) => res.data.items)
+    .then((res) => res.data)
 }
 
 /**
