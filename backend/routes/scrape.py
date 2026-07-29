@@ -5,7 +5,7 @@ import time
 
 from scrapers.ecommerce_scraper import scrape_ecommerce
 from scrapers.crypto_scraper import scrape_crypto
-from services.storage import save_items, add_history, load_items, load_websites, save_statistics
+from services.storage import save_items, add_history, load_items, load_websites, save_statistics, load_history
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -76,10 +76,17 @@ def calculate_statistics(items):
             "last_updated": last_updated
         }
 
+    history = load_history()
+    if not history:
+        success_rate = 100.0
+    else:
+        successes = sum(1 for record in history if record.get('success', False))
+        success_rate = round((successes / len(history)) * 100, 1)
+
     return {
         "total_items": len(items),
         "active_sites": len(load_websites()),
-        "success_rate": 100.0,
+        "success_rate": success_rate,
         "last_scrape": datetime.now().isoformat(),
         "markets": markets_stats
     }
@@ -145,30 +152,53 @@ def scrape():
         
         # ====== STEP 5: Validate Data ======
         logger.info("Step 5: Validating data...")
-        is_valid, error_msg = validate_items(all_items)
-        if not is_valid:
-            logger.error(f"Validation failed: {error_msg}")
-            # Log one failure record per market
+        is_ec_valid, ec_error = validate_items(ecommerce_items)
+        is_cr_valid, cr_error = validate_items(crypto_items)
+        
+        if not is_ec_valid or not is_cr_valid:
             ts = datetime.now().isoformat()
-            add_history({
-                "timestamp": ts,
-                "scraper_type": "ecommerce",
-                "market": "Retail Goods",
-                "items_found": 0,
-                "success": False,
-                "error": error_msg
-            })
-            add_history({
-                "timestamp": ts,
-                "scraper_type": "crypto",
-                "market": "Digital Assets",
-                "items_found": 0,
-                "success": False,
-                "error": error_msg
-            })
+            if not is_ec_valid:
+                logger.error(f"E-Commerce validation failed: {ec_error}")
+                add_history({
+                    "timestamp": ts,
+                    "scraper_type": "ecommerce",
+                    "market": "Retail Goods",
+                    "items_found": 0,
+                    "success": False,
+                    "error": ec_error
+                })
+            else:
+                add_history({
+                    "timestamp": ts,
+                    "scraper_type": "ecommerce",
+                    "market": "Retail Goods",
+                    "items_found": len(ecommerce_items),
+                    "success": True
+                })
+
+            if not is_cr_valid:
+                logger.error(f"Crypto validation failed: {cr_error}")
+                add_history({
+                    "timestamp": ts,
+                    "scraper_type": "crypto",
+                    "market": "Digital Assets",
+                    "items_found": 0,
+                    "success": False,
+                    "error": cr_error
+                })
+            else:
+                add_history({
+                    "timestamp": ts,
+                    "scraper_type": "crypto",
+                    "market": "Digital Assets",
+                    "items_found": len(crypto_items),
+                    "success": True
+                })
+
+            error_msg = f"Data validation failed. E-Commerce: {ec_error if not is_ec_valid else 'Pass'}. Crypto: {cr_error if not is_cr_valid else 'Pass'}."
             return jsonify({
                 "status": "error",
-                "message": f"Data validation failed: {error_msg}",
+                "message": error_msg,
                 "data": None
             }), 400
         logger.info("✓ Data validation passed")

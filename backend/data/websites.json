@@ -6,7 +6,7 @@
     },
     {
         "name": "CoinGecko",
-        "url": "https://www.coingecko.com/",
+        "url": "https://api.coingecko.com/api/v3/coins/markets",
         "market": "Cryptocurrency"
     }
 ]

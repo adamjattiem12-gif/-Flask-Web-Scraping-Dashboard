@@ -1,1 +1,18 @@
-{}
+{
+    "total_items": 13,
+    "active_sites": 2,
+    "success_rate": 100.0,
+    "last_scrape": "2026-07-29T12:36:57.067873",
+    "markets": {
+        "Retail Goods": {
+            "item_count": 3,
+            "avg_price": 934.49,
+            "last_updated": "2026-07-29T12:36:54.925105"
+        },
+        "Digital Assets": {
+            "item_count": 10,
+            "avg_price": 6719.12,
+            "last_updated": "2026-07-29T12:36:57.053591"
+        }
+    }
+}

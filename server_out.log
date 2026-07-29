@@ -1,0 +1,104 @@
+ * Serving Flask app 'app'
+ * Debug mode: on
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 800-529-537
+INFO:routes.scrape:=== SCRAPE ENDPOINT CALLED ===
+INFO:routes.scrape:Step 1: Resolving scrape URLs from website registry...
+INFO:routes.scrape:  E-Commerce URL: https://webscraper.io/test-sites/e-commerce/allinone
+INFO:routes.scrape:  Cryptocurrency URL: https://api.coingecko.com/api/v3/coins/markets
+INFO:routes.scrape:Step 2: Scraping e-commerce...
+INFO:routes.scrape:\u2713 E-commerce scrape complete: 3 items
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:33:49] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:33:49] "GET /api/statistics HTTP/1.1" 200 -
+INFO:routes.scrape:Step 3: Scraping crypto...
+INFO:routes.scrape:\u2713 Crypto scrape complete: 10 items
+INFO:routes.scrape:Step 4: Combined 13 items total
+INFO:routes.scrape:Step 5: Validating data...
+INFO:routes.scrape:\u2713 Data validation passed
+INFO:routes.scrape:Step 6: Saving items...
+INFO:routes.scrape:\u2713 Items saved: 13
+INFO:routes.scrape:Step 7: Calculating statistics...
+INFO:routes.scrape:\u2713 Statistics calculated
+INFO:routes.scrape:Step 8: Saving statistics to storage...
+INFO:routes.scrape:\u2713 Statistics persisted to statistics.json
+INFO:routes.scrape:Step 9: Logging scrape event to history...
+INFO:routes.scrape:\u2713 Scrape logged to history (2 market records)
+INFO:routes.scrape:\u2713 SCRAPE COMPLETE: 13 items scraped
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:33:51] "POST /api/scrape HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:34:49] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:34:49] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:35:49] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:35:49] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:35:49] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:00] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:00] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:02] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:03] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:04] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:07] "OPTIONS /api/scrape HTTP/1.1" 200 -
+INFO:routes.scrape:=== SCRAPE ENDPOINT CALLED ===
+INFO:routes.scrape:Step 1: Resolving scrape URLs from website registry...
+INFO:routes.scrape:  E-Commerce URL: https://webscraper.io/test-sites/e-commerce/allinone
+INFO:routes.scrape:  Cryptocurrency URL: https://api.coingecko.com/api/v3/coins/markets
+INFO:routes.scrape:Step 2: Scraping e-commerce...
+INFO:routes.scrape:\u2713 E-commerce scrape complete: 3 items
+INFO:routes.scrape:Step 3: Scraping crypto...
+INFO:routes.scrape:\u2713 Crypto scrape complete: 10 items
+INFO:routes.scrape:Step 4: Combined 13 items total
+INFO:routes.scrape:Step 5: Validating data...
+INFO:routes.scrape:\u2713 Data validation passed
+INFO:routes.scrape:Step 6: Saving items...
+INFO:routes.scrape:\u2713 Items saved: 13
+INFO:routes.scrape:Step 7: Calculating statistics...
+INFO:routes.scrape:\u2713 Statistics calculated
+INFO:routes.scrape:Step 8: Saving statistics to storage...
+INFO:routes.scrape:\u2713 Statistics persisted to statistics.json
+INFO:routes.scrape:Step 9: Logging scrape event to history...
+INFO:routes.scrape:\u2713 Scrape logged to history (2 market records)
+INFO:routes.scrape:\u2713 SCRAPE COMPLETE: 13 items scraped
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:10] "POST /api/scrape HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:14] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:14] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:14] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:22] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:23] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:34] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:34] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:34] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:54] "OPTIONS /api/scrape HTTP/1.1" 200 -
+INFO:routes.scrape:=== SCRAPE ENDPOINT CALLED ===
+INFO:routes.scrape:Step 1: Resolving scrape URLs from website registry...
+INFO:routes.scrape:  E-Commerce URL: https://webscraper.io/test-sites/e-commerce/allinone
+INFO:routes.scrape:  Cryptocurrency URL: https://api.coingecko.com/api/v3/coins/markets
+INFO:routes.scrape:Step 2: Scraping e-commerce...
+INFO:routes.scrape:\u2713 E-commerce scrape complete: 3 items
+INFO:routes.scrape:Step 3: Scraping crypto...
+INFO:routes.scrape:\u2713 Crypto scrape complete: 10 items
+INFO:routes.scrape:Step 4: Combined 13 items total
+INFO:routes.scrape:Step 5: Validating data...
+INFO:routes.scrape:\u2713 Data validation passed
+INFO:routes.scrape:Step 6: Saving items...
+INFO:routes.scrape:\u2713 Items saved: 13
+INFO:routes.scrape:Step 7: Calculating statistics...
+INFO:routes.scrape:\u2713 Statistics calculated
+INFO:routes.scrape:Step 8: Saving statistics to storage...
+INFO:routes.scrape:\u2713 Statistics persisted to statistics.json
+INFO:routes.scrape:Step 9: Logging scrape event to history...
+INFO:routes.scrape:\u2713 Scrape logged to history (2 market records)
+INFO:routes.scrape:\u2713 SCRAPE COMPLETE: 13 items scraped
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:57] "POST /api/scrape HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:57] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:36:57] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:08] "GET /api/websites HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:12] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:14] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:15] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:32] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:32] "GET /api/statistics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:37:32] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:38:32] "GET /api/items?page=1&per_page=20 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2026 12:38:32] "GET /api/statistics HTTP/1.1" 200 -
