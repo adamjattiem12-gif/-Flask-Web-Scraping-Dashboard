@@ -160,5 +160,77 @@
         "market": "Digital Assets",
         "items_found": 10,
         "success": true
+    },
+    {
+        "timestamp": "2026-07-29T13:58:05.189955",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 3,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T13:58:05.189955",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T13:58:12.284303",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 3,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T13:58:12.284303",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 0,
+        "success": false,
+        "error": "No items to validate"
+    },
+    {
+        "timestamp": "2026-07-29T14:34:19.058105",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 3,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T14:34:19.058105",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T14:34:21.433109",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 3,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T14:34:21.433109",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-29T14:34:48.175027",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 0,
+        "success": false,
+        "error": "Health check failed for http://10.255.255.1/api/v3/coins/markets"
+    },
+    {
+        "timestamp": "2026-07-29T14:34:48.188232",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 3,
+        "success": true
     }
 ]

@@ -6,6 +6,8 @@ import time
 from scrapers.ecommerce_scraper import scrape_ecommerce
 from scrapers.crypto_scraper import scrape_crypto
 from services.storage import save_items, add_history, load_items, load_websites, save_statistics, load_history
+from utils.exceptions import ScraperError
+from utils.validators import validate_scrape_url, health_check
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -25,7 +27,7 @@ def validate_items(items):
     Returns: (is_valid, error_message)
     """
     if not items:
-        return False, "No items to validate"
+        return True, None
     
     required_fields = ['name', 'price', 'price_display', 'market', 'source']
     
@@ -96,6 +98,43 @@ def calculate_statistics(items):
 # MAIN SCRAPE ENDPOINT
 # ============================================================================
 
+def run_scraper_with_fallback(scraper_func, scraper_type, registry_url, default_url, market_name):
+    target_url = registry_url
+    original_failure = None
+    
+    is_valid, reason = validate_scrape_url(target_url, scraper_type)
+    if not is_valid:
+        if target_url != default_url:
+            original_failure = f"URL_VALIDATION_FAILED: {reason}"
+            logger.warning(f"{market_name} URL validation failed, falling back to {default_url}")
+            target_url = default_url
+        else:
+            raise ScraperError(market_name, target_url, f"URL_VALIDATION_FAILED: {reason}")
+            
+    if not health_check(target_url, scraper_type):
+        if target_url == default_url and original_failure:
+            raise ScraperError(market_name, registry_url, original_failure)
+        raise ScraperError(market_name, target_url, f"Health check failed for {target_url}")
+
+    try:
+        return scraper_func(url=target_url)
+    except ScraperError as e:
+        if target_url != default_url and original_failure is None:
+            logger.warning(f"{market_name} scrape failed ({e.reason}), falling back to {default_url}")
+            target_url = default_url
+            if not health_check(target_url, scraper_type):
+                raise e
+            try:
+                items = scraper_func(url=target_url)
+                logger.warning(f"{market_name} fallback succeeded")
+                return items
+            except ScraperError:
+                raise e
+        else:
+            if original_failure:
+                raise ScraperError(market_name, registry_url, original_failure)
+            raise e
+
 @scrape_bp.route('/api/scrape', methods=['POST'])
 def scrape():
     """
@@ -124,28 +163,81 @@ def scrape():
         websites = load_websites()
         ecommerce_url = next(
             (w['url'] for w in websites if w.get('market') == 'E-Commerce'),
-            None  # Falls back to scraper default if not found
+            "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets"
         )
         crypto_url = next(
             (w['url'] for w in websites if w.get('market') == 'Cryptocurrency'),
-            None  # Falls back to scraper default if not found
+            "https://api.coingecko.com/api/v3/coins/markets"
         )
-        logger.info(f"  E-Commerce URL: {ecommerce_url or 'default'}")
-        logger.info(f"  Cryptocurrency URL: {crypto_url or 'default'}")
+        logger.info(f"  E-Commerce URL: {ecommerce_url}")
+        logger.info(f"  Cryptocurrency URL: {crypto_url}")
+
+        ecommerce_items = []
+        crypto_items = []
+        ec_failed = False
+        cr_failed = False
+        ec_error_reason = None
+        cr_error_reason = None
 
         # ====== STEP 2: Scrape E-Commerce ======
         logger.info("Step 2: Scraping e-commerce...")
-        scrape_kwargs_ec = {"url": ecommerce_url} if ecommerce_url else {}
-        ecommerce_items = scrape_ecommerce(**scrape_kwargs_ec)
-        logger.info(f"✓ E-commerce scrape complete: {len(ecommerce_items)} items")
+        try:
+            ecommerce_items = run_scraper_with_fallback(
+                scrape_ecommerce, 'ecommerce', ecommerce_url,
+                "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+                "Retail Goods"
+            )
+            logger.info(f"✓ E-commerce scrape complete: {len(ecommerce_items)} items")
+        except ScraperError as e:
+            logger.error(f"E-commerce scrape failed: {e.reason}")
+            ec_failed = True
+            ec_error_reason = e.reason
+            add_history({
+                "timestamp": datetime.now().isoformat(),
+                "scraper_type": "ecommerce",
+                "market": "Retail Goods",
+                "items_found": 0,
+                "success": False,
+                "error": e.reason
+            })
+
         time.sleep(2)  # Delay between requests (be respectful to APIs)
         
         # ====== STEP 3: Scrape Crypto ======
         logger.info("Step 3: Scraping crypto...")
-        scrape_kwargs_cr = {"url": crypto_url} if crypto_url else {}
-        crypto_items = scrape_crypto(**scrape_kwargs_cr)
-        logger.info(f"✓ Crypto scrape complete: {len(crypto_items)} items")
-        
+        try:
+            crypto_items = run_scraper_with_fallback(
+                scrape_crypto, 'crypto', crypto_url,
+                "https://api.coingecko.com/api/v3/coins/markets",
+                "Digital Assets"
+            )
+            logger.info(f"✓ Crypto scrape complete: {len(crypto_items)} items")
+        except ScraperError as e:
+            logger.error(f"Crypto scrape failed: {e.reason}")
+            cr_failed = True
+            cr_error_reason = e.reason
+            add_history({
+                "timestamp": datetime.now().isoformat(),
+                "scraper_type": "crypto",
+                "market": "Digital Assets",
+                "items_found": 0,
+                "success": False,
+                "error": e.reason
+            })
+            
+        if ec_failed and cr_failed:
+            return jsonify({
+                "status": "error",
+                "message": f"Both scrapers failed. E-Commerce: {ec_error_reason}. Crypto: {cr_error_reason}.",
+                "data": {
+                    "ecommerce_count": 0,
+                    "crypto_count": 0,
+                    "total_count": 0,
+                    "scrape_timestamp": datetime.now().isoformat(),
+                    "stats": calculate_statistics([])
+                }
+            }), 500
+
         # ====== STEP 4: Combine Results ======
         all_items = ecommerce_items + crypto_items
         logger.info(f"Step 4: Combined {len(all_items)} items total")
@@ -159,47 +251,22 @@ def scrape():
             ts = datetime.now().isoformat()
             if not is_ec_valid:
                 logger.error(f"E-Commerce validation failed: {ec_error}")
-                add_history({
-                    "timestamp": ts,
-                    "scraper_type": "ecommerce",
-                    "market": "Retail Goods",
-                    "items_found": 0,
-                    "success": False,
-                    "error": ec_error
-                })
-            else:
-                add_history({
-                    "timestamp": ts,
-                    "scraper_type": "ecommerce",
-                    "market": "Retail Goods",
-                    "items_found": len(ecommerce_items),
-                    "success": True
-                })
-
+                add_history({"timestamp": ts, "scraper_type": "ecommerce", "market": "Retail Goods", "items_found": 0, "success": False, "error": ec_error})
             if not is_cr_valid:
                 logger.error(f"Crypto validation failed: {cr_error}")
-                add_history({
-                    "timestamp": ts,
-                    "scraper_type": "crypto",
-                    "market": "Digital Assets",
-                    "items_found": 0,
-                    "success": False,
-                    "error": cr_error
-                })
-            else:
-                add_history({
-                    "timestamp": ts,
-                    "scraper_type": "crypto",
-                    "market": "Digital Assets",
-                    "items_found": len(crypto_items),
-                    "success": True
-                })
-
+                add_history({"timestamp": ts, "scraper_type": "crypto", "market": "Digital Assets", "items_found": 0, "success": False, "error": cr_error})
+            
             error_msg = f"Data validation failed. E-Commerce: {ec_error if not is_ec_valid else 'Pass'}. Crypto: {cr_error if not is_cr_valid else 'Pass'}."
             return jsonify({
                 "status": "error",
                 "message": error_msg,
-                "data": None
+                "data": {
+                    "ecommerce_count": len(ecommerce_items),
+                    "crypto_count": len(crypto_items),
+                    "total_count": len(all_items),
+                    "scrape_timestamp": datetime.now().isoformat(),
+                    "stats": calculate_statistics(all_items)
+                }
             }), 400
         logger.info("✓ Data validation passed")
         
@@ -246,21 +313,23 @@ def scrape():
         # ====== STEP 9: Log Per-Market History Records ======
         logger.info("Step 9: Logging scrape event to history...")
         ts = datetime.now().isoformat()
-        add_history({
-            "timestamp": ts,
-            "scraper_type": "ecommerce",
-            "market": "Retail Goods",
-            "items_found": len(ecommerce_items),
-            "success": True
-        })
-        add_history({
-            "timestamp": ts,
-            "scraper_type": "crypto",
-            "market": "Digital Assets",
-            "items_found": len(crypto_items),
-            "success": True
-        })
-        logger.info("✓ Scrape logged to history (2 market records)")
+        if not ec_failed:
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "ecommerce",
+                "market": "Retail Goods",
+                "items_found": len(ecommerce_items),
+                "success": True
+            })
+        if not cr_failed:
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "crypto",
+                "market": "Digital Assets",
+                "items_found": len(crypto_items),
+                "success": True
+            })
+        logger.info("✓ Scrape logged to history")
         
         # ====== STEP 10: Return Success Response ======
         response = {

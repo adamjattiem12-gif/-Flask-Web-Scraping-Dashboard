@@ -1,7 +1,9 @@
 import logging
 import sys
 import os
+import time
 import requests
+from urllib.parse import urlparse
 from datetime import datetime
 
 # Allow running this file directly from any working directory
@@ -10,6 +12,8 @@ if _BACKEND_DIR not in sys.path:
     sys.path.insert(0, _BACKEND_DIR)
 
 from utils.cleaners import clean_items, clean_price, clean_rating
+from utils.exceptions import ScraperError
+from utils.validators import validate_scrape_url
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +26,10 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
                    Pass a custom URL from the website registry to override.
     """
 
+    is_valid, reason = validate_scrape_url(url, 'crypto')
+    if not is_valid:
+        raise ScraperError("Digital Assets", url, f"URL_VALIDATION_FAILED: {reason}")
+
     # Parameters (filters for the API)
     params = {
         "vs_currency": "usd",           # Show prices in USD
@@ -29,24 +37,44 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
         "per_page": 10                  # Get top 10 cryptos
     }
 
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-    except requests.RequestException as exc:
-        logger.warning("Crypto scrape request failed: %s", exc)
-        return []
-    except ValueError as exc:
-        logger.warning("Crypto scrape returned invalid JSON: %s", exc)
-        return []
+    data = None
+    for attempt in range(1, 4):
+        try:
+            response = requests.get(url, params=params, timeout=5)
+            
+            if response.status_code == 429:
+                response.raise_for_status() # Trigger retry
+                
+            if response.status_code >= 500:
+                response.raise_for_status() # Trigger retry
+                
+            if response.status_code >= 400:
+                raise ScraperError("Digital Assets", url, f"HTTP_ERROR_{response.status_code}", status_code=response.status_code)
+                
+            data = response.json()
+            break
+            
+        except (requests.Timeout, requests.ConnectionError) as exc:
+            logger.warning("Crypto scrape attempt %s failed with connection error: %s", attempt, exc)
+            if attempt < 3:
+                time.sleep(1 if attempt == 1 else 2)
+            else:
+                raise ScraperError("Digital Assets", url, "CONNECTION_ERROR")
+        except requests.RequestException as exc:
+            # This catches the 5xx and 429 HTTP errors raised by raise_for_status()
+            logger.warning("Crypto scrape attempt %s failed with HTTP error: %s", attempt, exc)
+            if attempt < 3:
+                time.sleep(1 if attempt == 1 else 2)
+            else:
+                raise ScraperError("Digital Assets", url, "HTTP_SERVER_ERROR")
+        except ValueError as exc:
+            raise ScraperError("Digital Assets", url, "INVALID_JSON")
 
-    if response.status_code != 200:
-        logger.warning("Crypto scrape returned unexpected status: %s", response.status_code)
-        return []
+    if data is None:
+        raise ScraperError("Digital Assets", url, "MAX_RETRIES_EXCEEDED")
 
     if not isinstance(data, list):
-        logger.warning("Crypto scrape response was not a list: %s", type(data).__name__)
-        return []
+        raise ScraperError("Digital Assets", url, "INVALID_RESPONSE_FORMAT")
 
     items = []
 
