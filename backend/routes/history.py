@@ -32,10 +32,11 @@ def get_history():
 
     # Filter by market if supplied
     if market:
+        market_lower = market.lower()
         history = [
             record
             for record in history
-            if record.get("market") == market
+            if record.get("market", "").lower() == market_lower
         ]
 
     # Return only the newest X records if a limit is supplied

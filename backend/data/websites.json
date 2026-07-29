@@ -1,12 +1,12 @@
 [
     {
         "name": "WebScraper E-Commerce Sandbox",
-        "url": "https://webscraper.io/test-sites/e-commerce/allinone",
-        "market": "E-Commerce"
+        "url": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods"
     },
     {
         "name": "CoinGecko",
         "url": "https://api.coingecko.com/api/v3/coins/markets",
-        "market": "Cryptocurrency"
+        "market": "Digital Assets"
     }
 ]

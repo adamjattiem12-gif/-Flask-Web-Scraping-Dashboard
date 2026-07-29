@@ -90,6 +90,11 @@ def save_items(items):
             "items": existing_items
         })
 
+        # Prune old snapshots - keep only the last 50
+        MAX_HISTORY_SNAPSHOTS = 50
+        if len(history_snapshots) > MAX_HISTORY_SNAPSHOTS:
+            history_snapshots = history_snapshots[-MAX_HISTORY_SNAPSHOTS:]
+
         # Persist the updated version history
         with ITEMS_HISTORY_FILE.open("w") as f:
             json.dump(history_snapshots, f, indent=4)
@@ -129,17 +134,17 @@ def load_websites():
     ensure_data_folder()
 
     default_websites = [
-    {
-        "name": "WebScraper E-Commerce Sandbox",
-        "url": "https://webscraper.io/test-sites/e-commerce/allinone",
-        "market": "E-Commerce"
-    },
-    {
-        "name": "CoinGecko",
-        "url": "https://www.coingecko.com/",
-        "market": "Cryptocurrency"
-    }
-]
+        {
+            "name": "WebScraper E-Commerce Sandbox",
+            "url": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+            "market": "Retail Goods"
+        },
+        {
+            "name": "CoinGecko",
+            "url": "https://api.coingecko.com/api/v3/coins/markets",
+            "market": "Digital Assets"
+        }
+    ]
 
     if not WEBSITES_FILE.exists() or WEBSITES_FILE.stat().st_size == 0:
         save_websites(default_websites)

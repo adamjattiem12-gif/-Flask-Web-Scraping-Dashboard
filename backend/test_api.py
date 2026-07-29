@@ -15,12 +15,12 @@ def test():
     
     print("\nModifying websites.json to break Crypto URL...")
     websites = load_websites()
-    original_crypto_url = next(w['url'] for w in websites if w['market'] == 'Cryptocurrency')
+    original_crypto_url = next(w['url'] for w in websites if w['market'] in ('Cryptocurrency', 'Digital Assets'))
     
     for w in websites:
-        if w['market'] == 'Cryptocurrency':
+        if w['market'] in ('Cryptocurrency', 'Digital Assets'):
             # Use a blackhole IP to force a timeout
-            w['url'] = 'http://10.255.255.1'
+            w['url'] = 'http://10.255.255.1/api/v3/coins/markets'
     save_websites(websites)
     
     print("\nSCENARIO 2: Broken CoinGecko URL (timeout expected)")
@@ -38,7 +38,7 @@ def test():
     # Restore
     print("\nRestoring websites.json...")
     for w in websites:
-        if w['market'] == 'Cryptocurrency':
+        if w['market'] in ('Cryptocurrency', 'Digital Assets'):
             w['url'] = original_crypto_url
     save_websites(websites)
     

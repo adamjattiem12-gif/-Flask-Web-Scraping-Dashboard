@@ -14,7 +14,6 @@ if _BACKEND_DIR not in sys.path:
 
 from utils.cleaners import clean_items, clean_price, clean_rating
 from utils.exceptions import ScraperError
-from utils.validators import validate_scrape_url
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +25,6 @@ def scrape_ecommerce(url="https://webscraper.io/test-sites/e-commerce/allinone/c
         url (str): Target URL to scrape. Defaults to the tablets page.
                    Pass a custom URL from the website registry to override.
     """
-
-    is_valid, reason = validate_scrape_url(url, 'ecommerce')
-    if not is_valid:
-        raise ScraperError("Retail Goods", url, f"URL_VALIDATION_FAILED: {reason}")
 
     content = None
     for attempt in range(1, 4):

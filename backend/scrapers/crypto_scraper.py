@@ -13,7 +13,6 @@ if _BACKEND_DIR not in sys.path:
 
 from utils.cleaners import clean_items, clean_price, clean_rating
 from utils.exceptions import ScraperError
-from utils.validators import validate_scrape_url
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +24,6 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
         url (str): Target API endpoint. Defaults to the CoinGecko markets endpoint.
                    Pass a custom URL from the website registry to override.
     """
-
-    is_valid, reason = validate_scrape_url(url, 'crypto')
-    if not is_valid:
-        raise ScraperError("Digital Assets", url, f"URL_VALIDATION_FAILED: {reason}")
 
     # Parameters (filters for the API)
     params = {

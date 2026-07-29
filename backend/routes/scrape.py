@@ -1,52 +1,40 @@
 import logging
-from flask import Blueprint, jsonify
-from datetime import datetime
 import time
+from datetime import datetime
 
-from scrapers.ecommerce_scraper import scrape_ecommerce
+from flask import Blueprint, jsonify
+
 from scrapers.crypto_scraper import scrape_crypto
-from services.storage import save_items, add_history, load_items, load_websites, save_statistics, load_history
+from scrapers.ecommerce_scraper import scrape_ecommerce
+from services.storage import add_history, load_history, load_items, load_websites, save_items, save_statistics
 from utils.exceptions import ScraperError
-from utils.validators import validate_scrape_url, health_check
+from utils.validators import health_check, validate_scrape_url
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create Blueprint for the scrape route
 scrape_bp = Blueprint('scrape', __name__)
 
 
-# ============================================================================
-# VALIDATION FUNCTION
-# ============================================================================
-
 def validate_items(items):
     """
-    Validate that items have required fields
+    Validate that items have required fields.
     Returns: (is_valid, error_message)
     """
     if not items:
         return True, None
-    
+
     required_fields = ['name', 'price', 'price_display', 'market', 'source']
-    
+
     for item in items:
         for field in required_fields:
             if field not in item or item[field] is None:
                 return False, f"Item missing required field: {field}"
-    
+
     return True, None
 
 
-# ============================================================================
-# CALCULATE STATISTICS
-# ============================================================================
-
-def calculate_statistics(items):
-    """
-    Calculate statistics from the items list.
-    """
+def calculate_statistics(items, history_limit=100):
     if not items:
         return {
             "total_items": 0,
@@ -56,7 +44,6 @@ def calculate_statistics(items):
             "markets": {}
         }
 
-    # Group items by market dynamically
     markets = {}
     for item in items:
         market_name = item.get('market', 'Unknown')
@@ -82,8 +69,9 @@ def calculate_statistics(items):
     if not history:
         success_rate = 100.0
     else:
-        successes = sum(1 for record in history if record.get('success', False))
-        success_rate = round((successes / len(history)) * 100, 1)
+        recent_history = history[-history_limit:]
+        successes = sum(1 for record in recent_history if record.get('success', False))
+        success_rate = round((successes / len(recent_history)) * 100, 1)
 
     return {
         "total_items": len(items),
@@ -94,27 +82,33 @@ def calculate_statistics(items):
     }
 
 
-# ============================================================================
-# MAIN SCRAPE ENDPOINT
-# ============================================================================
-
 def run_scraper_with_fallback(scraper_func, scraper_type, registry_url, default_url, market_name):
     target_url = registry_url
     original_failure = None
-    
+
     is_valid, reason = validate_scrape_url(target_url, scraper_type)
     if not is_valid:
-        if target_url != default_url:
-            original_failure = f"URL_VALIDATION_FAILED: {reason}"
-            logger.warning(f"{market_name} URL validation failed, falling back to {default_url}")
-            target_url = default_url
-        else:
-            raise ScraperError(market_name, target_url, f"URL_VALIDATION_FAILED: {reason}")
-            
-    if not health_check(target_url, scraper_type):
-        if target_url == default_url and original_failure:
+        original_failure = f"URL_VALIDATION_FAILED: {reason}"
+        logger.warning(f"{market_name} URL validation failed for {target_url}, falling back to {default_url}")
+        target_url = default_url
+        is_valid, reason = validate_scrape_url(target_url, scraper_type)
+        if not is_valid:
             raise ScraperError(market_name, registry_url, original_failure)
-        raise ScraperError(market_name, target_url, f"Health check failed for {target_url}")
+
+    if not health_check(target_url, scraper_type):
+        if target_url == default_url:
+            if original_failure:
+                raise ScraperError(market_name, registry_url, original_failure)
+            raise ScraperError(market_name, target_url, f"Health check failed for {target_url}")
+        else:
+            logger.warning(f"{market_name} health check failed for {target_url}, falling back to {default_url}")
+            target_url = default_url
+            if not health_check(target_url, scraper_type):
+                raise ScraperError(
+                    market_name,
+                    registry_url,
+                    "Health check failed for registry URL; fallback also failed"
+                )
 
     try:
         return scraper_func(url=target_url)
@@ -135,38 +129,26 @@ def run_scraper_with_fallback(scraper_func, scraper_type, registry_url, default_
                 raise ScraperError(market_name, registry_url, original_failure)
             raise e
 
+
 @scrape_bp.route('/api/scrape', methods=['POST'])
 def scrape():
     """
     POST /api/scrape
-    
+
     Triggers a scrape of both e-commerce and crypto sources.
     Saves results to storage and logs the event.
-    
-    Returns:
-    {
-        "status": "success" or "error",
-        "message": "Human readable message",
-        "data": {
-            "ecommerce_count": 21,
-            "crypto_count": 10,
-            "total_count": 31,
-            "stats": {...}
-        }
-    }
     """
     logger.info("=== SCRAPE ENDPOINT CALLED ===")
-    
+
     try:
-        # ====== STEP 1: Resolve URLs from website registry ======
         logger.info("Step 1: Resolving scrape URLs from website registry...")
         websites = load_websites()
         ecommerce_url = next(
-            (w['url'] for w in websites if w.get('market') == 'E-Commerce'),
+            (w['url'] for w in websites if w.get('market') in ('E-Commerce', 'Retail Goods')),
             "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets"
         )
         crypto_url = next(
-            (w['url'] for w in websites if w.get('market') == 'Cryptocurrency'),
+            (w['url'] for w in websites if w.get('market') in ('Cryptocurrency', 'Digital Assets')),
             "https://api.coingecko.com/api/v3/coins/markets"
         )
         logger.info(f"  E-Commerce URL: {ecommerce_url}")
@@ -179,15 +161,16 @@ def scrape():
         ec_error_reason = None
         cr_error_reason = None
 
-        # ====== STEP 2: Scrape E-Commerce ======
         logger.info("Step 2: Scraping e-commerce...")
         try:
             ecommerce_items = run_scraper_with_fallback(
-                scrape_ecommerce, 'ecommerce', ecommerce_url,
+                scrape_ecommerce,
+                'ecommerce',
+                ecommerce_url,
                 "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
                 "Retail Goods"
             )
-            logger.info(f"✓ E-commerce scrape complete: {len(ecommerce_items)} items")
+            logger.info(f"E-commerce scrape complete: {len(ecommerce_items)} items")
         except ScraperError as e:
             logger.error(f"E-commerce scrape failed: {e.reason}")
             ec_failed = True
@@ -201,17 +184,19 @@ def scrape():
                 "error": e.reason
             })
 
-        time.sleep(2)  # Delay between requests (be respectful to APIs)
-        
-        # ====== STEP 3: Scrape Crypto ======
+        if not ec_failed:
+            time.sleep(2)
+
         logger.info("Step 3: Scraping crypto...")
         try:
             crypto_items = run_scraper_with_fallback(
-                scrape_crypto, 'crypto', crypto_url,
+                scrape_crypto,
+                'crypto',
+                crypto_url,
                 "https://api.coingecko.com/api/v3/coins/markets",
                 "Digital Assets"
             )
-            logger.info(f"✓ Crypto scrape complete: {len(crypto_items)} items")
+            logger.info(f"Crypto scrape complete: {len(crypto_items)} items")
         except ScraperError as e:
             logger.error(f"Crypto scrape failed: {e.reason}")
             cr_failed = True
@@ -224,7 +209,7 @@ def scrape():
                 "success": False,
                 "error": e.reason
             })
-            
+
         if ec_failed and cr_failed:
             return jsonify({
                 "status": "error",
@@ -238,24 +223,36 @@ def scrape():
                 }
             }), 500
 
-        # ====== STEP 4: Combine Results ======
         all_items = ecommerce_items + crypto_items
         logger.info(f"Step 4: Combined {len(all_items)} items total")
-        
-        # ====== STEP 5: Validate Data ======
+
         logger.info("Step 5: Validating data...")
         is_ec_valid, ec_error = validate_items(ecommerce_items)
         is_cr_valid, cr_error = validate_items(crypto_items)
-        
+
         if not is_ec_valid or not is_cr_valid:
             ts = datetime.now().isoformat()
             if not is_ec_valid:
                 logger.error(f"E-Commerce validation failed: {ec_error}")
-                add_history({"timestamp": ts, "scraper_type": "ecommerce", "market": "Retail Goods", "items_found": 0, "success": False, "error": ec_error})
+                add_history({
+                    "timestamp": ts,
+                    "scraper_type": "ecommerce",
+                    "market": "Retail Goods",
+                    "items_found": 0,
+                    "success": False,
+                    "error": ec_error
+                })
             if not is_cr_valid:
                 logger.error(f"Crypto validation failed: {cr_error}")
-                add_history({"timestamp": ts, "scraper_type": "crypto", "market": "Digital Assets", "items_found": 0, "success": False, "error": cr_error})
-            
+                add_history({
+                    "timestamp": ts,
+                    "scraper_type": "crypto",
+                    "market": "Digital Assets",
+                    "items_found": 0,
+                    "success": False,
+                    "error": cr_error
+                })
+
             error_msg = f"Data validation failed. E-Commerce: {ec_error if not is_ec_valid else 'Pass'}. Crypto: {cr_error if not is_cr_valid else 'Pass'}."
             return jsonify({
                 "status": "error",
@@ -268,13 +265,13 @@ def scrape():
                     "stats": calculate_statistics(all_items)
                 }
             }), 400
-        logger.info("✓ Data validation passed")
-        
-        # ====== STEP 6: Save Items ======
+
+        logger.info("Data validation passed")
+
         logger.info("Step 6: Saving items...")
         try:
             save_items(all_items)
-            logger.info(f"✓ Items saved: {len(all_items)}")
+            logger.info(f"Items saved: {len(all_items)}")
         except Exception as e:
             logger.error(f"Failed to save items: {str(e)}")
             ts = datetime.now().isoformat()
@@ -299,18 +296,15 @@ def scrape():
                 "message": "Failed to save scraped items to storage",
                 "data": None
             }), 500
-        
-        # ====== STEP 7: Calculate Statistics ======
+
         logger.info("Step 7: Calculating statistics...")
         stats = calculate_statistics(all_items)
-        logger.info("✓ Statistics calculated")
-        
-        # ====== STEP 8: Persist Statistics ======
+        logger.info("Statistics calculated")
+
         logger.info("Step 8: Saving statistics to storage...")
         save_statistics(stats)
-        logger.info("✓ Statistics persisted to statistics.json")
-        
-        # ====== STEP 9: Log Per-Market History Records ======
+        logger.info("Statistics persisted to statistics.json")
+
         logger.info("Step 9: Logging scrape event to history...")
         ts = datetime.now().isoformat()
         if not ec_failed:
@@ -329,9 +323,8 @@ def scrape():
                 "items_found": len(crypto_items),
                 "success": True
             })
-        logger.info("✓ Scrape logged to history")
-        
-        # ====== STEP 10: Return Success Response ======
+        logger.info("Scrape logged to history")
+
         response = {
             "status": "success",
             "message": f"Successfully scraped {len(all_items)} items",
@@ -343,12 +336,34 @@ def scrape():
                 "stats": stats
             }
         }
-        logger.info(f"✓ SCRAPE COMPLETE: {len(all_items)} items scraped")
+        logger.info(f"SCRAPE COMPLETE: {len(all_items)} items scraped")
         return jsonify(response), 200
-    
-    except Exception as e:
-        logger.error(f"✗ SCRAPE FAILED: {str(e)}", exc_info=True)
-        # Log the failed scrape
+
+    except ScraperError as e:
+        logger.error(f"Scrape failed (ScraperError): {e.reason}")
+        try:
+            ts = datetime.now().isoformat()
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "ecommerce",
+                "market": "Retail Goods",
+                "items_found": 0,
+                "success": False,
+                "error": e.reason
+            })
+            add_history({
+                "timestamp": ts,
+                "scraper_type": "crypto",
+                "market": "Digital Assets",
+                "items_found": 0,
+                "success": False,
+                "error": e.reason
+            })
+        except Exception:
+            pass
+        return jsonify({"status": "error", "message": f"Scrape failed: {e.reason}", "data": None}), 500
+    except (RuntimeError, ValueError, TypeError, KeyError) as e:
+        logger.error(f"Scrape failed (Runtime error): {str(e)}", exc_info=True)
         try:
             ts = datetime.now().isoformat()
             add_history({
@@ -367,25 +382,16 @@ def scrape():
                 "success": False,
                 "error": str(e)
             })
-        except:
-            pass  # Even if history fails, still return error to user
-        
-        return jsonify({
-            "status": "error",
-            "message": f"Scrape failed: {str(e)}",
-            "data": None
-        }), 500
+        except Exception:
+            pass
+        return jsonify({"status": "error", "message": f"Scrape failed: {str(e)}", "data": None}), 500
 
-
-# ============================================================================
-# ADDITIONAL HELPER ENDPOINTS
-# ============================================================================
 
 @scrape_bp.route('/api/scrape/status', methods=['GET'])
 def scrape_status():
     """
     GET /api/scrape/status
-    
+
     Returns current status: how many items are in storage, last scrape time, etc.
     """
     try:
@@ -402,10 +408,10 @@ def scrape_status():
             "message": str(e)
         }), 500
 
-    
+
 if __name__ == '__main__':
-    print("✓ scrape_bp imported successfully")
-    print("✓ All imports working")
+    print("scrape_bp imported successfully")
+    print("All imports working")
     print("\nStorage functions available:")
     print("  - save_items(items)")
     print("  - add_history(record)")

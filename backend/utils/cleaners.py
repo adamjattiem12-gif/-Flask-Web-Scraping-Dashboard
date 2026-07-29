@@ -28,23 +28,27 @@ def clean_rating(rating):
         return 0
 
 def remove_duplicates(items):
-    """Remove duplicate items based on name and price."""
+    """Remove duplicate items based on id and source."""
     seen = set()
     unique_items = []
     for item in items:
-        key = (item.get('name'), item.get('price'))
+        key = (item.get('id'), item.get('source'))
         if key not in seen:
             seen.add(key)
             unique_items.append(item)
     return unique_items
 
 def clean_items(items):
-    """Clean all items: strip whitespace, convert types, remove duplicates."""
-    for item in items:
+    """Clean all items: strip whitespace, convert types, remove duplicates.
+    Creates copies to avoid mutating the caller's data structures."""
+    cleaned_items = []
+    for original_item in items:
+        item = dict(original_item)
         item['name'] = clean_name(item.get('name', ''))
         item['price'] = clean_price(item.get('price_display'))
-        extra = item.get('extra', {})
-        if isinstance(extra, dict):
-            extra['rating'] = clean_rating(extra.get('rating'))
-            extra['review_count'] = clean_rating(extra.get('review_count'))
-    return remove_duplicates(items)
+        extra = dict(item.get('extra', {})) if isinstance(item.get('extra'), dict) else {}
+        extra['rating'] = clean_rating(extra.get('rating'))
+        extra['review_count'] = clean_rating(extra.get('review_count'))
+        item['extra'] = extra
+        cleaned_items.append(item)
+    return remove_duplicates(cleaned_items)
