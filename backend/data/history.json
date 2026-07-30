@@ -232,5 +232,33 @@
         "market": "Retail Goods",
         "items_found": 3,
         "success": true
+    },
+    {
+        "timestamp": "2026-07-30T09:58:50.798743",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 0,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-30T09:58:50.798743",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-30T09:59:05.760035",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 0,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-30T09:59:05.760035",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
     }
 ]

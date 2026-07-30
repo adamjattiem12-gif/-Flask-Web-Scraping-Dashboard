@@ -5,8 +5,8 @@
         "market": "Retail Goods"
     },
     {
-        "name": "CoinGecko",
-        "url": "https://api.coingecko.com/api/v3/coins/markets",
+        "name": "CoinPaprika",
+        "url": "https://api.coinpaprika.com/v1/tickers",
         "market": "Digital Assets"
     }
 ]

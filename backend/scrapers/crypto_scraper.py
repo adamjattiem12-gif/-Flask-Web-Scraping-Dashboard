@@ -17,25 +17,18 @@ from utils.exceptions import ScraperError
 logger = logging.getLogger(__name__)
 
 
-def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
-    """Scrape cryptocurrencies from a CoinGecko-compatible API endpoint.
+def scrape_crypto(url="https://api.coinpaprika.com/v1/tickers"):
+    """Scrape cryptocurrencies from a CoinPaprika-compatible API endpoint.
 
     Parameters:
-        url (str): Target API endpoint. Defaults to the CoinGecko markets endpoint.
+        url (str): Target API endpoint. Defaults to the CoinPaprika tickers endpoint.
                    Pass a custom URL from the website registry to override.
     """
-
-    # Parameters (filters for the API)
-    params = {
-        "vs_currency": "usd",           # Show prices in USD
-        "order": "market_cap_desc",     # Sort by market cap (largest first)
-        "per_page": 10                  # Get top 10 cryptos
-    }
 
     data = None
     for attempt in range(1, 4):
         try:
-            response = requests.get(url, params=params, timeout=5)
+            response = requests.get(url, timeout=5)
             
             if response.status_code == 429:
                 response.raise_for_status() # Trigger retry
@@ -74,9 +67,10 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
     items = []
 
     # Loop through each cryptocurrency
-    for i, crypto in enumerate(data):
+    for i, crypto in enumerate(data[:10]):
         try:
-            current_price = crypto.get('current_price', 0)
+            usd = crypto.get("quotes", {}).get("USD", {})
+            current_price = usd.get("price", 0)
             price_value = float(current_price) if current_price is not None else 0.0
             price_display = f"${price_value:.2f}"
 
@@ -86,12 +80,14 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
                 "price": clean_price(price_display),
                 "price_display": price_display,
                 "currency": "USD",
-                "source": "CoinGecko API",
+                "source": "CoinPaprika API",
                 "market": "Digital Assets",
                 "scraped_at": datetime.now().isoformat(),
                 "extra": {
                     "rating": clean_rating(i + 1),
-                    "review_count": 0
+                    "review_count": 0,
+                    "change_24h": usd.get("percent_change_24h", 0),
+                    "volume_24h": usd.get("volume_24h", 0),
                 }
             }
             items.append(item)
@@ -104,7 +100,7 @@ def scrape_crypto(url="https://api.coingecko.com/api/v3/coins/markets"):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    print("Scraping crypto prices from CoinGecko...")
+    print("Scraping crypto prices from CoinPaprika...")
     cryptos = scrape_crypto()
     if cryptos:
         print(f"\nFetched {len(cryptos)} cryptocurrencies:")

@@ -149,7 +149,7 @@ def scrape():
         )
         crypto_url = next(
             (w['url'] for w in websites if w.get('market') in ('Cryptocurrency', 'Digital Assets')),
-            "https://api.coingecko.com/api/v3/coins/markets"
+            "https://api.coinpaprika.com/v1/tickers"
         )
         logger.info(f"  E-Commerce URL: {ecommerce_url}")
         logger.info(f"  Cryptocurrency URL: {crypto_url}")
@@ -193,7 +193,7 @@ def scrape():
                 scrape_crypto,
                 'crypto',
                 crypto_url,
-                "https://api.coingecko.com/api/v3/coins/markets",
+                "https://api.coinpaprika.com/v1/tickers",
                 "Digital Assets"
             )
             logger.info(f"Crypto scrape complete: {len(crypto_items)} items")

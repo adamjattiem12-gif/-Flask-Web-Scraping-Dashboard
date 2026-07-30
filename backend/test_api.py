@@ -23,7 +23,7 @@ def test():
             w['url'] = 'http://10.255.255.1/api/v3/coins/markets'
     save_websites(websites)
     
-    print("\nSCENARIO 2: Broken CoinGecko URL (timeout expected)")
+    print("\nSCENARIO 2: Broken CoinPaprika URL (timeout expected)")
     t2 = time.time()
     res2 = client.post('/api/scrape')
     t3 = time.time()

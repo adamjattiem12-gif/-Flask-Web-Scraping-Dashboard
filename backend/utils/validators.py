@@ -12,7 +12,7 @@ def validate_scrape_url(url, scraper_type):
 
     path = parsed.path.lower()
     if scraper_type == 'crypto':
-        if not any(word in path for word in ['api', 'coins', 'markets']):
+        if not any(word in path for word in ['api', 'coins', 'markets', 'tickers', 'paprika']):
             return False, "Invalid crypto path"
     elif scraper_type == 'ecommerce':
         if not any(word in path for word in ['e-commerce', 'allinone', 'computers', 'tablets']):
@@ -23,7 +23,7 @@ def validate_scrape_url(url, scraper_type):
 def health_check(url, scraper_type):
     try:
         if scraper_type == 'crypto':
-            res = requests.get(url, params={'vs_currency': 'usd', 'per_page': 1}, timeout=3)
+            res = requests.get(url, timeout=3)
             if res.status_code == 200:
                 try:
                     data = res.json()
