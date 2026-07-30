@@ -16,7 +16,9 @@ container.clientWidth/container.clientHeight,
 );
 
 // Position the camera so all bars are visible.
-camera.position.set(0,8,18);
+camera.position.set(8,10,18);
+
+camera.lookAt(0,4,0);
 
 // Create the WebGL renderer that draws the scene.
 const renderer = new THREE.WebGLRenderer({
@@ -24,7 +26,6 @@ antialias:true
 });
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.shadowMap.enabled = true;
 
 // Match the renderer size to the Vue component.
 renderer.setSize(
@@ -47,6 +48,25 @@ light.castShadow = true;
 scene.add(light);
 // Ambient light softens shadows and brightens the scene.
 scene.add(new THREE.AmbientLight(0xffffff,1));
+
+const floor = new THREE.Mesh(
+
+new THREE.PlaneGeometry(25,25),
+
+new THREE.ShadowMaterial({
+
+opacity:0.25
+
+})
+
+);
+
+floor.rotation.x = -Math.PI/2;
+
+floor.receiveShadow = true;
+
+scene.add(floor);
+
 // Store references to all bars so they can be updated later.
 const bars=[];
 
@@ -107,6 +127,26 @@ renderer.render(scene,camera);
 
 // Start the animation loop.
 animate();
+
+window.addEventListener("resize",()=>{
+
+camera.aspect=
+
+container.clientWidth/
+
+container.clientHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+
+container.clientWidth,
+
+container.clientHeight
+
+);
+
+});
 
 // Expose methods that Vue can call.
 return{

@@ -53,7 +53,7 @@
         </div>
 
         <!-- THREE.JS BAR CHART -->
-         <ThreeDBarChart />
+        <ThreeDBarChart />
 
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">

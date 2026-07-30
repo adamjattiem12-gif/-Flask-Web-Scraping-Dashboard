@@ -12,21 +12,30 @@ const statsStore = useStatsStore();
 let chart;
 
 onMounted(async () => {
-    await statsStore.fetchStatistics();
-    chart = createThreeChart(
-        canvasContainer.value,
-        statsStore.statistics
-    );
-});
+    await statsStore.fetchStats();
 
+chart = createThreeChart(
+    canvasContainer.value,
+    statsStore.stats
+);
+});
+    // Watcher
 watch(
-() => statsStore.statistics,
+
+() => statsStore.stats,
 
 (newStats)=>{
-    chart.updateBars(newStats);
+
+    if(chart){
+
+        chart.updateBars(newStats);
+
+    }
+
 },
 
-{ deep:true }
+{deep:true}
+
 );
 
 onUnmounted(()=>{
