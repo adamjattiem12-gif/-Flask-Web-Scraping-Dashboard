@@ -19,6 +19,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Skeleton rows while loading -->
         <template v-if="loading">
           <tr v-for="n in 5" :key="'skeleton-' + n" class="skeleton-row">
             <td v-for="col in columns" :key="col.key">
@@ -27,6 +28,7 @@
           </tr>
         </template>
 
+        <!-- Empty state -->
         <tr v-else-if="sortedItems.length === 0">
           <td :colspan="columns.length" class="empty-state">
             <p class="empty-title">No results found</p>
@@ -34,7 +36,8 @@
           </td>
         </tr>
 
-        <tr v-else v-for="item in sortedItems" :key="item.id ?? item.name + (item.scraped_at || item.scrapedAt || item.updated_at)">
+        <!-- Real data -->
+        <tr v-else v-for="item in sortedItems" :key="item.id ?? item.name + (item.scraped_at || item.scrapedAt)">
           <td>{{ item.name }}</td>
           <td>{{ formatCurrency(item.price, item.currency) }}</td>
           <td>{{ item.currency || 'USD' }}</td>
@@ -50,9 +53,14 @@
 
     <!-- Pagination -->
     <div v-if="!error && !loading && totalPages > 1" class="pagination">
-      <button class="page-btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
+      <button
+        class="page-btn"
+        :disabled="currentPage <= 1"
+        @click="goToPage(currentPage - 1)"
+      >
         Previous
       </button>
+
       <button
         v-for="page in pageNumbers"
         :key="page"
@@ -62,7 +70,12 @@
       >
         {{ page }}
       </button>
-      <button class="page-btn" :disabled="currentPage >= totalPages" @click="goToPage(currentPage + 1)">
+
+      <button
+        class="page-btn"
+        :disabled="currentPage >= totalPages"
+        @click="goToPage(currentPage + 1)"
+      >
         Next
       </button>
     </div>
@@ -138,9 +151,25 @@ const pageNumbers = computed(() => {
 })
 
 const getSourceClass = (source) => {
-  if (source === 'WebScraper.io') return 'source-books'
-  if (source === 'CoinGecko' || source === 'CoinMarketCap') return 'source-crypto'
+  if (source === 'WebScraper.io' || source === 'WebScraper.io E-Commerce') return 'source-retail'
+  if (source === 'CoinPaprika') return 'source-crypto'
   return 'source-default'
+}
+
+const getScrapedTimeRaw = (item) => {
+  return item.scraped_at || item.scrapedAt || item.last_scrape || item.updated_at || null
+}
+
+const getScrapedTime = (item) => {
+  const timestamp = getScrapedTimeRaw(item)
+  if (!timestamp) return '—'
+  try {
+    const date = new Date(timestamp)
+    if (isNaN(date.getTime())) return '—'
+    return date.toLocaleString()
+  } catch {
+    return '—'
+  }
 }
 
 const goToPage = (page) => {
@@ -158,24 +187,6 @@ const formatCurrency = (price, currency) => {
     }).format(price)
   } catch {
     return `${currency || 'USD'} ${Number(price).toFixed(2)}`
-  }
-}
-
-// ✅ NEW: Helper to get scraped time from item (supports multiple field names)
-const getScrapedTimeRaw = (item) => {
-  return item.scraped_at || item.scrapedAt || item.last_scrape || item.updated_at || null
-}
-
-// ✅ NEW: Formatted scraped time
-const getScrapedTime = (item) => {
-  const timestamp = getScrapedTimeRaw(item)
-  if (!timestamp) return '—'
-  try {
-    const date = new Date(timestamp)
-    if (isNaN(date.getTime())) return '—'
-    return date.toLocaleString()
-  } catch {
-    return '—'
   }
 }
 </script>
@@ -235,7 +246,7 @@ const getScrapedTime = (item) => {
   text-transform: capitalize;
 }
 
-.source-books {
+.source-retail {
   background: #EAF2EA;
   color: #4A7349;
 }

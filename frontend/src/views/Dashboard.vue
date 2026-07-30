@@ -29,19 +29,19 @@
           <StatCard
             icon="📦"
             label="Total Items"
-            :value="statsStore.stats?.total_items ?? 0"
+            :value="statsStore.stats.total_items ?? 0"
             subtitle="across 2 markets"
           />
           <StatCard
             icon="🌐"
             label="Active Sources"
-            :value="statsStore.stats?.active_sites ?? 0"
-            subtitle="WebScraper.io · CoinGecko"
+            :value="statsStore.stats.active_sites ?? 0"
+            subtitle="WebScraper.io · CoinPaprika"
           />
           <StatCard
             icon="✅"
             label="Success Rate"
-            :value="statsStore.stats?.success_rate ?? '0%'"
+            :value="statsStore.stats.success_rate + '%' ?? '0%'"
             subtitle="last 7 days"
           />
         </div>
@@ -57,15 +57,15 @@
           <MarketOverviewCard
             title="🛒 Retail Goods"
             accent-color="#D4914A"
-            :avg-price="statsStore.stats?.markets?.['Retail Goods']?.avg_price ?? 0"
-            :items-count="statsStore.stats?.markets?.['Retail Goods']?.item_count ?? 0"
+            :avg-price="statsStore.stats.markets?.['Retail Goods']?.avg_price ?? 0"
+            :items-count="statsStore.stats.markets?.['Retail Goods']?.item_count ?? 0"
             :recent-items="retailRecentItems"
           />
           <MarketOverviewCard
             title="₿ Digital Assets"
             accent-color="#4A8C8C"
-            :avg-price="statsStore.stats?.markets?.['Digital Assets']?.avg_price ?? 0"
-            :items-count="statsStore.stats?.markets?.['Digital Assets']?.item_count ?? 0"
+            :avg-price="statsStore.stats.markets?.['Digital Assets']?.avg_price ?? 0"
+            :items-count="statsStore.stats.markets?.['Digital Assets']?.item_count ?? 0"
             :recent-items="cryptoRecentItems"
           />
         </div>
@@ -80,7 +80,7 @@
         <div class="action-bar">
           <div class="source-badge">
             <span class="badge-dot"></span>
-            WebScraper.io · CoinGecko
+            WebScraper.io · CoinPaprika
           </div>
           <ScrapeButton @scrape-complete="handleScrapeComplete" />
         </div>
@@ -131,7 +131,10 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 let refreshInterval = null
 
-// ALL DATA FROM STORES
+// ============================================================
+// ✅ ALL DATA FROM STORES (REAL API)
+// ============================================================
+
 const tableItems = computed(() => itemsStore.items ?? [])
 
 const retailRecentItems = computed(() => {
@@ -150,27 +153,17 @@ const cryptoRecentItems = computed(() => {
   }))
 })
 
-const topMoversData = computed(() => {
-  const items = itemsStore.items ?? []
-  if (items.length === 0) return []
-  
-  const sorted = [...items].sort((a, b) => (b.change ?? 0) - (a.change ?? 0))
-  return sorted.slice(0, 5).map((item, index) => ({
-    rank: index + 1,
-    symbol: item.symbol ?? item.name,
-    change: item.change ?? 0,
-    price: item.price ?? 0,
-    market: item.market ?? 'Unknown'
-  }))
-})
+const topMoversData = computed(() => itemsStore.getTopMovers)
 
+// ============================================================
 // METHODS
+// ============================================================
+
 const updateTimestamp = () => {
   const now = new Date()
   lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
 }
 
-// ✅ MAIN REFRESH FUNCTION
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
@@ -188,45 +181,31 @@ const refreshAllData = async () => {
   }
 }
 
-// ✅ SCRAPE COMPLETE - Force update with current timestamps
 const handleScrapeComplete = async () => {
-  console.log('🔄 Scrape complete! Updating timestamps...')
+  console.log('🔄 Scrape complete! Updating data...')
   
-  // Fetch fresh data from API
-  await itemsStore.fetchItems()
+  // ✅ Uses real API with change calculation
+  await itemsStore.updateItemsAfterScrape()
   await statsStore.fetchStats()
   
-  // ✅ FORCE UPDATE: Set scraped_at to current time for ALL items
-  const now = new Date().toISOString()
-  const nowFormatted = new Date().toLocaleString()
-  
-  // Update each item with current timestamp
-  itemsStore.items = itemsStore.items.map(item => ({
-    ...item,
-    scraped_at: now,
-    scrapedAt: now,
-    scraped_at_formatted: nowFormatted
-  }))
-  
-  // Update stats store last scrape
-  statsStore.stats = {
-    ...statsStore.stats,
-    last_scrape: now,
-    lastScrape: now
-  }
+  // ✅ Update last scrape timestamp
+  statsStore.updateLastScrape()
   
   updateTimestamp()
   totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
   errorMessage.value = ''
   
-  console.log('✅ Timestamps updated to:', nowFormatted)
+  console.log('✅ Data updated with real changes')
 }
 
 const handlePageChange = (page) => {
   currentPage.value = page
 }
 
+// ============================================================
 // LIFECYCLE
+// ============================================================
+
 onMounted(async () => {
   try {
     await refreshAllData()

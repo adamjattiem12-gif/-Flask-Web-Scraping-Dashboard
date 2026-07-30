@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { fetchStatistics } from '../services/api'  // ✅ ADDED: Import real API function
+import api from '@/services/api'
 
 export const useStatsStore = defineStore('stats', {
   state: () => ({
@@ -16,51 +16,93 @@ export const useStatsStore = defineStore('stats', {
 
   actions: {
     /**
-     * fetchStats - Gets statistics for the dashboard
-     * 
-     * ✅ Week 2: Now calls REAL backend API
-     * Falls back to mock data if API fails
+     * fetchStats - Gets statistics from REAL API
      */
     async fetchStats() {
       this.loading = true
       this.error = null
 
       try {
-        // 🟢 REAL API CALL - Get stats from backend
-        const response = await fetchStatistics()
+        // ✅ REAL API CALL
+        const response = await api.stats.getStats()
         this.stats = response
-      } catch (error) {
-        console.error('Stats API Error:', error)
-        this.error = error.error || 'Failed to load statistics'
-        
-        // 🔄 FALLBACK: Use mock stats if API fails
-        await this.loadMockStats()
-      } finally {
         this.loading = false
+        return this.stats
+      } catch (error) {
+        this.error = `Failed to load stats: ${error.message}`
+        this.loading = false
+        throw error
       }
     },
 
     /**
-     * loadMockStats - Fallback mock stats if API is down
+     * updateLastScrape - Updates the last scrape timestamp
      */
-    async loadMockStats() {
-      this.stats = {
-        total_items: 20,
-        active_sites: 2,
-        success_rate: 96.5,
-        last_scrape: '2026-07-20T14:30:00',
-        markets: {
-          'Retail Goods': {
-            item_count: 10,
-            avg_price: 683.19,
-            last_updated: '2026-07-20T14:30:00'
-          },
-          'Digital Assets': {
-            item_count: 10,
-            avg_price: 3152.45,
-            last_updated: '2026-07-20T14:30:00'
+    updateLastScrape(timestamp = null) {
+      const now = timestamp || new Date().toISOString()
+      this.stats.last_scrape = now
+      
+      if (this.stats.markets) {
+        Object.keys(this.stats.markets).forEach(key => {
+          if (this.stats.markets[key]) {
+            this.stats.markets[key].last_updated = now
           }
-        }
+        })
+      }
+    },
+
+    /**
+     * resetStats - Resets stats to default
+     */
+    resetStats() {
+      this.stats = {
+        total_items: 0,
+        active_sites: 0,
+        success_rate: 0,
+        last_scrape: null,
+        markets: {}
+      }
+      this.error = null
+    }
+  },
+
+  getters: {
+    getTotalItems: (state) => state.stats.total_items || 0,
+    getActiveSites: (state) => state.stats.active_sites || 0,
+    getSuccessRate: (state) => {
+      const rate = state.stats.success_rate || 0
+      return typeof rate === 'number' ? rate + '%' : rate
+    },
+    getLastScrape: (state) => {
+      const timestamp = state.stats.last_scrape
+      if (!timestamp) return 'Never'
+      try {
+        const date = new Date(timestamp)
+        if (isNaN(date.getTime())) return 'Never'
+        return date.toLocaleString()
+      } catch {
+        return 'Never'
+      }
+    },
+    getMarketStats: (state) => (marketName) => {
+      return state.stats.markets?.[marketName] || {
+        item_count: 0,
+        avg_price: 0,
+        last_updated: null
+      }
+    },
+    getRetailStats: (state) => {
+      return state.stats.markets?.['Retail Goods'] || {
+        item_count: 0,
+        avg_price: 0,
+        last_updated: null
+      }
+    },
+    getCryptoStats: (state) => {
+      return state.stats.markets?.['Digital Assets'] || {
+        item_count: 0,
+        avg_price: 0,
+        last_updated: null
       }
     }
   }
