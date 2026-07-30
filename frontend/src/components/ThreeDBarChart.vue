@@ -35,10 +35,12 @@ onUnmounted(()=>{
 </script>
 
 <style scoped>
-    .chart{
-    height:450px;
-    width:100%;
-    border-radius:12px;
-    overflow:hidden;
-    }
+    .chart {
+    width: 100%;
+    height: 420px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+}
 </style>

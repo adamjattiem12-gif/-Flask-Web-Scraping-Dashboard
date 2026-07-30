@@ -52,6 +52,9 @@
           <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
 
+        <!-- THREE.JS BAR CHART -->
+         <ThreeDBarChart />
+
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">
           <MarketOverviewCard
@@ -116,6 +119,7 @@ import TopMovers from '@/components/TopMovers.vue'
 import DataTable from '@/components/DataTable.vue'
 import Watchlist from '@/components/Watchlist.vue'
 import ScrapeButton from '@/components/ScrapeButton.vue'
+import ThreeDBarChart from '@/components/ThreeDBarChart.vue'
 
 // STORE INSTANCES
 const itemsStore = useItemsStore()
