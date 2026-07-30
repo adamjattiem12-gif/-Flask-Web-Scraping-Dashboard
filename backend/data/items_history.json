@@ -1,7 +1,167 @@
 [
     {
-        "snapshot_at": "2026-07-29T12:33:51.023379",
+        "snapshot_at": "2026-07-30T15:22:27.577948",
         "items": [
+            {
+                "id": "btc-bitcoin",
+                "name": "Bitcoin",
+                "price": 64765.74,
+                "price_display": "$64765.74",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509056",
+                "extra": {
+                    "rating": 1,
+                    "review_count": 0,
+                    "change_24h": 0.6499999761581421,
+                    "volume_24h": 26882704445.962166
+                }
+            },
+            {
+                "id": "eth-ethereum",
+                "name": "Ethereum",
+                "price": 1922.59,
+                "price_display": "$1922.59",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509077",
+                "extra": {
+                    "rating": 2,
+                    "review_count": 0,
+                    "change_24h": 1.100000023841858,
+                    "volume_24h": 8420573592.812812
+                }
+            },
+            {
+                "id": "usdt-tether",
+                "name": "Tether",
+                "price": 1.0,
+                "price_display": "$1.00",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509084",
+                "extra": {
+                    "rating": 3,
+                    "review_count": 0,
+                    "change_24h": 0.009999999776482582,
+                    "volume_24h": 502125389604.5105
+                }
+            },
+            {
+                "id": "bnb-binance-coin",
+                "name": "BNB",
+                "price": 585.43,
+                "price_display": "$585.43",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509095",
+                "extra": {
+                    "rating": 4,
+                    "review_count": 0,
+                    "change_24h": 2.9700000286102295,
+                    "volume_24h": 593597603.5176313
+                }
+            },
+            {
+                "id": "usdc-usd-coin",
+                "name": "USDC",
+                "price": 1.0,
+                "price_display": "$1.00",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509099",
+                "extra": {
+                    "rating": 5,
+                    "review_count": 0,
+                    "change_24h": 0.009999999776482582,
+                    "volume_24h": 14339403621.60607
+                }
+            },
+            {
+                "id": "xrp-xrp",
+                "name": "XRP",
+                "price": 1.08,
+                "price_display": "$1.08",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509103",
+                "extra": {
+                    "rating": 6,
+                    "review_count": 0,
+                    "change_24h": 0.75,
+                    "volume_24h": 940551270.2206197
+                }
+            },
+            {
+                "id": "sol-solana",
+                "name": "Solana",
+                "price": 74.23,
+                "price_display": "$74.23",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509107",
+                "extra": {
+                    "rating": 7,
+                    "review_count": 0,
+                    "change_24h": 0.8799999952316284,
+                    "volume_24h": 1356859593.666597
+                }
+            },
+            {
+                "id": "trx-tron",
+                "name": "TRON",
+                "price": 0.33,
+                "price_display": "$0.33",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509110",
+                "extra": {
+                    "rating": 8,
+                    "review_count": 0,
+                    "change_24h": 0.6700000166893005,
+                    "volume_24h": 350807202.77489465
+                }
+            },
+            {
+                "id": "steth-lido-staked-ether",
+                "name": "Lido Staked Ether",
+                "price": 1919.99,
+                "price_display": "$1919.99",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509113",
+                "extra": {
+                    "rating": 9,
+                    "review_count": 0,
+                    "change_24h": 0.9599999785423279,
+                    "volume_24h": 5848337.981916035
+                }
+            },
+            {
+                "id": "hype-hyperliquid",
+                "name": "Hyperliquid",
+                "price": 53.04,
+                "price_display": "$53.04",
+                "currency": "USD",
+                "source": "CoinPaprika API",
+                "market": "Digital Assets",
+                "scraped_at": "2026-07-30T15:17:42.509116",
+                "extra": {
+                    "rating": 10,
+                    "review_count": 0,
+                    "change_24h": -4.059999942779541,
+                    "volume_24h": 204481124.05486768
+                }
+            },
             {
                 "id": 1,
                 "name": "Lenovo IdeaTab",
@@ -10,7 +170,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143460",
+                "scraped_at": "2026-07-30T15:19:04.180646",
                 "extra": {
                     "rating": 3,
                     "review_count": 7
@@ -24,7 +184,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143492",
+                "scraped_at": "2026-07-30T15:19:04.180665",
                 "extra": {
                     "rating": 4,
                     "review_count": 7
@@ -38,7 +198,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143507",
+                "scraped_at": "2026-07-30T15:19:04.180674",
                 "extra": {
                     "rating": 1,
                     "review_count": 7
@@ -52,7 +212,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143519",
+                "scraped_at": "2026-07-30T15:19:04.180682",
                 "extra": {
                     "rating": 2,
                     "review_count": 2
@@ -66,7 +226,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143531",
+                "scraped_at": "2026-07-30T15:19:04.180689",
                 "extra": {
                     "rating": 3,
                     "review_count": 1
@@ -80,7 +240,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143542",
+                "scraped_at": "2026-07-30T15:19:04.180696",
                 "extra": {
                     "rating": 2,
                     "review_count": 10
@@ -94,7 +254,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143554",
+                "scraped_at": "2026-07-30T15:19:04.180703",
                 "extra": {
                     "rating": 4,
                     "review_count": 14
@@ -108,7 +268,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143565",
+                "scraped_at": "2026-07-30T15:19:04.180709",
                 "extra": {
                     "rating": 4,
                     "review_count": 3
@@ -122,7 +282,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143576",
+                "scraped_at": "2026-07-30T15:19:04.180716",
                 "extra": {
                     "rating": 2,
                     "review_count": 14
@@ -136,7 +296,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143587",
+                "scraped_at": "2026-07-30T15:19:04.180723",
                 "extra": {
                     "rating": 2,
                     "review_count": 13
@@ -150,7 +310,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143598",
+                "scraped_at": "2026-07-30T15:19:04.180733",
                 "extra": {
                     "rating": 1,
                     "review_count": 11
@@ -164,7 +324,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143619",
+                "scraped_at": "2026-07-30T15:19:04.180740",
                 "extra": {
                     "rating": 2,
                     "review_count": 9
@@ -178,7 +338,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143630",
+                "scraped_at": "2026-07-30T15:19:04.180747",
                 "extra": {
                     "rating": 3,
                     "review_count": 8
@@ -192,7 +352,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143642",
+                "scraped_at": "2026-07-30T15:19:04.180754",
                 "extra": {
                     "rating": 4,
                     "review_count": 1
@@ -206,7 +366,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143653",
+                "scraped_at": "2026-07-30T15:19:04.180761",
                 "extra": {
                     "rating": 3,
                     "review_count": 14
@@ -220,7 +380,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143663",
+                "scraped_at": "2026-07-30T15:19:04.180767",
                 "extra": {
                     "rating": 2,
                     "review_count": 7
@@ -234,7 +394,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143675",
+                "scraped_at": "2026-07-30T15:19:04.180774",
                 "extra": {
                     "rating": 4,
                     "review_count": 12
@@ -248,7 +408,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143686",
+                "scraped_at": "2026-07-30T15:19:04.180781",
                 "extra": {
                     "rating": 3,
                     "review_count": 9
@@ -262,7 +422,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143696",
+                "scraped_at": "2026-07-30T15:19:04.180787",
                 "extra": {
                     "rating": 2,
                     "review_count": 8
@@ -276,7 +436,7 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143706",
+                "scraped_at": "2026-07-30T15:19:04.180793",
                 "extra": {
                     "rating": 2,
                     "review_count": 6
@@ -290,1132 +450,304 @@
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-24T16:01:37.143716",
+                "scraped_at": "2026-07-30T15:19:04.180800",
                 "extra": {
                     "rating": 3,
                     "review_count": 7
                 }
-            }
-        ]
-    },
-    {
-        "snapshot_at": "2026-07-29T12:36:10.536875",
-        "items": [
+            },
             {
                 "id": 1,
-                "name": "MSI GL62M 7REX...",
-                "price": 1199.0,
-                "price_display": "$1199",
+                "name": "Lenovo IdeaTab",
+                "price": 69.99,
+                "price_display": "$69.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:33:48.664232",
+                "scraped_at": "2026-07-30T15:21:42.371875",
                 "extra": {
-                    "rating": 2,
-                    "review_count": 12
+                    "rating": 3,
+                    "review_count": 7
                 }
             },
             {
                 "id": 2,
-                "name": "Lenovo V110-15...",
-                "price": 454.73,
-                "price_display": "$454.73",
+                "name": "IdeaTab A3500L",
+                "price": 88.99,
+                "price_display": "$88.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:33:48.664268",
+                "scraped_at": "2026-07-30T15:21:42.371895",
+                "extra": {
+                    "rating": 4,
+                    "review_count": 7
+                }
+            },
+            {
+                "id": 3,
+                "name": "Acer Iconia",
+                "price": 96.99,
+                "price_display": "$96.99",
+                "currency": "USD",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371904",
+                "extra": {
+                    "rating": 1,
+                    "review_count": 7
+                }
+            },
+            {
+                "id": 4,
+                "name": "Galaxy Tab 3",
+                "price": 97.99,
+                "price_display": "$97.99",
+                "currency": "USD",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371911",
                 "extra": {
                     "rating": 2,
                     "review_count": 2
                 }
             },
             {
-                "id": 3,
-                "name": "Lenovo Yoga 72...",
-                "price": 1149.73,
-                "price_display": "$1149.73",
+                "id": 5,
+                "name": "Iconia B1-730H...",
+                "price": 99.99,
+                "price_display": "$99.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:33:48.664283",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 12
-                }
-            },
-            {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price": 64545.0,
-                "price_display": "$64545.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020040",
-                "extra": {
-                    "rating": 1,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price": 1916.92,
-                "price_display": "$1916.92",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020059",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tether",
-                "name": "Tether",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020067",
+                "scraped_at": "2026-07-30T15:21:42.371918",
                 "extra": {
                     "rating": 3,
-                    "review_count": 0
+                    "review_count": 1
                 }
             },
             {
-                "id": "binancecoin",
-                "name": "BNB",
-                "price": 571.9,
-                "price_display": "$571.90",
+                "id": 6,
+                "name": "Memo Pad HD 7",
+                "price": 101.99,
+                "price_display": "$101.99",
                 "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020072",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371925",
+                "extra": {
+                    "rating": 2,
+                    "review_count": 10
+                }
+            },
+            {
+                "id": 7,
+                "name": "Asus MeMO Pad",
+                "price": 102.99,
+                "price_display": "$102.99",
+                "currency": "USD",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371932",
                 "extra": {
                     "rating": 4,
-                    "review_count": 0
+                    "review_count": 14
                 }
             },
             {
-                "id": "usd-coin",
-                "name": "USDC",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020077",
-                "extra": {
-                    "rating": 5,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ripple",
-                "name": "XRP",
-                "price": 1.09,
-                "price_display": "$1.09",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020081",
-                "extra": {
-                    "rating": 6,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "solana",
-                "name": "Solana",
-                "price": 73.93,
-                "price_display": "$73.93",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020086",
-                "extra": {
-                    "rating": 7,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tron",
-                "name": "TRON",
-                "price": 0.33,
-                "price_display": "$0.33",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020091",
-                "extra": {
-                    "rating": 8,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "figure-heloc",
-                "name": "Figure Heloc",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020095",
-                "extra": {
-                    "rating": 9,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "hyperliquid",
-                "name": "Hyperliquid",
-                "price": 54.86,
-                "price_display": "$54.86",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:33:51.020100",
-                "extra": {
-                    "rating": 10,
-                    "review_count": 0
-                }
-            }
-        ]
-    },
-    {
-        "snapshot_at": "2026-07-29T12:36:57.058155",
-        "items": [
-            {
-                "id": 1,
-                "name": "MSI GL62M 7REX...",
-                "price": 1199.0,
-                "price_display": "$1199",
+                "id": 8,
+                "name": "Amazon Kindle",
+                "price": 103.99,
+                "price_display": "$103.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:36:08.140398",
+                "scraped_at": "2026-07-30T15:21:42.371939",
                 "extra": {
-                    "rating": 2,
-                    "review_count": 12
+                    "rating": 4,
+                    "review_count": 3
                 }
             },
             {
-                "id": 2,
-                "name": "Lenovo V110-15...",
-                "price": 454.73,
-                "price_display": "$454.73",
+                "id": 9,
+                "name": "Galaxy Tab 3",
+                "price": 107.99,
+                "price_display": "$107.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:36:08.140432",
+                "scraped_at": "2026-07-30T15:21:42.371945",
                 "extra": {
                     "rating": 2,
-                    "review_count": 2
+                    "review_count": 14
                 }
             },
             {
-                "id": 3,
-                "name": "Lenovo Yoga 72...",
-                "price": 1149.73,
-                "price_display": "$1149.73",
+                "id": 10,
+                "name": "IdeaTab A8-50",
+                "price": 121.99,
+                "price_display": "$121.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:36:08.140446",
+                "scraped_at": "2026-07-30T15:21:42.371952",
                 "extra": {
                     "rating": 2,
-                    "review_count": 12
+                    "review_count": 13
                 }
             },
             {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price": 64567.0,
-                "price_display": "$64567.00",
+                "id": 11,
+                "name": "MeMO Pad 7",
+                "price": 130.99,
+                "price_display": "$130.99",
                 "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531913",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371963",
                 "extra": {
                     "rating": 1,
-                    "review_count": 0
+                    "review_count": 11
                 }
             },
             {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price": 1917.52,
-                "price_display": "$1917.52",
+                "id": 12,
+                "name": "IdeaTab A3500-...",
+                "price": 148.99,
+                "price_display": "$148.99",
                 "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531930",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371970",
                 "extra": {
                     "rating": 2,
-                    "review_count": 0
+                    "review_count": 9
                 }
             },
             {
-                "id": "tether",
-                "name": "Tether",
-                "price": 1.0,
-                "price_display": "$1.00",
+                "id": 13,
+                "name": "IdeaTab S5000",
+                "price": 172.99,
+                "price_display": "$172.99",
                 "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531936",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371977",
                 "extra": {
                     "rating": 3,
-                    "review_count": 0
+                    "review_count": 8
                 }
             },
             {
-                "id": "binancecoin",
-                "name": "BNB",
-                "price": 571.93,
-                "price_display": "$571.93",
+                "id": 14,
+                "name": "Galaxy Tab 4",
+                "price": 233.99,
+                "price_display": "$233.99",
                 "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531941",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.371984",
                 "extra": {
                     "rating": 4,
-                    "review_count": 0
+                    "review_count": 1
                 }
             },
             {
-                "id": "usd-coin",
-                "name": "USDC",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531945",
-                "extra": {
-                    "rating": 5,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ripple",
-                "name": "XRP",
-                "price": 1.09,
-                "price_display": "$1.09",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531950",
-                "extra": {
-                    "rating": 6,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "solana",
-                "name": "Solana",
-                "price": 73.95,
-                "price_display": "$73.95",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531954",
-                "extra": {
-                    "rating": 7,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tron",
-                "name": "TRON",
-                "price": 0.33,
-                "price_display": "$0.33",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531959",
-                "extra": {
-                    "rating": 8,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "figure-heloc",
-                "name": "Figure Heloc",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531963",
-                "extra": {
-                    "rating": 9,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "whitebit",
-                "name": "WhiteBIT Coin",
-                "price": 56.42,
-                "price_display": "$56.42",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:10.531968",
-                "extra": {
-                    "rating": 10,
-                    "review_count": 0
-                }
-            }
-        ]
-    },
-    {
-        "snapshot_at": "2026-07-29T13:58:05.181688",
-        "items": [
-            {
-                "id": 1,
-                "name": "MSI GL62M 7REX...",
-                "price": 1199.0,
-                "price_display": "$1199",
+                "id": 15,
+                "name": "Galaxy Tab",
+                "price": 251.99,
+                "price_display": "$251.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:36:54.925050",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 12
-                }
-            },
-            {
-                "id": 2,
-                "name": "Lenovo V110-15...",
-                "price": 454.73,
-                "price_display": "$454.73",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:36:54.925087",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 2
-                }
-            },
-            {
-                "id": 3,
-                "name": "Lenovo Yoga 72...",
-                "price": 1149.73,
-                "price_display": "$1149.73",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T12:36:54.925105",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 12
-                }
-            },
-            {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price": 64567.0,
-                "price_display": "$64567.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053531",
-                "extra": {
-                    "rating": 1,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price": 1917.52,
-                "price_display": "$1917.52",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053549",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tether",
-                "name": "Tether",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053555",
-                "extra": {
-                    "rating": 3,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "binancecoin",
-                "name": "BNB",
-                "price": 571.93,
-                "price_display": "$571.93",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053560",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "usd-coin",
-                "name": "USDC",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053565",
-                "extra": {
-                    "rating": 5,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ripple",
-                "name": "XRP",
-                "price": 1.09,
-                "price_display": "$1.09",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053569",
-                "extra": {
-                    "rating": 6,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "solana",
-                "name": "Solana",
-                "price": 73.95,
-                "price_display": "$73.95",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053575",
-                "extra": {
-                    "rating": 7,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tron",
-                "name": "TRON",
-                "price": 0.33,
-                "price_display": "$0.33",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053580",
-                "extra": {
-                    "rating": 8,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "figure-heloc",
-                "name": "Figure Heloc",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053586",
-                "extra": {
-                    "rating": 9,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "whitebit",
-                "name": "WhiteBIT Coin",
-                "price": 56.42,
-                "price_display": "$56.42",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T12:36:57.053591",
-                "extra": {
-                    "rating": 10,
-                    "review_count": 0
-                }
-            }
-        ]
-    },
-    {
-        "snapshot_at": "2026-07-29T14:34:19.047906",
-        "items": [
-            {
-                "id": 1,
-                "name": "Asus VivoBook...",
-                "price": 295.99,
-                "price_display": "$295.99",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T13:58:02.756996",
+                "scraped_at": "2026-07-30T15:21:42.371990",
                 "extra": {
                     "rating": 3,
                     "review_count": 14
                 }
             },
             {
-                "id": 2,
-                "name": "Apple MacBook...",
-                "price": 1333.0,
-                "price_display": "$1333",
+                "id": 16,
+                "name": "MeMo PAD FHD 1...",
+                "price": 320.99,
+                "price_display": "$320.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T13:58:02.757017",
-                "extra": {
-                    "rating": 1,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": 3,
-                "name": "Lenovo IdeaPad...",
-                "price": 1212.16,
-                "price_display": "$1212.16",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T13:58:02.757027",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price": 64409.0,
-                "price_display": "$64409.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163128",
-                "extra": {
-                    "rating": 1,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price": 1912.74,
-                "price_display": "$1912.74",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163140",
+                "scraped_at": "2026-07-30T15:21:42.371997",
                 "extra": {
                     "rating": 2,
-                    "review_count": 0
+                    "review_count": 7
                 }
             },
             {
-                "id": "tether",
-                "name": "Tether",
-                "price": 1.0,
-                "price_display": "$1.00",
+                "id": 17,
+                "name": "Galaxy Note",
+                "price": 399.99,
+                "price_display": "$399.99",
                 "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163145",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.372004",
+                "extra": {
+                    "rating": 4,
+                    "review_count": 12
+                }
+            },
+            {
+                "id": 18,
+                "name": "Galaxy Note",
+                "price": 489.99,
+                "price_display": "$489.99",
+                "currency": "USD",
+                "source": "WebScraper.io E-Commerce",
+                "market": "Retail Goods",
+                "scraped_at": "2026-07-30T15:21:42.372011",
                 "extra": {
                     "rating": 3,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "binancecoin",
-                "name": "BNB",
-                "price": 569.87,
-                "price_display": "$569.87",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163148",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "usd-coin",
-                "name": "USDC",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163151",
-                "extra": {
-                    "rating": 5,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ripple",
-                "name": "XRP",
-                "price": 1.08,
-                "price_display": "$1.08",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163154",
-                "extra": {
-                    "rating": 6,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "solana",
-                "name": "Solana",
-                "price": 73.88,
-                "price_display": "$73.88",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163156",
-                "extra": {
-                    "rating": 7,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tron",
-                "name": "TRON",
-                "price": 0.33,
-                "price_display": "$0.33",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163159",
-                "extra": {
-                    "rating": 8,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "figure-heloc",
-                "name": "Figure Heloc",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163162",
-                "extra": {
-                    "rating": 9,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "whitebit",
-                "name": "WhiteBIT Coin",
-                "price": 56.28,
-                "price_display": "$56.28",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T13:58:05.163165",
-                "extra": {
-                    "rating": 10,
-                    "review_count": 0
-                }
-            }
-        ]
-    },
-    {
-        "snapshot_at": "2026-07-29T14:34:21.425899",
-        "items": [
-            {
-                "id": 1,
-                "name": "Acer Aspire A5...",
-                "price": 679.0,
-                "price_display": "$679",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T14:34:16.312455",
-                "extra": {
-                    "rating": 2,
                     "review_count": 9
                 }
             },
             {
-                "id": 2,
-                "name": "Acer Aspire ES...",
-                "price": 379.95,
-                "price_display": "$379.95",
+                "id": 19,
+                "name": "iPad Mini Reti...",
+                "price": 537.99,
+                "price_display": "$537.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T14:34:16.312476",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 9
-                }
-            },
-            {
-                "id": 3,
-                "name": "Nokia 123",
-                "price": 24.99,
-                "price_display": "$24.99",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T14:34:16.312485",
-                "extra": {
-                    "rating": 3,
-                    "review_count": 11
-                }
-            },
-            {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price": 64268.0,
-                "price_display": "$64268.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040253",
-                "extra": {
-                    "rating": 1,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price": 1904.13,
-                "price_display": "$1904.13",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040265",
+                "scraped_at": "2026-07-30T15:21:42.372017",
                 "extra": {
                     "rating": 2,
-                    "review_count": 0
+                    "review_count": 8
                 }
             },
             {
-                "id": "tether",
-                "name": "Tether",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040270",
-                "extra": {
-                    "rating": 3,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "binancecoin",
-                "name": "BNB",
-                "price": 568.64,
-                "price_display": "$568.64",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040273",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "usd-coin",
-                "name": "USDC",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040276",
-                "extra": {
-                    "rating": 5,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ripple",
-                "name": "XRP",
-                "price": 1.07,
-                "price_display": "$1.07",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040279",
-                "extra": {
-                    "rating": 6,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "solana",
-                "name": "Solana",
-                "price": 73.46,
-                "price_display": "$73.46",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040282",
-                "extra": {
-                    "rating": 7,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tron",
-                "name": "TRON",
-                "price": 0.33,
-                "price_display": "$0.33",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040285",
-                "extra": {
-                    "rating": 8,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "figure-heloc",
-                "name": "Figure Heloc",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040288",
-                "extra": {
-                    "rating": 9,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "whitebit",
-                "name": "WhiteBIT Coin",
-                "price": 56.16,
-                "price_display": "$56.16",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:19.040291",
-                "extra": {
-                    "rating": 10,
-                    "review_count": 0
-                }
-            }
-        ]
-    },
-    {
-        "snapshot_at": "2026-07-29T14:34:48.179370",
-        "items": [
-            {
-                "id": 1,
-                "name": "Acer Aspire A5...",
-                "price": 679.0,
-                "price_display": "$679",
+                "id": 20,
+                "name": "Galaxy Note 10...",
+                "price": 587.99,
+                "price_display": "$587.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T14:34:19.289905",
+                "scraped_at": "2026-07-30T15:21:42.372023",
                 "extra": {
                     "rating": 2,
-                    "review_count": 9
+                    "review_count": 6
                 }
             },
             {
-                "id": 2,
-                "name": "Acer Aspire ES...",
-                "price": 379.95,
-                "price_display": "$379.95",
+                "id": 21,
+                "name": "Apple iPad Air",
+                "price": 603.99,
+                "price_display": "$603.99",
                 "currency": "USD",
                 "source": "WebScraper.io E-Commerce",
                 "market": "Retail Goods",
-                "scraped_at": "2026-07-29T14:34:19.289924",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 9
-                }
-            },
-            {
-                "id": 3,
-                "name": "Nokia 123",
-                "price": 24.99,
-                "price_display": "$24.99",
-                "currency": "USD",
-                "source": "WebScraper.io E-Commerce",
-                "market": "Retail Goods",
-                "scraped_at": "2026-07-29T14:34:19.289932",
+                "scraped_at": "2026-07-30T15:21:42.372030",
                 "extra": {
                     "rating": 3,
-                    "review_count": 11
-                }
-            },
-            {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price": 64268.0,
-                "price_display": "$64268.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423349",
-                "extra": {
-                    "rating": 1,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price": 1904.13,
-                "price_display": "$1904.13",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423361",
-                "extra": {
-                    "rating": 2,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tether",
-                "name": "Tether",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423365",
-                "extra": {
-                    "rating": 3,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "binancecoin",
-                "name": "BNB",
-                "price": 568.64,
-                "price_display": "$568.64",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423368",
-                "extra": {
-                    "rating": 4,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "usd-coin",
-                "name": "USDC",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423370",
-                "extra": {
-                    "rating": 5,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "ripple",
-                "name": "XRP",
-                "price": 1.07,
-                "price_display": "$1.07",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423373",
-                "extra": {
-                    "rating": 6,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "solana",
-                "name": "Solana",
-                "price": 73.46,
-                "price_display": "$73.46",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423376",
-                "extra": {
-                    "rating": 7,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "tron",
-                "name": "TRON",
-                "price": 0.33,
-                "price_display": "$0.33",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423379",
-                "extra": {
-                    "rating": 8,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "figure-heloc",
-                "name": "Figure Heloc",
-                "price": 1.0,
-                "price_display": "$1.00",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423382",
-                "extra": {
-                    "rating": 9,
-                    "review_count": 0
-                }
-            },
-            {
-                "id": "whitebit",
-                "name": "WhiteBIT Coin",
-                "price": 56.16,
-                "price_display": "$56.16",
-                "currency": "USD",
-                "source": "CoinGecko API",
-                "market": "Digital Assets",
-                "scraped_at": "2026-07-29T14:34:21.423385",
-                "extra": {
-                    "rating": 10,
-                    "review_count": 0
+                    "review_count": 7
                 }
             }
         ]
