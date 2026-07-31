@@ -52,9 +52,6 @@
           <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
 
-        <!-- THREE.JS BAR CHART -->
-        <ThreeDBarChart />
-
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">
           <MarketOverviewCard
@@ -103,6 +100,15 @@
       </template>
     </div>
   </div>
+  <!-- INTERACTIVE 3D MARKET VISUALIZATION -->
+<div class="section-header">
+  <h2>Interactive 3D Market Visualization</h2>
+  <span class="section-subtitle">
+    Hover over the bars and drag to rotate the chart.
+  </span>
+</div>
+
+<ThreeDBarChart />
 </template>
 
 <script setup>

@@ -16,14 +16,16 @@ container.clientWidth/container.clientHeight,
 );
 
 // Position the camera so all bars are visible.
-camera.position.set(8,10,18);
-
+camera.position.set(10,8,18);
 camera.lookAt(0,4,0);
 
 // Create the WebGL renderer that draws the scene.
 const renderer = new THREE.WebGLRenderer({
 antialias:true
 });
+
+renderer.setClearColor(0xF7F5F2);
+
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -41,13 +43,13 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enablePan = true;
 // Add a directional light to illuminate the bars.
-const light = new THREE.DirectionalLight(0xffffff,2);
+const light = new THREE.DirectionalLight(0xffffff,2.5);
 
 light.position.set(10,20,20);
 light.castShadow = true;
 scene.add(light);
 // Ambient light softens shadows and brightens the scene.
-scene.add(new THREE.AmbientLight(0xffffff,1));
+scene.add(new THREE.AmbientLight(0xffffff,1.5));
 
 const floor = new THREE.Mesh(
 
@@ -102,7 +104,7 @@ bars.push(cube);
 createBar(
 data.markets["Retail Goods"].item_count,
 0xff9900,
--4,
+-8,
 {
 name:"Retail Goods",
 items:data.markets["Retail Goods"].item_count,
@@ -126,7 +128,7 @@ price:data.markets["Digital Assets"].avg_price
 createBar(
 data.total_items,
 0x00ff88,
-4,
+8,
 {
 name:"Total Items",
 items:data.total_items,

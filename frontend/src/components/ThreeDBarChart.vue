@@ -45,11 +45,13 @@ onUnmounted(()=>{
 
 <style scoped>
     .chart {
-    width: 100%;
+    width: 70%;
     height: 420px;
-    margin-bottom: 30px;
+    margin: 0 auto 30px auto;
     border-radius: 12px;
     overflow: hidden;
-    background: #ffffff;
+    background: #F7F5F2;
+    border: 1px solid #E5E2DD;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 </style>
