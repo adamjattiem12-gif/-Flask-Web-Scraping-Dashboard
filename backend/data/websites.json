@@ -1,0 +1,12 @@
+[
+    {
+        "name": "WebScraper E-Commerce Sandbox",
+        "url": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods"
+    },
+    {
+        "name": "CoinPaprika",
+        "url": "https://api.coinpaprika.com/v1/tickers",
+        "market": "Digital Assets"
+    }
+]

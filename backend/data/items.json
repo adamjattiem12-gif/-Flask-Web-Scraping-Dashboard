@@ -1,0 +1,162 @@
+[
+    {
+        "id": "crypto-0",
+        "name": "Crypto 0",
+        "price": 100,
+        "price_display": "$100.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 1,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-1",
+        "name": "Crypto 1",
+        "price": 101,
+        "price_display": "$101.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 2,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-2",
+        "name": "Crypto 2",
+        "price": 102,
+        "price_display": "$102.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 3,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-3",
+        "name": "Crypto 3",
+        "price": 103,
+        "price_display": "$103.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 4,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-4",
+        "name": "Crypto 4",
+        "price": 104,
+        "price_display": "$104.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 5,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-5",
+        "name": "Crypto 5",
+        "price": 105,
+        "price_display": "$105.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 6,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-6",
+        "name": "Crypto 6",
+        "price": 106,
+        "price_display": "$106.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 7,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-7",
+        "name": "Crypto 7",
+        "price": 107,
+        "price_display": "$107.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 8,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-8",
+        "name": "Crypto 8",
+        "price": 108,
+        "price_display": "$108.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 9,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    },
+    {
+        "id": "crypto-9",
+        "name": "Crypto 9",
+        "price": 109,
+        "price_display": "$109.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-30T00:00:00",
+        "extra": {
+            "rating": 10,
+            "review_count": 0,
+            "change_24h": 0.5,
+            "volume_24h": 12345
+        }
+    }
+]
