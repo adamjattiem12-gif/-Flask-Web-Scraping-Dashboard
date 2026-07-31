@@ -71,7 +71,7 @@ scene.add(floor);
 const bars=[];
 
 // Creates a single 3D bar and adds it to the scene.
-function createBar(height,color,x){
+function createBar(height,color,x,info){
     // Define the size of the bar.
 const geometry=new THREE.BoxGeometry(2,height,2);
 // Create the material that gives the bar its colour.
@@ -85,6 +85,8 @@ geometry,
 material
 );
 
+cube.userData = info;
+
 cube.castShadow = true;
 cube.receiveShadow = true;
 
@@ -96,24 +98,40 @@ scene.add(cube);
 bars.push(cube);
 }
 
-// Create the Digital Assets bar.
+//Create the retail goods bar
 createBar(
 data.markets["Retail Goods"].item_count,
 0xff9900,
--4
+-4,
+{
+name:"Retail Goods",
+items:data.markets["Retail Goods"].item_count,
+price:data.markets["Retail Goods"].avg_price
+}
 );
 
+// Create the Digital Assets bar.
 createBar(
 data.markets["Digital Assets"].item_count,
 0x00aaff,
-0
+0,
+{
+name:"Digital Assets",
+items:data.markets["Digital Assets"].item_count,
+price:data.markets["Digital Assets"].avg_price
+}
 );
 
 // Create the Total Items bar.
 createBar(
 data.total_items,
 0x00ff88,
-4
+4,
+{
+name:"Total Items",
+items:data.total_items,
+price:null
+}
 );
 
 // Continuously render the scene for smooth animations.
