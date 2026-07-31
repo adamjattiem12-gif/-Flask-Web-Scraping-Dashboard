@@ -1040,5 +1040,165 @@
             "rating": 3,
             "review_count": 7
         }
+    },
+    {
+        "id": "btc-bitcoin",
+        "name": "Bitcoin",
+        "price": 63836.66,
+        "price_display": "$63836.66",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353932",
+        "extra": {
+            "rating": 1,
+            "review_count": 0,
+            "change_24h": -0.5899999737739563,
+            "volume_24h": 23748660543.19722
+        }
+    },
+    {
+        "id": "eth-ethereum",
+        "name": "Ethereum",
+        "price": 1889.1,
+        "price_display": "$1889.10",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353953",
+        "extra": {
+            "rating": 2,
+            "review_count": 0,
+            "change_24h": -1.190000057220459,
+            "volume_24h": 6138545005.248004
+        }
+    },
+    {
+        "id": "usdt-tether",
+        "name": "Tether",
+        "price": 1.0,
+        "price_display": "$1.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353960",
+        "extra": {
+            "rating": 3,
+            "review_count": 0,
+            "change_24h": 0.029999999329447746,
+            "volume_24h": 182555258395.92654
+        }
+    },
+    {
+        "id": "bnb-binance-coin",
+        "name": "BNB",
+        "price": 591.13,
+        "price_display": "$591.13",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353971",
+        "extra": {
+            "rating": 4,
+            "review_count": 0,
+            "change_24h": 2.2799999713897705,
+            "volume_24h": 795826047.6695899
+        }
+    },
+    {
+        "id": "usdc-usd-coin",
+        "name": "USDC",
+        "price": 1.0,
+        "price_display": "$1.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353975",
+        "extra": {
+            "rating": 5,
+            "review_count": 0,
+            "change_24h": -0.009999999776482582,
+            "volume_24h": 11845758191.804382
+        }
+    },
+    {
+        "id": "xrp-xrp",
+        "name": "XRP",
+        "price": 1.08,
+        "price_display": "$1.08",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353978",
+        "extra": {
+            "rating": 6,
+            "review_count": 0,
+            "change_24h": -0.07999999821186066,
+            "volume_24h": 786558108.9362427
+        }
+    },
+    {
+        "id": "sol-solana",
+        "name": "Solana",
+        "price": 73.6,
+        "price_display": "$73.60",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353982",
+        "extra": {
+            "rating": 7,
+            "review_count": 0,
+            "change_24h": -0.23999999463558197,
+            "volume_24h": 1221810951.592596
+        }
+    },
+    {
+        "id": "trx-tron",
+        "name": "TRON",
+        "price": 0.33,
+        "price_display": "$0.33",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353985",
+        "extra": {
+            "rating": 8,
+            "review_count": 0,
+            "change_24h": 0.27000001072883606,
+            "volume_24h": 334881894.47152835
+        }
+    },
+    {
+        "id": "steth-lido-staked-ether",
+        "name": "Lido Staked Ether",
+        "price": 1892.0,
+        "price_display": "$1892.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353988",
+        "extra": {
+            "rating": 9,
+            "review_count": 0,
+            "change_24h": -0.9900000095367432,
+            "volume_24h": 7305206.731964025
+        }
+    },
+    {
+        "id": "hype-hyperliquid",
+        "name": "Hyperliquid",
+        "price": 54.75,
+        "price_display": "$54.75",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T10:16:36.353991",
+        "extra": {
+            "rating": 10,
+            "review_count": 0,
+            "change_24h": 1.6100000143051147,
+            "volume_24h": 205356466.79194143
+        }
     }
 ]
