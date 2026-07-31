@@ -29,19 +29,19 @@
           <StatCard
             icon="📦"
             label="Total Items"
-            :value="statsStore.stats.total_items ?? 0"
+            :value="statsStore.stats?.total_items ?? 0"
             subtitle="across 2 markets"
           />
           <StatCard
             icon="🌐"
             label="Active Sources"
-            :value="statsStore.stats.active_sites ?? 0"
+            :value="statsStore.stats?.active_sites ?? 0"
             subtitle="WebScraper.io · CoinPaprika"
           />
           <StatCard
             icon="✅"
             label="Success Rate"
-            :value="statsStore.stats.success_rate + '%' ?? '0%'"
+            :value="statsStore.stats?.success_rate ?? '0%'"
             subtitle="last 7 days"
           />
         </div>
@@ -51,25 +51,24 @@
           <h2>Price Snapshot</h2>
           <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
-        
-         <!-- THREE.JS BAR CHART -->
-        <ThreeDBarChart />
 
+        <!-- ✅ THREE.JS 3D BAR CHART -->
+        <ThreeDBarChart />
 
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">
           <MarketOverviewCard
             title="🛒 Retail Goods"
             accent-color="#D4914A"
-            :avg-price="statsStore.stats.markets?.['Retail Goods']?.avg_price ?? 0"
-            :items-count="statsStore.stats.markets?.['Retail Goods']?.item_count ?? 0"
+            :avg-price="statsStore.stats?.markets?.['Retail Goods']?.avg_price ?? 0"
+            :items-count="statsStore.stats?.markets?.['Retail Goods']?.item_count ?? 0"
             :recent-items="retailRecentItems"
           />
           <MarketOverviewCard
             title="₿ Digital Assets"
             accent-color="#4A8C8C"
-            :avg-price="statsStore.stats.markets?.['Digital Assets']?.avg_price ?? 0"
-            :items-count="statsStore.stats.markets?.['Digital Assets']?.item_count ?? 0"
+            :avg-price="statsStore.stats?.markets?.['Digital Assets']?.avg_price ?? 0"
+            :items-count="statsStore.stats?.markets?.['Digital Assets']?.item_count ?? 0"
             :recent-items="cryptoRecentItems"
           />
         </div>
@@ -120,6 +119,7 @@ import TopMovers from '@/components/TopMovers.vue'
 import DataTable from '@/components/DataTable.vue'
 import Watchlist from '@/components/Watchlist.vue'
 import ScrapeButton from '@/components/ScrapeButton.vue'
+import ThreeDBarChart from '@/components/ThreeDBarChart.vue'
 
 // STORE INSTANCES
 const itemsStore = useItemsStore()
@@ -135,12 +135,10 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 let refreshInterval = null
 
-// ============================================================
-// ✅ ALL DATA FROM STORES (REAL API)
-// ============================================================
-
+// ALL DATA FROM STORES
 const tableItems = computed(() => itemsStore.items ?? [])
 
+// ✅ RETAIL RECENT ITEMS - Uses store data with calculated changes
 const retailRecentItems = computed(() => {
   const items = itemsStore.getRetailItems ?? []
   return items.slice(0, 3).map(item => ({
@@ -149,6 +147,7 @@ const retailRecentItems = computed(() => {
   }))
 })
 
+// ✅ CRYPTO RECENT ITEMS - Uses store data with calculated changes
 const cryptoRecentItems = computed(() => {
   const items = itemsStore.getCryptoItems ?? []
   return items.slice(0, 3).map(item => ({
@@ -157,17 +156,16 @@ const cryptoRecentItems = computed(() => {
   }))
 })
 
+// ✅ TOP MOVERS - Uses store getter (cleaner)
 const topMoversData = computed(() => itemsStore.getTopMovers)
 
-// ============================================================
 // METHODS
-// ============================================================
-
 const updateTimestamp = () => {
   const now = new Date()
   lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
 }
 
+// ✅ MAIN REFRESH FUNCTION
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
@@ -185,14 +183,13 @@ const refreshAllData = async () => {
   }
 }
 
+// ✅ SCRAPE COMPLETE - Store handles everything
 const handleScrapeComplete = async () => {
   console.log('🔄 Scrape complete! Updating data...')
   
-  // ✅ Uses real API with change calculation
+  // Store handles change calculation and timestamp updates
   await itemsStore.updateItemsAfterScrape()
   await statsStore.fetchStats()
-  
-  // ✅ Update last scrape timestamp
   statsStore.updateLastScrape()
   
   updateTimestamp()
@@ -206,10 +203,7 @@ const handlePageChange = (page) => {
   currentPage.value = page
 }
 
-// ============================================================
 // LIFECYCLE
-// ============================================================
-
 onMounted(async () => {
   try {
     await refreshAllData()
@@ -360,6 +354,11 @@ onUnmounted(() => {
   font-size: 14px;
   display: block;
   margin-top: 4px;
+}
+
+/* ✅ 3D CHART WRAPPER - Add some spacing */
+.three-chart-wrapper {
+  margin-bottom: 32px;
 }
 
 .markets-grid {
