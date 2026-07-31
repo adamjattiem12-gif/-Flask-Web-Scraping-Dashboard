@@ -1200,5 +1200,459 @@
             "change_24h": 1.6100000143051147,
             "volume_24h": 205356466.79194143
         }
+    },
+    {
+        "id": "btc-bitcoin",
+        "name": "Bitcoin",
+        "price": 63628.22,
+        "price_display": "$63628.22",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950794",
+        "extra": {
+            "rating": 1,
+            "review_count": 0,
+            "change_24h": -1.2799999713897705,
+            "volume_24h": 21994330463.86016
+        }
+    },
+    {
+        "id": "eth-ethereum",
+        "name": "Ethereum",
+        "price": 1881.64,
+        "price_display": "$1881.64",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950842",
+        "extra": {
+            "rating": 2,
+            "review_count": 0,
+            "change_24h": -1.7300000190734863,
+            "volume_24h": 6122955785.059847
+        }
+    },
+    {
+        "id": "usdt-tether",
+        "name": "Tether",
+        "price": 1.0,
+        "price_display": "$1.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950868",
+        "extra": {
+            "rating": 3,
+            "review_count": 0,
+            "change_24h": 0.03999999910593033,
+            "volume_24h": 126658370291.26503
+        }
+    },
+    {
+        "id": "bnb-binance-coin",
+        "name": "BNB",
+        "price": 589.64,
+        "price_display": "$589.64",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950876",
+        "extra": {
+            "rating": 4,
+            "review_count": 0,
+            "change_24h": 0.6299999952316284,
+            "volume_24h": 785007076.7316407
+        }
+    },
+    {
+        "id": "usdc-usd-coin",
+        "name": "USDC",
+        "price": 1.0,
+        "price_display": "$1.00",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950883",
+        "extra": {
+            "rating": 5,
+            "review_count": 0,
+            "change_24h": 0,
+            "volume_24h": 12522875607.79293
+        }
+    },
+    {
+        "id": "xrp-xrp",
+        "name": "XRP",
+        "price": 1.07,
+        "price_display": "$1.07",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950889",
+        "extra": {
+            "rating": 6,
+            "review_count": 0,
+            "change_24h": -0.5799999833106995,
+            "volume_24h": 814234221.4434739
+        }
+    },
+    {
+        "id": "sol-solana",
+        "name": "Solana",
+        "price": 73.4,
+        "price_display": "$73.40",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950896",
+        "extra": {
+            "rating": 7,
+            "review_count": 0,
+            "change_24h": -0.5600000023841858,
+            "volume_24h": 1183427738.7722087
+        }
+    },
+    {
+        "id": "trx-tron",
+        "name": "TRON",
+        "price": 0.33,
+        "price_display": "$0.33",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950904",
+        "extra": {
+            "rating": 8,
+            "review_count": 0,
+            "change_24h": -0.1599999964237213,
+            "volume_24h": 345411259.8566556
+        }
+    },
+    {
+        "id": "steth-lido-staked-ether",
+        "name": "Lido Staked Ether",
+        "price": 1885.54,
+        "price_display": "$1885.54",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950911",
+        "extra": {
+            "rating": 9,
+            "review_count": 0,
+            "change_24h": -1.4500000476837158,
+            "volume_24h": 7218719.747924188
+        }
+    },
+    {
+        "id": "hype-hyperliquid",
+        "name": "Hyperliquid",
+        "price": 54.23,
+        "price_display": "$54.23",
+        "currency": "USD",
+        "source": "CoinPaprika API",
+        "market": "Digital Assets",
+        "scraped_at": "2026-07-31T12:03:26.950918",
+        "extra": {
+            "rating": 10,
+            "review_count": 0,
+            "change_24h": 1.7300000190734863,
+            "volume_24h": 209328223.0669985
+        }
+    },
+    {
+        "id": 1,
+        "name": "Lenovo IdeaTab",
+        "price": 69.99,
+        "price_display": "$69.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487528",
+        "extra": {
+            "rating": 3,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 2,
+        "name": "IdeaTab A3500L",
+        "price": 88.99,
+        "price_display": "$88.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487563",
+        "extra": {
+            "rating": 4,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 3,
+        "name": "Acer Iconia",
+        "price": 96.99,
+        "price_display": "$96.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487577",
+        "extra": {
+            "rating": 1,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 4,
+        "name": "Galaxy Tab 3",
+        "price": 97.99,
+        "price_display": "$97.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487590",
+        "extra": {
+            "rating": 2,
+            "review_count": 2
+        }
+    },
+    {
+        "id": 5,
+        "name": "Iconia B1-730H...",
+        "price": 99.99,
+        "price_display": "$99.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487602",
+        "extra": {
+            "rating": 3,
+            "review_count": 1
+        }
+    },
+    {
+        "id": 6,
+        "name": "Memo Pad HD 7",
+        "price": 101.99,
+        "price_display": "$101.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487614",
+        "extra": {
+            "rating": 2,
+            "review_count": 10
+        }
+    },
+    {
+        "id": 7,
+        "name": "Asus MeMO Pad",
+        "price": 102.99,
+        "price_display": "$102.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487626",
+        "extra": {
+            "rating": 4,
+            "review_count": 14
+        }
+    },
+    {
+        "id": 8,
+        "name": "Amazon Kindle",
+        "price": 103.99,
+        "price_display": "$103.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487638",
+        "extra": {
+            "rating": 4,
+            "review_count": 3
+        }
+    },
+    {
+        "id": 9,
+        "name": "Galaxy Tab 3",
+        "price": 107.99,
+        "price_display": "$107.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487650",
+        "extra": {
+            "rating": 2,
+            "review_count": 14
+        }
+    },
+    {
+        "id": 10,
+        "name": "IdeaTab A8-50",
+        "price": 121.99,
+        "price_display": "$121.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487667",
+        "extra": {
+            "rating": 2,
+            "review_count": 13
+        }
+    },
+    {
+        "id": 11,
+        "name": "MeMO Pad 7",
+        "price": 130.99,
+        "price_display": "$130.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487679",
+        "extra": {
+            "rating": 1,
+            "review_count": 11
+        }
+    },
+    {
+        "id": 12,
+        "name": "IdeaTab A3500-...",
+        "price": 148.99,
+        "price_display": "$148.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487691",
+        "extra": {
+            "rating": 2,
+            "review_count": 9
+        }
+    },
+    {
+        "id": 13,
+        "name": "IdeaTab S5000",
+        "price": 172.99,
+        "price_display": "$172.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487703",
+        "extra": {
+            "rating": 3,
+            "review_count": 8
+        }
+    },
+    {
+        "id": 14,
+        "name": "Galaxy Tab 4",
+        "price": 233.99,
+        "price_display": "$233.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487715",
+        "extra": {
+            "rating": 4,
+            "review_count": 1
+        }
+    },
+    {
+        "id": 15,
+        "name": "Galaxy Tab",
+        "price": 251.99,
+        "price_display": "$251.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487727",
+        "extra": {
+            "rating": 3,
+            "review_count": 14
+        }
+    },
+    {
+        "id": 16,
+        "name": "MeMo PAD FHD 1...",
+        "price": 320.99,
+        "price_display": "$320.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487738",
+        "extra": {
+            "rating": 2,
+            "review_count": 7
+        }
+    },
+    {
+        "id": 17,
+        "name": "Galaxy Note",
+        "price": 399.99,
+        "price_display": "$399.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487751",
+        "extra": {
+            "rating": 4,
+            "review_count": 12
+        }
+    },
+    {
+        "id": 18,
+        "name": "Galaxy Note",
+        "price": 489.99,
+        "price_display": "$489.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487763",
+        "extra": {
+            "rating": 3,
+            "review_count": 9
+        }
+    },
+    {
+        "id": 19,
+        "name": "iPad Mini Reti...",
+        "price": 537.99,
+        "price_display": "$537.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487774",
+        "extra": {
+            "rating": 2,
+            "review_count": 8
+        }
+    },
+    {
+        "id": 20,
+        "name": "Galaxy Note 10...",
+        "price": 587.99,
+        "price_display": "$587.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487784",
+        "extra": {
+            "rating": 2,
+            "review_count": 6
+        }
+    },
+    {
+        "id": 21,
+        "name": "Apple iPad Air",
+        "price": 603.99,
+        "price_display": "$603.99",
+        "currency": "USD",
+        "source": "WebScraper.io E-Commerce",
+        "market": "Retail Goods",
+        "scraped_at": "2026-07-31T12:03:58.487795",
+        "extra": {
+            "rating": 3,
+            "review_count": 7
+        }
     }
 ]

@@ -33,5 +33,19 @@
         "market": "Digital Assets",
         "items_found": 10,
         "status": "Success"
+    },
+    {
+        "timestamp": "2026-07-31T12:03:27.001123",
+        "target": "https://api.coinpaprika.com/v1/tickers",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "status": "Success"
+    },
+    {
+        "timestamp": "2026-07-31T12:03:58.526361",
+        "target": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods",
+        "items_found": 21,
+        "status": "Success"
     }
 ]
