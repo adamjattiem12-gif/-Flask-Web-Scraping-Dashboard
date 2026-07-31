@@ -1,264 +1,37 @@
 [
     {
-        "timestamp": "2026-07-24T10:54:49.220687",
-        "scraper_type": "test",
-        "items_found": 31,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T10:58:24.781263",
-        "scraper_type": "test",
-        "items_found": 31,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T11:00:34.072963",
-        "scraper_type": "test",
-        "items_found": 31,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T11:11:08.396110",
-        "scraper_type": "test",
-        "items_found": 31,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T11:15:55.685866",
-        "scraper_type": "test",
-        "items_found": 31,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T14:58:13.992431",
-        "scraper_type": "crypto",
+        "timestamp": "2026-07-30T15:17:42.515370",
+        "target": "https://api.coinpaprika.com/v1/tickers",
+        "market": "Digital Assets",
         "items_found": 10,
-        "success": true
+        "status": "Success"
     },
     {
-        "timestamp": "2026-07-24T14:58:35.327651",
-        "scraper_type": "ecommerce",
+        "timestamp": "2026-07-30T15:19:04.196372",
+        "target": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods",
         "items_found": 21,
-        "success": true
+        "status": "Success"
     },
     {
-        "timestamp": "2026-07-24T15:02:25.981397",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:03:27.346099",
-        "scraper_type": "ecommerce",
+        "timestamp": "2026-07-30T15:21:42.388667",
+        "target": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods",
         "items_found": 21,
-        "success": true
+        "status": "Success"
     },
     {
-        "timestamp": "2026-07-24T15:12:55.419738",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:13:24.518343",
-        "scraper_type": "ecommerce",
+        "timestamp": "2026-07-30T15:22:27.598373",
+        "target": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods",
         "items_found": 21,
-        "success": true
+        "status": "Success"
     },
     {
-        "timestamp": "2026-07-24T15:17:17.079880",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:17:59.762360",
-        "scraper_type": "ecommerce",
-        "items_found": 21,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:22:51.641544",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:26:21.003423",
-        "scraper_type": "ecommerce",
-        "items_found": 21,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:28:07.652605",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:59:04.918140",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T15:59:12.763501",
-        "scraper_type": "ecommerce",
-        "items_found": 21,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T16:00:55.011454",
-        "scraper_type": "crypto",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-24T16:01:37.151117",
-        "scraper_type": "ecommerce",
-        "items_found": 21,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T12:33:51.041191",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T12:33:51.041191",
-        "scraper_type": "crypto",
+        "timestamp": "2026-07-31T10:16:36.368934",
+        "target": "https://api.coinpaprika.com/v1/tickers",
         "market": "Digital Assets",
         "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T12:36:10.549890",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T12:36:10.549890",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T12:36:57.070602",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T12:36:57.070602",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T13:58:05.189955",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T13:58:05.189955",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T13:58:12.284303",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T13:58:12.284303",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 0,
-        "success": false,
-        "error": "No items to validate"
-    },
-    {
-        "timestamp": "2026-07-29T14:34:19.058105",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T14:34:19.058105",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T14:34:21.433109",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T14:34:21.433109",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-29T14:34:48.175027",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 0,
-        "success": false,
-        "error": "Health check failed for http://10.255.255.1/api/v3/coins/markets"
-    },
-    {
-        "timestamp": "2026-07-29T14:34:48.188232",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 3,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-30T09:58:50.798743",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 0,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-30T09:58:50.798743",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-30T09:59:05.760035",
-        "scraper_type": "ecommerce",
-        "market": "Retail Goods",
-        "items_found": 0,
-        "success": true
-    },
-    {
-        "timestamp": "2026-07-30T09:59:05.760035",
-        "scraper_type": "crypto",
-        "market": "Digital Assets",
-        "items_found": 10,
-        "success": true
+        "status": "Success"
     }
 ]
