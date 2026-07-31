@@ -27,7 +27,7 @@
             <td class="price-cell">${{ item.price.toFixed(2) }}</td>
             <td>
               <span class="change-badge" :class="item.change >= 0 ? 'positive' : 'negative'">
-                {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
+                {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change ?? 0).toFixed(2) }}%
               </span>
             </td>
             <td>

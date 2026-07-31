@@ -3,6 +3,9 @@
     <div class="watchlist-header">
       <h3 class="section-title">⭐ Watchlist</h3>
       <span class="item-count">{{ watchedItems.length }} items</span>
+      <button v-if="watchedItems.length" class="clear-btn" @click="watchlistStore.clearWatchlist">
+        Clear all
+      </button>
     </div>
     
     <!-- Loading State -->
@@ -22,9 +25,9 @@
       <div v-for="(item, index) in watchedItems" :key="item.id" class="watchlist-item">
         <span class="watch-rank">{{ String(index + 1).padStart(2, '0') }}</span>
         <span class="watch-name">{{ item.name }}</span>
-        <span class="watch-price">${{ item.price.toFixed(2) }}</span>
+        <span class="watch-price">${{ Number(item.price || 0).toFixed(2) }}</span>
         <span class="watch-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-          {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
+          {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change || 0).toFixed(2) }}%
         </span>
         <button @click="removeFromWatchlist(item.id)" class="remove-btn" title="Remove from watchlist">
           ✕
@@ -40,30 +43,28 @@ import { useWatchlistStore } from '@/stores/watchlistStore'
 import { useItemsStore } from '@/stores/itemsStore'
 
 // ✅ Call stores INSIDE functions, not at top level
-// const watchlistStore = useWatchlistStore()  // ❌ Remove this
-// const itemsStore = useItemsStore()          // ❌ Remove this
-
 const loading = ref(false)
+const watchlistStore = useWatchlistStore()
+const itemsStore = useItemsStore()
 
 // ✅ Computed property calls store INSIDE the function
 const watchedItems = computed(() => {
-  const watchlistStore = useWatchlistStore()
-  const itemsStore = useItemsStore()
   return watchlistStore.getWatchedItems(itemsStore)
 })
 
 // ✅ Method calls store INSIDE the function
 const removeFromWatchlist = (id) => {
-  const watchlistStore = useWatchlistStore()
   watchlistStore.toggleWatch(id)
 }
 
 // ✅ Load data on mount
-onMounted(() => {
+onMounted(async () => {
   loading.value = true
-  const itemsStore = useItemsStore()
-  itemsStore.fetchItems()
-  loading.value = false
+  try {
+    if (itemsStore.items.length === 0) await itemsStore.fetchItems()
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
@@ -96,6 +97,17 @@ onMounted(() => {
   background: #F7F5F2;
   padding: 2px 12px;
   border-radius: 20px;
+}
+
+.clear-btn {
+  margin-left: auto;
+  border: 1px solid #E5E2DD;
+  border-radius: 6px;
+  background: white;
+  color: #C1666B;
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 .watchlist-items {

@@ -10,7 +10,7 @@
         <span class="mover-name">{{ item.symbol || item.name }}</span>
         <span class="mover-price">${{ item.price.toFixed(2) }}</span>
         <span class="mover-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-          {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
+          {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change ?? 0).toFixed(2) }}%
         </span>
       </div>
     </div>

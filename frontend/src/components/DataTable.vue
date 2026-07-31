@@ -10,7 +10,7 @@
     <table v-else class="data-table">
       <thead>
         <tr>
-          <th v-for="col in columns" :key="col.key" @click="sortBy(col.key)">
+          <th v-for="col in columns" :key="col.key" @click="col.sortable !== false && sortBy(col.key)">
             {{ col.label }}
             <span v-if="sortKey === col.key" class="sort-arrow">
               {{ sortOrder === 'asc' ? '▲' : '▼' }}
@@ -37,7 +37,7 @@
         </tr>
 
         <!-- Real data -->
-        <tr v-else v-for="item in sortedItems" :key="item.id ?? item.name + (item.scraped_at || item.scrapedAt)">
+        <tr v-else v-for="item in paginatedItems" :key="item.id ?? item.name + (item.scraped_at || item.scrapedAt)">
           <td>{{ item.name }}</td>
           <td>{{ formatCurrency(item.price, item.currency) }}</td>
           <td>{{ item.currency || 'USD' }}</td>
@@ -47,6 +47,16 @@
             </span>
           </td>
           <td>{{ getScrapedTime(item) }}</td>
+          <td class="watchlist-cell">
+            <button
+              class="watch-btn"
+              :class="{ watched: watchlistStore.isWatched(item.id) }"
+              :aria-label="watchlistStore.isWatched(item.id) ? 'Remove from watchlist' : 'Add to watchlist'"
+              @click="watchlistStore.toggleWatch(item.id)"
+            >
+              {{ watchlistStore.isWatched(item.id) ? '★' : '☆' }}
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -84,6 +94,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useWatchlistStore } from '@/stores/watchlistStore'
+
+const watchlistStore = useWatchlistStore()
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -102,7 +115,10 @@ const columns = [
   { key: 'currency', label: 'Currency' },
   { key: 'source', label: 'Source' },
   { key: 'scraped_at', label: 'Scraped At' },
+  { key: 'watchlist', label: 'Watch', sortable: false },
 ]
+
+const pageSize = 10
 
 const sortKey = ref('')
 const sortOrder = ref('asc')
@@ -142,6 +158,11 @@ const sortedItems = computed(() => {
     if (valA > valB) return 1 * dir
     return 0
   })
+})
+
+const paginatedItems = computed(() => {
+  const start = (props.currentPage - 1) * pageSize
+  return sortedItems.value.slice(start, start + pageSize)
 })
 
 const pageNumbers = computed(() => {
@@ -231,6 +252,26 @@ const formatCurrency = (price, currency) => {
   font-size: 14px;
   color: #333;
   border-bottom: 1px solid #F0EFF5;
+}
+
+.watchlist-cell {
+  text-align: center;
+  width: 70px;
+}
+
+.watch-btn {
+  border: 0;
+  background: transparent;
+  color: #B8B4C5;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.watch-btn:hover,
+.watch-btn.watched {
+  color: #D4914A;
 }
 
 .data-table tbody tr:last-child td {

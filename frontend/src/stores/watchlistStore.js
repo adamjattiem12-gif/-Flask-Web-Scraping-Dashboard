@@ -8,7 +8,7 @@ import { defineStore } from 'pinia'
  */
 export const useWatchlistStore = defineStore('watchlist', {
   state: () => ({
-    watchedIds: []   // Array of item IDs that the user has favorited
+    watchedIds: loadWatchedIds()   // Array of item IDs that the user has favorited
   }),
 
   getters: {
@@ -58,6 +58,27 @@ export const useWatchlistStore = defineStore('watchlist', {
         // Not in watchlist → add it
         this.watchedIds.push(itemId)
       }
+      persistWatchedIds(this.watchedIds)
+    },
+
+    clearWatchlist() {
+      this.watchedIds = []
+      persistWatchedIds(this.watchedIds)
     }
   }
 })
+
+function loadWatchedIds() {
+  if (typeof window === 'undefined') return []
+  try {
+    const stored = window.localStorage.getItem('dashboard-watchlist')
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function persistWatchedIds(ids) {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem('dashboard-watchlist', JSON.stringify(ids))
+}

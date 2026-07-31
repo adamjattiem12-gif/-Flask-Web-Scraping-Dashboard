@@ -23,7 +23,7 @@
         </div>
         <p class="price">${{ item.price.toLocaleString() }}</p>
         <p class="change" :class="item.extra?.change_24h >= 0 ? 'up' : 'down'">
-          {{ item.extra?.change_24h >= 0 ? '▲' : '▼' }} {{ Math.abs(item.extra?.change_24h || 0) }}% (24h)
+          {{ item.extra?.change_24h >= 0 ? '▲' : '▼' }} {{ Math.abs(Number(item.extra?.change_24h || 0)).toFixed(2) }}% (24h)
         </p>
         <p class="volume">Volume: ${{ (item.extra?.volume || 0).toLocaleString() }}</p>
       </div>

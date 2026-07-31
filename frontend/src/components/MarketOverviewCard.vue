@@ -19,7 +19,7 @@
         <div v-for="item in recentItems" :key="item.name" class="activity-item">
           <span class="activity-name">{{ item.name }}</span>
           <span class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-            {{ item.change >= 0 ? '+' : '' }}{{ item.change }}%
+            {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change ?? 0).toFixed(2) }}%
           </span>
         </div>
       </div>

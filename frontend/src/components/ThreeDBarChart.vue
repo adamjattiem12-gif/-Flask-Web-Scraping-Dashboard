@@ -109,9 +109,9 @@ onUnmounted(() => {
 
 <style scoped>
 .chart {
-  width: 70%;
-  height: 420px;
-  margin: 0 auto 30px auto;
+  width: 100%;
+  height: 360px;
+  margin: 0;
   border-radius: 12px;
   overflow: hidden;
   background: #F7F5F2;

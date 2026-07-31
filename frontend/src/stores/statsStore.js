@@ -24,8 +24,8 @@ export const useStatsStore = defineStore('stats', {
 
       try {
         // ✅ REAL API CALL
-        const response = await api.stats.getStats()
-        this.stats = response
+        const response = await api.get('/api/statistics')
+        this.stats = response.data
         this.loading = false
         return this.stats
       } catch (error) {

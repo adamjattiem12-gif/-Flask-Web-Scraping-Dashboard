@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import api from '../services/api'
 
 /**
  * itemsStore - Manages all product/crypto items
@@ -86,19 +87,12 @@ export const useItemsStore = defineStore('items', {
       this.error = null
 
       try {
-        // Fetch retail data from backend
-        const retailResponse = await fetch('/api/items/retail')
-        if (!retailResponse.ok) {
-          throw new Error(`Retail API error: ${retailResponse.status}`)
-        }
-        const retailItems = await retailResponse.json()
-
-        // Fetch crypto data from CoinPaprika via backend
-        const cryptoResponse = await fetch('/api/items/crypto')
-        if (!cryptoResponse.ok) {
-          throw new Error(`Crypto API error: ${cryptoResponse.status}`)
-        }
-        const cryptoItems = await cryptoResponse.json()
+        const [retailResponse, cryptoResponse] = await Promise.all([
+          api.get('/api/items', { params: { market: 'Retail Goods', per_page: 100 } }),
+          api.get('/api/items', { params: { market: 'Digital Assets', per_page: 100 } })
+        ])
+        const retailItems = retailResponse.data.items
+        const cryptoItems = cryptoResponse.data.items
 
         // Combine both datasets
         const allItems = [...retailItems, ...cryptoItems]
@@ -117,7 +111,7 @@ export const useItemsStore = defineStore('items', {
         
         return this.items
       } catch (error) {
-        this.error = `Failed to load items: ${error.message}`
+        this.error = `Failed to load items: ${error.error || error.message}`
         this.loading = false
         throw error
       }
@@ -174,16 +168,12 @@ export const useItemsStore = defineStore('items', {
         if (!freshItems) {
           // Fetch fresh data from both APIs
           const [retailRes, cryptoRes] = await Promise.all([
-            fetch('/api/items/retail'),
-            fetch('/api/items/crypto')
+            api.get('/api/items', { params: { market: 'Retail Goods', per_page: 100 } }),
+            api.get('/api/items', { params: { market: 'Digital Assets', per_page: 100 } })
           ])
-          
-          if (!retailRes.ok || !cryptoRes.ok) {
-            throw new Error('Failed to fetch fresh data')
-          }
-          
-          const retailItems = await retailRes.json()
-          const cryptoItems = await cryptoRes.json()
+
+          const retailItems = retailRes.data.items
+          const cryptoItems = cryptoRes.data.items
           freshItems = [...retailItems, ...cryptoItems]
         }
         
@@ -199,7 +189,7 @@ export const useItemsStore = defineStore('items', {
         
         return this.items
       } catch (error) {
-        this.error = `Failed to update items: ${error.message}`
+        this.error = `Failed to update items: ${error.error || error.message}`
         throw error
       }
     },

@@ -33,5 +33,61 @@
         "market": "Digital Assets",
         "items_found": 10,
         "status": "Success"
+    },
+    {
+        "timestamp": "2026-07-31T15:22:30.028620",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 21,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:22:30.028620",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:40:12.568875",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 21,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:40:12.568875",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:40:39.432905",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 21,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:40:39.432905",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:42:22.933992",
+        "scraper_type": "ecommerce",
+        "market": "Retail Goods",
+        "items_found": 21,
+        "success": true
+    },
+    {
+        "timestamp": "2026-07-31T15:42:22.933992",
+        "scraper_type": "crypto",
+        "market": "Digital Assets",
+        "items_found": 10,
+        "success": true
     }
 ]

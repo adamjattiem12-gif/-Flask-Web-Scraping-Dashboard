@@ -87,6 +87,10 @@
           <ScrapeButton @scrape-complete="handleScrapeComplete" />
         </div>
 
+        <div class="three-chart-wrapper">
+          <ThreeDBarChart />
+        </div>
+
         <!-- DATA TABLE -->
         <div class="table-section">
           <DataTable 
@@ -103,7 +107,6 @@
     </div>
   </div>
   <!-- ✅ THREE.JS 3D BAR CHART -->
-        <ThreeDBarChart />
 </template>
 
 <script setup>
@@ -133,11 +136,12 @@ const tableLoading = ref(false)
 const lastUpdated = ref('')
 const errorMessage = ref('')
 const currentPage = ref(1)
-const totalPages = ref(1)
+const pageSize = 10
 let refreshInterval = null
 
 // ALL DATA FROM STORES
 const tableItems = computed(() => itemsStore.items ?? [])
+const totalPages = computed(() => Math.max(1, Math.ceil(tableItems.value.length / pageSize)))
 
 // ✅ RETAIL RECENT ITEMS - Uses store data with calculated changes
 const retailRecentItems = computed(() => {
@@ -174,7 +178,7 @@ const refreshAllData = async () => {
     await itemsStore.fetchItems()
     await statsStore.fetchStats()
     updateTimestamp()
-    totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
+    if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
     errorMessage.value = ''
   } catch (error) {
     errorMessage.value = error.message || 'Failed to load data'
@@ -194,7 +198,7 @@ const handleScrapeComplete = async () => {
   statsStore.updateLastScrape()
   
   updateTimestamp()
-  totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
+  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
   errorMessage.value = ''
   
   console.log('✅ Data updated with real changes')

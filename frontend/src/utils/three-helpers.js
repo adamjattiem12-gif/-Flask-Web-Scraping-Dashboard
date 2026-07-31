@@ -116,8 +116,14 @@ export function createThreeChart(container, data) {
     // Combine the geometry and material into a 3D mesh.
     const cube = new THREE.Mesh(geometry, material);
     cube.userData = info;
+    cube.userData.baseHeight = barHeight;
+    cube.userData.targetHeight = barHeight;
+    cube.userData.baseColor = new THREE.Color(color);
+    cube.userData.highlightColor = new THREE.Color(0xffffff);
+    cube.userData.colorPulse = 0;
     cube.castShadow = true;
     cube.receiveShadow = true;
+    cube.scale.y = 0;
 
     // Position the bar in the scene.
     cube.position.x = x;
@@ -135,7 +141,9 @@ export function createThreeChart(container, data) {
       transparent: true 
     });
     const wireframe = new THREE.LineSegments(edges, lineMaterial);
+    wireframe.userData = cube.userData;
     wireframe.position.copy(cube.position);
+    wireframe.scale.y = 0;
     scene.add(wireframe);
     bars.push(wireframe);
   }
@@ -205,7 +213,7 @@ export function createThreeChart(container, data) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    const intersects = raycaster.intersectObjects(bars);
+    const intersects = raycaster.intersectObjects(bars).filter(({ object }) => object.userData?.name);
 
     if (intersects.length > 0) {
       const hoveredBar = intersects[0].object;
@@ -218,7 +226,7 @@ export function createThreeChart(container, data) {
       tooltip.innerHTML = `
         <strong style="font-size:15px;">${info.name}</strong><br>
         <span style="color:#ccc;">Items:</span> ${info.items}<br>
-        ${info.price ? `<span style="color:#ccc;">Average Price:</span> R${info.price.toFixed(2)}` : ''}
+        ${Number.isFinite(Number(info.price)) && Number(info.price) > 0 ? `<span style="color:#ccc;">Average Price:</span> R${Number(info.price).toFixed(2)}` : ''}
       `;
     } else {
       tooltip.style.display = "none";
@@ -229,6 +237,24 @@ export function createThreeChart(container, data) {
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
+
+    for (let i = 0; i < bars.length; i += 2) {
+      const bar = bars[i];
+      const outline = bars[i + 1];
+      const targetHeight = bar.userData.targetHeight;
+      const targetScale = targetHeight / bar.userData.baseHeight;
+      bar.scale.y += (targetScale - bar.scale.y) * 0.08;
+      bar.userData.colorPulse *= 0.94;
+      bar.material.color.lerpColors(
+        bar.userData.baseColor,
+        bar.userData.highlightColor,
+        bar.userData.colorPulse
+      );
+      outline.scale.y = bar.scale.y;
+      bar.position.y = (bar.userData.baseHeight * bar.scale.y) / 2;
+      outline.position.y = bar.position.y;
+    }
+
     renderer.render(scene, camera);
   }
 
@@ -255,25 +281,25 @@ export function createThreeChart(container, data) {
       if (bars.length >= 6) {
         // Retail bar (index 0) 
         const retailItems = updateData.markets["Retail Goods"]?.item_count || 0;
-        bars[0].scale.y = Math.max(retailItems, 0.5);
-        bars[0].position.y = Math.max(retailItems, 0.5) / 2;
+        bars[0].userData.targetHeight = Math.max(retailItems, 0.5);
         // Update userData
         bars[0].userData.items = retailItems;
         bars[0].userData.price = updateData.markets["Retail Goods"]?.avg_price || 0;
+        bars[0].userData.colorPulse = 1;
         
         // Digital bar (index 2)
         const digitalItems = updateData.markets["Digital Assets"]?.item_count || 0;
-        bars[2].scale.y = Math.max(digitalItems, 0.5);
-        bars[2].position.y = Math.max(digitalItems, 0.5) / 2;
+        bars[2].userData.targetHeight = Math.max(digitalItems, 0.5);
         bars[2].userData.items = digitalItems;
         bars[2].userData.price = updateData.markets["Digital Assets"]?.avg_price || 0;
+        bars[2].userData.colorPulse = 1;
         
         // Total bar (index 4)
         const totalItems = updateData.total_items || 0;
-        bars[4].scale.y = Math.max(totalItems, 0.5);
-        bars[4].position.y = Math.max(totalItems, 0.5) / 2;
+        bars[4].userData.targetHeight = Math.max(totalItems, 0.5);
         bars[4].userData.items = totalItems;
         bars[4].userData.price = null;
+        bars[4].userData.colorPulse = 1;
       }
     },
 
