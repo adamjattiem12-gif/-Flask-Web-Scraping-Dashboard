@@ -51,6 +51,10 @@
           <h2>Price Snapshot</h2>
           <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
+        
+         <!-- THREE.JS BAR CHART -->
+        <ThreeDBarChart />
+
 
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">
