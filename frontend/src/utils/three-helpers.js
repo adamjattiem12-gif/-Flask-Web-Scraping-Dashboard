@@ -35,14 +35,18 @@ export function createThreeChart(container, data) {
     1000
   );
 
-  // Position the camera so all bars are visible.
-  camera.position.set(8, 10, 18);
+  // ✅ Position the camera so all bars are visible (moved back for better view)
+  camera.position.set(10, 8, 18);
   camera.lookAt(0, 4, 0);
 
   // Create the WebGL renderer that draws the scene.
   const renderer = new THREE.WebGLRenderer({
     antialias: true
   });
+
+  // ✅ Set background color to match dashboard
+  renderer.setClearColor(0xF7F5F2);
+
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -61,14 +65,14 @@ export function createThreeChart(container, data) {
   controls.enablePan = true;
   controls.target.set(0, 4, 0);
   
-  // Add a directional light to illuminate the bars.
-  const light = new THREE.DirectionalLight(0xffffff, 2);
+  // ✅ Add a directional light to illuminate the bars (brighter)
+  const light = new THREE.DirectionalLight(0xffffff, 2.5);
   light.position.set(10, 20, 20);
   light.castShadow = true;
   scene.add(light);
   
-  // Ambient light softens shadows and brightens the scene.
-  scene.add(new THREE.AmbientLight(0xffffff, 1));
+  // ✅ Ambient light softens shadows and brightens the scene (brighter)
+  scene.add(new THREE.AmbientLight(0xffffff, 1.5));
 
   // ✅ Add a second light from the front
   const frontLight = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -79,8 +83,7 @@ export function createThreeChart(container, data) {
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(25, 25),
     new THREE.ShadowMaterial({
-      opacity: 0.3,
-      color: 0x000000
+      opacity: 0.25
     })
   );
   floor.rotation.x = -Math.PI / 2;
@@ -89,17 +92,17 @@ export function createThreeChart(container, data) {
   scene.add(floor);
 
   // ✅ Grid helper for reference (optional)
-  const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
+  const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0xdddddd);
   gridHelper.position.y = -0.05;
   scene.add(gridHelper);
 
   // Store references to all bars so they can be updated later.
   const bars = [];
 
-  // ✅ Creates a single 3D bar with labels and adds it to the scene.
-  function createBar(height, color, x, label, market) {
+  // Creates a single 3D bar and adds it to the scene.
+  function createBar(height, color, x, info) {
     // Define the size of the bar.
-    const barHeight = Math.max(height * 1.5, 0.5); // Scale height for better visibility
+    const barHeight = Math.max(height, 0.5);
     const geometry = new THREE.BoxGeometry(2, barHeight, 2);
     
     // Create the material that gives the bar its colour.
@@ -112,6 +115,7 @@ export function createThreeChart(container, data) {
 
     // Combine the geometry and material into a 3D mesh.
     const cube = new THREE.Mesh(geometry, material);
+    cube.userData = info;
     cube.castShadow = true;
     cube.receiveShadow = true;
 
@@ -119,48 +123,107 @@ export function createThreeChart(container, data) {
     cube.position.x = x;
     cube.position.y = barHeight / 2;
     
-    // ✅ Store extra data on the mesh for updates
-    cube.userData = { originalHeight: height, label, market };
-    
     // Add the bar to the scene and save a reference to it.
     scene.add(cube);
     bars.push(cube);
 
     // ✅ Add a colored border/outline to the bar
     const edges = new THREE.EdgesGeometry(geometry);
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.2, transparent: true });
+    const lineMaterial = new THREE.LineBasicMaterial({ 
+      color: 0x000000, 
+      opacity: 0.15, 
+      transparent: true 
+    });
     const wireframe = new THREE.LineSegments(edges, lineMaterial);
     wireframe.position.copy(cube.position);
     scene.add(wireframe);
-    bars.push(wireframe); // Store with bars for cleanup
+    bars.push(wireframe);
   }
 
   // ✅ Create the Retail Goods bar
   createBar(
     chartData.markets["Retail Goods"]?.item_count || 0,
-    0xFF9900, // Orange
-    -4,
-    "Retail Goods",
-    "retail"
+    0xff9900,
+    -8,
+    {
+      name: "Retail Goods",
+      items: chartData.markets["Retail Goods"]?.item_count || 0,
+      price: chartData.markets["Retail Goods"]?.avg_price || 0
+    }
   );
 
   // ✅ Create the Digital Assets bar
   createBar(
     chartData.markets["Digital Assets"]?.item_count || 0,
-    0x00AAFF, // Blue
+    0x00aaff,
     0,
-    "Digital Assets",
-    "crypto"
+    {
+      name: "Digital Assets",
+      items: chartData.markets["Digital Assets"]?.item_count || 0,
+      price: chartData.markets["Digital Assets"]?.avg_price || 0
+    }
   );
 
   // ✅ Create the Total Items bar
   createBar(
     chartData.total_items || 0,
-    0x00FF88, // Green
-    4,
-    "Total Items",
-    "total"
+    0x00ff88,
+    8,
+    {
+      name: "Total Items",
+      items: chartData.total_items || 0,
+      price: null
+    }
   );
+
+  // ✅ Create a floating tooltip for bar information.
+  const tooltip = document.createElement("div");
+  tooltip.style.position = "absolute";
+  tooltip.style.padding = "10px 14px";
+  tooltip.style.background = "rgba(0,0,0,0.85)";
+  tooltip.style.color = "white";
+  tooltip.style.borderRadius = "8px";
+  tooltip.style.fontSize = "13px";
+  tooltip.style.pointerEvents = "none";
+  tooltip.style.display = "none";
+  tooltip.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+  tooltip.style.backdropFilter = "blur(4px)";
+  tooltip.style.border = "1px solid rgba(255,255,255,0.1)";
+  tooltip.style.zIndex = "10";
+
+  container.style.position = "relative";
+  container.appendChild(tooltip);
+
+  // ✅ Create the raycaster used to detect mouse interaction.
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  renderer.domElement.addEventListener("mousemove", (event) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(bars);
+
+    if (intersects.length > 0) {
+      const hoveredBar = intersects[0].object;
+      const info = hoveredBar.userData;
+
+      tooltip.style.display = "block";
+      tooltip.style.left = (event.clientX - rect.left + 15) + "px";
+      tooltip.style.top = (event.clientY - rect.top + 15) + "px";
+
+      tooltip.innerHTML = `
+        <strong style="font-size:15px;">${info.name}</strong><br>
+        <span style="color:#ccc;">Items:</span> ${info.items}<br>
+        ${info.price ? `<span style="color:#ccc;">Average Price:</span> R${info.price.toFixed(2)}` : ''}
+      `;
+    } else {
+      tooltip.style.display = "none";
+    }
+  });
 
   // ✅ Continuously render the scene for smooth animations.
   function animate() {
@@ -188,25 +251,29 @@ export function createThreeChart(container, data) {
       console.log('🔄 Updating 3D chart with:', updateData);
       
       // Update the height of each bar when new statistics arrive.
-      // Bars are stored in order: Retail, Digital, Total
+      // Bars are stored in order: Retail, wireframe, Digital, wireframe, Total, wireframe
       if (bars.length >= 6) {
-        // Retail bar (index 0) and its wireframe (index 1)
-        const retailHeight = Math.max((updateData.markets["Retail Goods"]?.item_count || 0) * 1.5, 0.5);
-        bars[0].scale.y = retailHeight / (bars[0].userData.originalHeight * 1.5 || 1);
-        bars[0].position.y = retailHeight / 2;
-        bars[1].position.y = retailHeight / 2; // wireframe
+        // Retail bar (index 0) 
+        const retailItems = updateData.markets["Retail Goods"]?.item_count || 0;
+        bars[0].scale.y = Math.max(retailItems, 0.5);
+        bars[0].position.y = Math.max(retailItems, 0.5) / 2;
+        // Update userData
+        bars[0].userData.items = retailItems;
+        bars[0].userData.price = updateData.markets["Retail Goods"]?.avg_price || 0;
         
-        // Digital bar (index 2) and its wireframe (index 3)
-        const digitalHeight = Math.max((updateData.markets["Digital Assets"]?.item_count || 0) * 1.5, 0.5);
-        bars[2].scale.y = digitalHeight / (bars[2].userData.originalHeight * 1.5 || 1);
-        bars[2].position.y = digitalHeight / 2;
-        bars[3].position.y = digitalHeight / 2; // wireframe
+        // Digital bar (index 2)
+        const digitalItems = updateData.markets["Digital Assets"]?.item_count || 0;
+        bars[2].scale.y = Math.max(digitalItems, 0.5);
+        bars[2].position.y = Math.max(digitalItems, 0.5) / 2;
+        bars[2].userData.items = digitalItems;
+        bars[2].userData.price = updateData.markets["Digital Assets"]?.avg_price || 0;
         
-        // Total bar (index 4) and its wireframe (index 5)
-        const totalHeight = Math.max((updateData.total_items || 0) * 1.5, 0.5);
-        bars[4].scale.y = totalHeight / (bars[4].userData.originalHeight * 1.5 || 1);
-        bars[4].position.y = totalHeight / 2;
-        bars[5].position.y = totalHeight / 2; // wireframe
+        // Total bar (index 4)
+        const totalItems = updateData.total_items || 0;
+        bars[4].scale.y = Math.max(totalItems, 0.5);
+        bars[4].position.y = Math.max(totalItems, 0.5) / 2;
+        bars[4].userData.items = totalItems;
+        bars[4].userData.price = null;
       }
     },
 
@@ -221,6 +288,9 @@ export function createThreeChart(container, data) {
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
+      }
+      if (container.contains(tooltip)) {
+        container.removeChild(tooltip);
       }
     }
   };

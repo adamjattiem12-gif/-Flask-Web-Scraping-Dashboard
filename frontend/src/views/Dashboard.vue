@@ -52,8 +52,7 @@
           <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
 
-        <!-- ✅ THREE.JS 3D BAR CHART -->
-        <ThreeDBarChart />
+        
 
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">
@@ -103,6 +102,8 @@
       </template>
     </div>
   </div>
+  <!-- ✅ THREE.JS 3D BAR CHART -->
+        <ThreeDBarChart />
 </template>
 
 <script setup>
