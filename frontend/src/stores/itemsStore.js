@@ -13,7 +13,21 @@ export const useItemsStore = defineStore('items', {
     loading: false,      // True when data is being fetched
     error: null,         // Error message if something fails
     previousItems: [],   // Store previous scrape data for change calculation
-    itemHistory: {}      // Cache of historical prices per item ID
+    itemHistory: {},     // Cache of historical prices per item ID
+    // ✅ ADDED: Stats for 3D chart and summary
+    stats: {
+      total_items: 0,
+      markets: {
+        "Retail Goods": {
+          item_count: 0,
+          avg_price: 0
+        },
+        "Digital Assets": {
+          item_count: 0,
+          avg_price: 0
+        }
+      }
+    }
   }),
 
   getters: {
@@ -95,6 +109,10 @@ export const useItemsStore = defineStore('items', {
         // Process items with change calculation
         this.items = this.calculateChanges(allItems)
         this.filteredItems = this.items
+        
+        // ✅ UPDATE STATS after items are loaded
+        this.updateStats()
+        
         this.loading = false
         
         return this.items
@@ -176,11 +194,53 @@ export const useItemsStore = defineStore('items', {
         this.items = this.calculateChanges(freshItems)
         this.filteredItems = this.items
         
+        // ✅ UPDATE STATS after items are updated
+        this.updateStats()
+        
         return this.items
       } catch (error) {
         this.error = `Failed to update items: ${error.message}`
         throw error
       }
+    },
+
+    /**
+     * ✅ updateStats - Calculates and updates stats for the 3D chart
+     * Used by: fetchItems, updateItemsAfterScrape
+     */
+    updateStats() {
+      const retailItems = this.getRetailItems || []
+      const cryptoItems = this.getCryptoItems || []
+      
+      // Calculate retail stats
+      let retailAvg = 0
+      if (retailItems.length > 0) {
+        const sum = retailItems.reduce((acc, item) => acc + (item.price || 0), 0)
+        retailAvg = sum / retailItems.length
+      }
+      
+      // Calculate crypto stats
+      let cryptoAvg = 0
+      if (cryptoItems.length > 0) {
+        const sum = cryptoItems.reduce((acc, item) => acc + (item.price || 0), 0)
+        cryptoAvg = sum / cryptoItems.length
+      }
+      
+      this.stats = {
+        total_items: this.items.length,
+        markets: {
+          "Retail Goods": {
+            item_count: retailItems.length,
+            avg_price: Math.round(retailAvg * 100) / 100
+          },
+          "Digital Assets": {
+            item_count: cryptoItems.length,
+            avg_price: Math.round(cryptoAvg * 100) / 100
+          }
+        }
+      }
+      
+      console.log('📊 Stats updated:', this.stats)
     },
 
     /**
@@ -219,6 +279,13 @@ export const useItemsStore = defineStore('items', {
       this.filteredItems = []
       this.previousItems = []
       this.itemHistory = {}
+      this.stats = {
+        total_items: 0,
+        markets: {
+          "Retail Goods": { item_count: 0, avg_price: 0 },
+          "Digital Assets": { item_count: 0, avg_price: 0 }
+        }
+      }
       this.error = null
     }
   }
