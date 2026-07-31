@@ -134,6 +134,62 @@ price:null
 }
 );
 
+// Create a floating tooltip for bar information.
+const tooltip = document.createElement("div");
+
+tooltip.style.position = "absolute";
+tooltip.style.padding = "10px";
+tooltip.style.background = "rgba(0,0,0,0.8)";
+tooltip.style.color = "white";
+tooltip.style.borderRadius = "8px";
+tooltip.style.fontSize = "13px";
+tooltip.style.pointerEvents = "none";
+tooltip.style.display = "none";
+
+container.style.position = "relative";
+container.appendChild(tooltip);
+
+// Create the raycaster used to detect mouse interaction.
+const raycaster = new THREE.Raycaster();
+
+// Store the mouse position in normalized device coordinates.
+const mouse = new THREE.Vector2();
+
+renderer.domElement.addEventListener("mousemove", (event) => {
+
+    const rect = renderer.domElement.getBoundingClientRect();
+
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(bars);
+
+    if (intersects.length > 0) {
+
+        const hoveredBar = intersects[0].object;
+        const info = hoveredBar.userData;
+
+        tooltip.style.display = "block";
+
+        tooltip.style.left = (event.clientX - rect.left + 15) + "px";
+        tooltip.style.top = (event.clientY - rect.top + 15) + "px";
+
+        tooltip.innerHTML = `
+            <strong>${info.name}</strong><br>
+            Items: ${info.items}<br>
+            ${info.price ? `Average Price: R${info.price}` : ""}
+        `;
+
+    } else {
+
+        tooltip.style.display = "none";
+
+    }
+
+});
+
 // Continuously render the scene for smooth animations.
 function animate(){
     // Request the next animation frame.
