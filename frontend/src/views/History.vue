@@ -82,27 +82,35 @@ const loading = ref(false)
 // ✅ NEW: This function now gets called by both the Refresh button AND scrape-complete event
 const refreshHistory = async () => {
   loading.value = true
-  await new Promise(resolve => setTimeout(resolve, 300))
-  history.value = scrapeStore.scrapeHistory
-  loading.value = false
+  try {
+    // Pull the authoritative record from the backend (history.json) so the
+    // page never shows stale or duplicate entries after a scrape.
+    await scrapeStore.fetchHistory()
+  } finally {
+    history.value = scrapeStore.scrapeHistory
+    loading.value = false
+  }
 }
 
 const formatDate = (timestamp) => {
   return new Date(timestamp).toLocaleString()
 }
 
-onMounted(() => {
-  if (scrapeStore.scrapeHistory.length === 0) {
-    scrapeStore.generateMockHistory()
+onMounted(async () => {
+  loading.value = true
+  try {
+    await scrapeStore.fetchHistory()
+  } finally {
+    history.value = scrapeStore.scrapeHistory
+    loading.value = false
   }
-  history.value = scrapeStore.scrapeHistory
 })
 </script>
 
 <style scoped>
 .history {
   padding: 24px;
-  background: #F7F5F2;
+  background: var(--color-bg);
   min-height: 100vh;
 }
 
@@ -115,12 +123,12 @@ onMounted(() => {
 }
 
 h2 {
-  color: #2D2A3E;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 
 .subtitle {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   margin-top: 0;
   margin-bottom: 16px;
 }
@@ -131,7 +139,7 @@ h2 {
 }
 
 .refresh-btn {
-  background: #5B8C5A;
+  background: var(--color-success);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -141,7 +149,7 @@ h2 {
 }
 
 .refresh-btn:hover {
-  background: #4A7349;
+  background: var(--color-success-strong);
 }
 
 .refresh-btn:disabled {
@@ -150,8 +158,8 @@ h2 {
 }
 
 .table-container {
-  background: white;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: auto;
 }
@@ -163,21 +171,21 @@ table {
 }
 
 th {
-  background: #F7F5F2;
-  color: #2D2A3E;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-weight: 600;
   padding: 12px 16px;
   text-align: left;
-  border-bottom: 2px solid #E5E2DD;
+  border-bottom: 2px solid var(--color-border);
 }
 
 td {
   padding: 12px 16px;
-  border-bottom: 1px solid #F7F5F2;
+  border-bottom: 1px solid var(--color-bg);
 }
 
 tr:hover td {
-  background: #FAF9F7;
+  background: var(--color-border-subtle);
 }
 
 .badge {
@@ -188,34 +196,34 @@ tr:hover td {
 }
 
 .badge-retail {
-  background: #D4914A;
+  background: var(--color-warning);
   color: white;
 }
 
 .badge-crypto {
-  background: #4A8C8C;
+  background: var(--color-info);
   color: white;
 }
 
 .status-success {
-  color: #5B8C5A;
+  color: var(--color-success);
   font-weight: 500;
 }
 
 .status-error {
-  color: #C1666B;
+  color: var(--color-danger);
   font-weight: 500;
 }
 
 .loading-state {
   text-align: center;
   padding: 40px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
 }
 
 .spinner {
-  border: 3px solid #F7F5F2;
-  border-top: 3px solid #5B8C5A;
+  border: 3px solid var(--color-bg);
+  border-top: 3px solid var(--color-success);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -231,19 +239,19 @@ tr:hover td {
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  background: white;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
 }
 
 .empty-state p {
   font-size: 18px;
-  color: #2D2A3E;
+  color: var(--color-text);
   margin: 0;
 }
 
 .empty-sub {
-  color: #9E9BB0 !important;
+  color: var(--color-text-muted) !important;
   font-size: 14px !important;
   margin-top: 8px !important;
 }
@@ -251,10 +259,10 @@ tr:hover td {
 .week1-note {
   margin-top: 32px;
   padding: 16px 20px;
-  background: #FFF8E7;
-  border: 1px solid #F0E6D0;
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-strong);
   border-radius: 8px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-size: 14px;
 }
 </style>

@@ -17,25 +17,30 @@ export const useScrapeStore = defineStore('scrape', {
      * ✅ Week 2: Now calls REAL backend API
      * Falls back to mock if API fails
      */
-    async triggerScrape() {
+    async triggerScrape(market = null) {
       this.status = 'loading'
       this.message = 'Scraping in progress...'
       this.error = null
 
       try {
         // 🟢 REAL API CALL - Trigger scrape on backend
-        const response = await triggerScrape()
-        
+        // Passing `market` scrapes only that market (Retail Goods /
+        // Digital Assets); omitting it scrapes both, as before.
+        const response = await triggerScrape(market)
+
         this.status = 'success'
         this.message = `✓ ${response.message || 'Scraped successfully!'}`
         this.lastScrape = new Date()
-        
-        // Add to history
+
+        // Add a local entry immediately for instant UI feedback, then
+        // sync with the backend's authoritative record via fetchHistory()
+        // (called by the view after scrape-complete) so the two never
+        // drift apart.
         this.scrapeHistory.unshift({
           timestamp: new Date(),
-          market: response.market || 'All',
-          target: response.target || 'All Markets',
-          items_found: response.items_found || 0,
+          market: market || response.market || 'All',
+          target: response.target || market || 'All Markets',
+          items_found: response.data?.total_count ?? response.items_found ?? 0,
           success: true
         })
       } catch (error) {
@@ -43,11 +48,11 @@ export const useScrapeStore = defineStore('scrape', {
         this.status = 'error'
         this.error = error.error || 'Scrape failed'
         this.message = '✗ Scrape failed - try again'
-        
+
         this.scrapeHistory.unshift({
           timestamp: new Date(),
-          market: 'All',
-          target: 'All Markets',
+          market: market || 'All',
+          target: market || 'All Markets',
           items_found: 0,
           success: false
         })
@@ -73,7 +78,11 @@ export const useScrapeStore = defineStore('scrape', {
       try {
         // 🟢 REAL API CALL - Get history from backend
         const response = await fetchHistory(limit)
-        this.scrapeHistory = response.history || response || []
+        const records = response.history || response || []
+        // Backend stores/returns records oldest-first; the rest of the UI
+        // (and the optimistic entries added via unshift() in
+        // triggerScrape) expect newest-first, so reverse here.
+        this.scrapeHistory = [...records].reverse()
       } catch (error) {
         console.error('History API Error:', error)
         // 🔄 FALLBACK: Use mock history if API fails
@@ -102,7 +111,7 @@ export const useScrapeStore = defineStore('scrape', {
           market: markets[i % markets.length],
           target: markets[i % markets.length] === 'Retail Goods' 
             ? 'WebScraper.io' 
-            : 'CoinGecko',
+            : 'CoinPaprika',
           items_found: success ? Math.floor(Math.random() * 15) + 5 : 0,
           success: success
         })

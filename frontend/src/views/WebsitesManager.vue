@@ -4,6 +4,33 @@
     <h2>📡 Monitored Websites</h2>
     <p class="subtitle">Websites that are currently being scraped for price data</p>
 
+    <!-- ADD WEBSITE FORM -->
+    <form class="add-website-form" @submit.prevent="handleAdd">
+      <h3>➕ Add a website</h3>
+      <div class="form-grid">
+        <label>
+          Name
+          <input v-model.trim="form.name" type="text" placeholder="e.g. My News Source" required />
+        </label>
+        <label>
+          Market
+          <select v-model="form.market" required>
+            <option disabled value="">Choose a market</option>
+            <option value="Retail Goods">Retail Goods</option>
+            <option value="Digital Assets">Digital Assets</option>
+          </select>
+        </label>
+        <label class="url-field">
+          URL
+          <input v-model.trim="form.url" type="url" placeholder="https://example.com/target-page" required />
+        </label>
+      </div>
+      <p v-if="websitesStore.saveError" class="form-error">❌ {{ websitesStore.saveError }}</p>
+      <button type="submit" class="add-btn" :disabled="websitesStore.saving">
+        {{ websitesStore.saving ? 'Adding…' : 'Add Website' }}
+      </button>
+    </form>
+
     <!-- LOADING STATE -->
     <div v-if="websitesStore.loading" class="loading-state">
       <div class="spinner"></div>
@@ -18,6 +45,9 @@
 
     <!-- WEBSITES GRID - Shows all monitored websites -->
     <div v-else class="websites-grid">
+      <p v-if="websitesStore.websites.length === 0" class="empty-state">
+        No websites registered yet — add one above.
+      </p>
       <div 
         v-for="site in websitesStore.websites" 
         :key="site.id" 
@@ -42,6 +72,13 @@
 
         <div class="website-footer">
           <span class="last-scraped">Last scraped: {{ formatDate() }}</span>
+          <button
+            class="remove-btn"
+            :disabled="websitesStore.deletingId === site.id"
+            @click="handleRemove(site)"
+          >
+            {{ websitesStore.deletingId === site.id ? 'Removing…' : '🗑️ Remove' }}
+          </button>
         </div>
       </div>
     </div> 
@@ -49,14 +86,40 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useWebsitesStore } from '../stores/websitesStore'
 
 const websitesStore = useWebsitesStore()
 
+const form = reactive({
+  name: '',
+  url: '',
+  market: ''
+})
+
 // Helper function to format the current date
 const formatDate = () => {
   return new Date().toLocaleString()
+}
+
+const handleAdd = async () => {
+  try {
+    await websitesStore.addWebsite({ name: form.name, url: form.url, market: form.market })
+    form.name = ''
+    form.url = ''
+    form.market = ''
+  } catch {
+    // saveError is already set on the store; the template shows it.
+  }
+}
+
+const handleRemove = async (site) => {
+  if (!window.confirm(`Remove "${site.name}" from monitored websites?`)) return
+  try {
+    await websitesStore.removeWebsite(site.id)
+  } catch {
+    // error is already set on the store; the template shows it.
+  }
 }
 
 // Load websites when page loads
@@ -68,80 +131,148 @@ onMounted(() => {
 <style scoped>
 .websites-manager {
   padding: 24px;
-  background: #F7F5F2;
+  background: var(--color-bg);
   min-height: 100vh;
 }
 
 /* Page title styles */
 h2 {
-  color: #2D2A3E;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 
 .subtitle {
-  color: #5C5A6B;
-  margin-top: 0;
-  margin-bottom: 32px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
 }
 
-/* Website cards grid - responsive layout */
+.empty-state {
+  color: var(--color-text-muted);
+  padding: 24px;
+}
+
+/* Add website form */
+.add-website-form {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.add-website-form h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--color-text);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.url-field {
+  grid-column: 1 / -1;
+}
+
+.form-grid input,
+.form-grid select {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.form-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+
+.add-btn {
+  margin-top: 16px;
+  background: var(--color-success);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.add-btn:hover:not(:disabled) {
+  background: var(--color-success-strong);
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .websites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
 
-/* Individual website card */
 .website-card {
-  background: white;
-  border: 1px solid #E5E2DD;
-  border-radius: 8px;
-  padding: 24px;
-  transition: box-shadow 0.2s;
-}
-
-.website-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  padding: 20px;
 }
 
 .website-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
+  gap: 8px;
 }
 
 .website-header h3 {
   margin: 0;
-  color: #2D2A3E;
-  font-size: 16px;
+  font-size: 15px;
+  color: var(--color-text);
 }
 
-/* Market badges */
 .badge {
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
   white-space: nowrap;
 }
 
 .badge-retail {
-  background: #D4914A;
-  color: white;
+  background: var(--color-success-bg);
+  color: var(--color-success-strong);
 }
 
 .badge-crypto {
-  background: #4A8C8C;
-  color: white;
+  background: var(--color-info-bg);
+  color: var(--color-info-strong);
 }
 
 .website-details {
-  margin-bottom: 16px;
+  margin: 8px 0;
 }
 
 .url {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-size: 14px;
   word-break: break-all;
   margin: 8px 0;
@@ -154,26 +285,49 @@ h2 {
 }
 
 .status-active {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .website-footer {
-  border-top: 1px solid #F7F5F2;
+  border-top: 1px solid var(--color-bg);
   padding-top: 12px;
   font-size: 13px;
-  color: #9E9BB0;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.remove-btn {
+  background: transparent;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-btn:hover:not(:disabled) {
+  background: var(--color-danger-bg);
+}
+
+.remove-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Loading state */
 .loading-state {
   text-align: center;
   padding: 40px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
 }
 
 .spinner {
-  border: 3px solid #F7F5F2;
-  border-top: 3px solid #5B8C5A;
+  border: 3px solid var(--color-bg);
+  border-top: 3px solid var(--color-success);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -190,11 +344,11 @@ h2 {
 .error-state {
   text-align: center;
   padding: 40px;
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .error-state button {
-  background: #5B8C5A;
+  background: var(--color-success);
   color: white;
   border: none;
   padding: 8px 24px;
@@ -204,17 +358,6 @@ h2 {
 }
 
 .error-state button:hover {
-  background: #4A7349;
-}
-
-/* Week 1 notice */
-.week1-note {
-  margin-top: 32px;
-  padding: 16px 20px;
-  background: #FFF8E7;
-  border: 1px solid #F0E6D0;
-  border-radius: 8px;
-  color: #5C5A6B;
-  font-size: 14px;
+  background: var(--color-success-strong);
 }
 </style>

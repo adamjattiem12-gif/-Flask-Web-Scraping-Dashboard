@@ -24,15 +24,24 @@
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
+
+    <button class="theme-toggle" @click="themeStore.toggle()" :aria-label="themeStore.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+      <span class="nav-icon">{{ themeStore.theme === 'dark' ? '☀️' : '🌙' }}</span>
+      <span>{{ themeStore.theme === 'dark' ? 'Light mode' : 'Dark mode' }}</span>
+    </button>
   </aside>
 </template>
 
 <script setup>
+import { useThemeStore } from '@/stores/themeStore'
+
 defineProps({
   isOpen: { type: Boolean, default: false }
 })
 
 defineEmits(['close'])
+
+const themeStore = useThemeStore()
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: '📊' },
@@ -119,6 +128,29 @@ const navItems = [
   background: rgba(255, 255, 255, 0.08);
   border-left: 3px solid #5B8C5A;
   border-radius: 8px 0 0 8px;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 12px 0 12px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #9E9BB0;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .nav-icon {

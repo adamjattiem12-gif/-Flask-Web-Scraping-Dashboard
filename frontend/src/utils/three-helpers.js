@@ -17,6 +17,18 @@ const FALLBACK_DATA = {
   }
 };
 
+// ✅ Theme-aware colors for the WebGL scene. CSS variables only affect DOM
+// elements, not canvas/WebGL drawing, so the renderer's clear color and grid
+// have to be set explicitly here and kept in sync with the app theme.
+const THEME_COLORS = {
+  light: { bg: 0xf7f5f2, gridMain: 0x888888, gridSub: 0xdddddd },
+  dark: { bg: 0x15131f, gridMain: 0x6f6d85, gridSub: 0x35334a },
+};
+
+function getCurrentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+
 // Creates the entire Three.js scene and returns methods that allow Vue to update or destroy the chart.
 export function createThreeChart(container, data) {
   // ✅ Use real data or fallback if empty/missing
@@ -44,8 +56,9 @@ export function createThreeChart(container, data) {
     antialias: true
   });
 
-  // ✅ Set background color to match dashboard
-  renderer.setClearColor(0xF7F5F2);
+  // ✅ Set background color to match the current theme
+  let currentTheme = getCurrentTheme();
+  renderer.setClearColor(THEME_COLORS[currentTheme].bg);
 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -91,8 +104,8 @@ export function createThreeChart(container, data) {
   floor.receiveShadow = true;
   scene.add(floor);
 
-  // ✅ Grid helper for reference (optional)
-  const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0xdddddd);
+  // ✅ Grid helper for reference (colors follow the current theme)
+  let gridHelper = new THREE.GridHelper(20, 20, THEME_COLORS[currentTheme].gridMain, THEME_COLORS[currentTheme].gridSub);
   gridHelper.position.y = -0.05;
   scene.add(gridHelper);
 
@@ -234,8 +247,9 @@ export function createThreeChart(container, data) {
   });
 
   // ✅ Continuously render the scene for smooth animations.
+  let animationFrameId = null;
   function animate() {
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
     controls.update();
 
     for (let i = 0; i < bars.length; i += 2) {
@@ -262,14 +276,32 @@ export function createThreeChart(container, data) {
   animate();
 
   // ✅ Handle window resize
-  window.addEventListener("resize", () => {
+  // Keep a reference to the listener so it can be removed on destroy()
+  // instead of leaking a new listener every time the chart is recreated.
+  const handleResize = () => {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
-  });
+  };
+  window.addEventListener("resize", handleResize);
 
   // ✅ Expose methods that Vue can call.
   return {
+    // Called when the app theme changes, so the canvas (which CSS can't
+    // reach) stays in sync with the rest of the UI.
+    updateTheme() {
+      currentTheme = getCurrentTheme();
+      const colors = THEME_COLORS[currentTheme];
+      renderer.setClearColor(colors.bg);
+
+      scene.remove(gridHelper);
+      gridHelper.geometry.dispose();
+      gridHelper.material.dispose();
+      gridHelper = new THREE.GridHelper(20, 20, colors.gridMain, colors.gridSub);
+      gridHelper.position.y = -0.05;
+      scene.add(gridHelper);
+    },
+
     updateBars(newData) {
       // Use new data or fallback
       const updateData = newData && newData.total_items ? newData : FALLBACK_DATA;
@@ -305,6 +337,19 @@ export function createThreeChart(container, data) {
 
     // Clean up the renderer when the component is destroyed.
     destroy() {
+      // Stop the requestAnimationFrame loop — previously this was never
+      // captured/cancelled, so it kept running (and consuming CPU) even
+      // after the chart was unmounted.
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      // Remove the resize listener — previously a new listener was added
+      // on every mount and never removed, leaking one per mount since
+      // window outlives the component.
+      window.removeEventListener("resize", handleResize);
+
       // Dispose of geometries and materials
       bars.forEach(bar => {
         if (bar.geometry) bar.geometry.dispose();

@@ -23,8 +23,8 @@ defineProps({
 
 <style scoped>
 .stat-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 20px 24px;
   display: flex;
@@ -34,7 +34,7 @@ defineProps({
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 .stat-icon {
@@ -54,7 +54,7 @@ defineProps({
 }
 
 .stat-label {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.3px;
@@ -63,14 +63,14 @@ defineProps({
 }
 
 .stat-value {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 26px;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .stat-subtitle {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 13px;
   margin-top: 2px;
 }

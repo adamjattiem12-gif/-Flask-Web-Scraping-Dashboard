@@ -24,7 +24,7 @@ defineProps({
 <style scoped>
 .page-layout {
   min-height: 100vh;
-  background: #F7F5F2;
+  background: var(--color-bg);
 }
 
 .page-header {
@@ -34,8 +34,8 @@ defineProps({
   align-items: center;
   margin: 0;
   padding: 20px 40px;
-  background: #FFFFFF;
-  border-bottom: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   gap: 16px;
 }
 
@@ -46,7 +46,7 @@ defineProps({
 
 .page-header h1 {
   margin: 0;
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 28px;
   font-weight: 600;
 }

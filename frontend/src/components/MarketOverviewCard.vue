@@ -42,15 +42,15 @@ defineProps({
 
 <style scoped>
 .market-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 24px;
-  border-top: 4px solid #D4914A;
+  border-top: 4px solid var(--color-warning);
 }
 
 .market-title {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -62,7 +62,7 @@ defineProps({
   gap: 16px;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #F0EDEA;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .price-block {
@@ -71,7 +71,7 @@ defineProps({
 }
 
 .price-label {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -79,14 +79,14 @@ defineProps({
 }
 
 .price-value {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 22px;
   font-weight: 700;
   margin-top: 2px;
 }
 
 .activity-label {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -98,7 +98,7 @@ defineProps({
   display: flex;
   justify-content: space-between;
   padding: 6px 0;
-  border-bottom: 1px solid #F7F5F2;
+  border-bottom: 1px solid var(--color-bg);
 }
 
 .activity-item:last-child {
@@ -106,7 +106,7 @@ defineProps({
 }
 
 .activity-name {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -117,15 +117,15 @@ defineProps({
 }
 
 .activity-change.positive {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .activity-change.negative {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .activity-empty {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 14px;
   padding: 6px 0;
 }

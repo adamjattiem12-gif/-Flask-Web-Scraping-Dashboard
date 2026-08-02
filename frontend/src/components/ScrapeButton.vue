@@ -22,12 +22,21 @@
 </template>
 
 <script setup>
-import { computed, defineEmits } from 'vue'
+import { computed, defineEmits, defineProps } from 'vue'
 import { useScrapeStore } from '../stores/scrapeStore'
 
 // ✅ NEW: Emit event so parent components know when scrape is complete
 // Used by: Dashboard, History, RetailGoods, DigitalAssets to auto-refresh
 const emit = defineEmits(['scrape-complete'])
+
+// Optional: pass market="Retail Goods" or market="Digital Assets" to scrape
+// only that market. Omit (or pass null) to scrape both, as before.
+const props = defineProps({
+  market: {
+    type: String,
+    default: null
+  }
+})
 
 const scrapeStore = useScrapeStore()
 
@@ -58,7 +67,7 @@ const messageClass = computed(() => {
 })
 
 const handleScrape = async () => {
-  await scrapeStore.triggerScrape()
+  await scrapeStore.triggerScrape(props.market)
   
   // ✅ NEW: After successful scrape, tell parent to refresh its data
   if (scrapeStore.status === 'success') {
@@ -98,35 +107,35 @@ const formatTime = (date) => {
 }
 
 .btn-idle {
-  background: #5B8C5A;
+  background: var(--color-success);
   color: white;
 }
 
 .btn-idle:hover {
-  background: #4A7349;
+  background: var(--color-success-strong);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(91, 140, 90, 0.3);
 }
 
 .btn-loading {
-  background: #5B8C5A;
+  background: var(--color-success);
   color: white;
   opacity: 0.7;
   cursor: not-allowed;
 }
 
 .btn-success {
-  background: #5B8C5A;
+  background: var(--color-success);
   color: white;
 }
 
 .btn-error {
-  background: #C1666B;
+  background: var(--color-danger);
   color: white;
 }
 
 .btn-error:hover {
-  background: #A85257;
+  background: var(--color-danger-strong);
 }
 
 .spinner {
@@ -147,20 +156,20 @@ const formatTime = (date) => {
 }
 
 .msg-success {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .msg-error {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .msg-info {
-  color: #4A8C8C;
+  color: var(--color-info);
 }
 
 .last-scrape {
   margin: 4px 0 0;
   font-size: 13px;
-  color: #9E9BB0;
+  color: var(--color-text-muted);
 }
 </style>

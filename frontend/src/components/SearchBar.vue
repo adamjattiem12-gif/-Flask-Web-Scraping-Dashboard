@@ -51,14 +51,14 @@ const clearSearch = () => {
   width: 100%;
   max-width: 400px;
   padding: 10px 14px;
-  background: white;
-  border: 1px solid #E0DEEB;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   transition: border-color 0.2s ease;
 }
 
 .search-bar:focus-within {
-  border-color: #5B8C5A;
+  border-color: var(--color-success);
 }
 
 .search-icon {
@@ -72,24 +72,24 @@ const clearSearch = () => {
   border: none;
   outline: none;
   font-size: 14px;
-  color: #333;
+  color: var(--color-text);
   background: transparent;
 }
 
 .search-input::placeholder {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
 }
 
 .clear-btn {
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 13px;
   padding: 2px 4px;
   line-height: 1;
 }
 .clear-btn:hover {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 </style>

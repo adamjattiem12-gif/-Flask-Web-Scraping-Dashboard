@@ -57,19 +57,19 @@ defineProps({
 
 <style scoped>
 .table-container {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
 }
 
 .table-header {
   padding: 20px 24px;
-  border-bottom: 1px solid #E5E2DD;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .table-title {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 18px;
   font-weight: 600;
 }
@@ -85,13 +85,13 @@ table {
 }
 
 thead {
-  background: #F7F5F2;
+  background: var(--color-bg);
 }
 
 th {
   text-align: left;
   padding: 12px 16px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
@@ -100,8 +100,8 @@ th {
 
 td {
   padding: 14px 16px;
-  border-bottom: 1px solid #F0EDEA;
-  color: #2D2A3E;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-text);
 }
 
 tr:last-child td {
@@ -118,7 +118,7 @@ tr:last-child td {
 }
 
 .name-source {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 
@@ -135,13 +135,13 @@ tr:last-child td {
 }
 
 .change-badge.positive {
-  background: #E8F5E8;
-  color: #5B8C5A;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .change-badge.negative {
-  background: #FDE8E9;
-  color: #C1666B;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
 .market-badge {
@@ -153,26 +153,26 @@ tr:last-child td {
 }
 
 .market-badge.digital {
-  background: #E8F4F4;
-  color: #4A8C8C;
+  background: var(--color-info-bg);
+  color: var(--color-info);
 }
 
 .market-badge.retail {
-  background: #F5EDE4;
-  color: #D4914A;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .rating {
-  color: #D4914A;
+  color: var(--color-warning);
   font-weight: 600;
 }
 
 .no-rating {
-  color: #C5C5D0;
+  color: var(--color-text-muted);
 }
 
 .scraped-cell {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 

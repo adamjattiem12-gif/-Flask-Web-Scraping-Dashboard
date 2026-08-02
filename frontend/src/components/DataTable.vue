@@ -220,8 +220,8 @@ const formatCurrency = (price, currency) => {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border: 1px solid #E0DEEB;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -229,17 +229,17 @@ const formatCurrency = (price, currency) => {
 .data-table th {
   text-align: left;
   padding: 12px 16px;
-  background: #F7F6FB;
+  background: var(--color-border-subtle);
   font-size: 13px;
   font-weight: 600;
-  color: #4A4762;
+  color: var(--color-text-secondary);
   cursor: pointer;
   user-select: none;
-  border-bottom: 1px solid #E0DEEB;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .data-table th:hover {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .sort-arrow {
@@ -250,8 +250,8 @@ const formatCurrency = (price, currency) => {
 .data-table td {
   padding: 12px 16px;
   font-size: 14px;
-  color: #333;
-  border-bottom: 1px solid #F0EFF5;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .watchlist-cell {
@@ -262,7 +262,7 @@ const formatCurrency = (price, currency) => {
 .watch-btn {
   border: 0;
   background: transparent;
-  color: #B8B4C5;
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 22px;
   line-height: 1;
@@ -271,7 +271,7 @@ const formatCurrency = (price, currency) => {
 
 .watch-btn:hover,
 .watch-btn.watched {
-  color: #D4914A;
+  color: var(--color-warning);
 }
 
 .data-table tbody tr:last-child td {
@@ -288,24 +288,24 @@ const formatCurrency = (price, currency) => {
 }
 
 .source-retail {
-  background: #EAF2EA;
-  color: #4A7349;
+  background: var(--color-success-bg);
+  color: var(--color-success-strong);
 }
 
 .source-crypto {
-  background: #E6F1F1;
-  color: #2F6363;
+  background: var(--color-info-bg);
+  color: var(--color-info-strong);
 }
 
 .source-default {
-  background: #F0EFF5;
-  color: #4A4762;
+  background: var(--color-border-subtle);
+  color: var(--color-text-secondary);
 }
 
 .skeleton-cell {
   height: 14px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #F0EFF5 25%, #E4E2ED 50%, #F0EFF5 75%);
+  background: linear-gradient(90deg, var(--color-border-subtle) 25%, var(--color-border) 50%, var(--color-border-subtle) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
 }
@@ -323,23 +323,23 @@ const formatCurrency = (price, currency) => {
 .empty-title {
   font-size: 15px;
   font-weight: 600;
-  color: #4A4762;
+  color: var(--color-text-secondary);
   margin: 0 0 4px;
 }
 
 .empty-subtitle {
   font-size: 13px;
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   margin: 0;
 }
 
 .table-message.error-message {
   text-align: center;
   padding: 32px 16px;
-  background: white;
-  border: 1px solid #E0DEEB;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .retry-btn {
@@ -347,14 +347,14 @@ const formatCurrency = (price, currency) => {
   padding: 8px 20px;
   border: none;
   border-radius: 6px;
-  background: #C1666B;
+  background: var(--color-danger);
   color: white;
   font-weight: 600;
   cursor: pointer;
 }
 
 .retry-btn:hover {
-  background: #A85257;
+  background: var(--color-danger-strong);
 }
 
 .pagination {
@@ -366,22 +366,22 @@ const formatCurrency = (price, currency) => {
 
 .page-btn {
   padding: 6px 12px;
-  border: 1px solid #E0DEEB;
-  background: white;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   border-radius: 4px;
   font-size: 13px;
   cursor: pointer;
-  color: #4A4762;
+  color: var(--color-text-secondary);
 }
 
 .page-btn:hover:not(:disabled) {
-  border-color: #5B8C5A;
-  color: #5B8C5A;
+  border-color: var(--color-success);
+  color: var(--color-success);
 }
 
 .page-btn.active {
-  background: #5B8C5A;
-  border-color: #5B8C5A;
+  background: var(--color-success);
+  border-color: var(--color-success);
   color: white;
 }
 

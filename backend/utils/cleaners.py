@@ -1,13 +1,27 @@
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
+# Matches an optional leading minus sign, then digits with optional
+# thousands separators and a single decimal point. This lets clean_price
+# handle any currency symbol/formatting (¥, ₹, kr, Rp, "USD 12.00", etc.)
+# instead of only the handful of symbols that used to be hardcoded.
+_NUMERIC_PATTERN = re.compile(r'-?\d[\d,]*\.?\d*')
+
 def clean_price(price_str):
-    """Convert price string to float, remove currency symbols."""
+    """Convert price string to float, stripping any currency symbols or
+    other non-numeric formatting rather than relying on a fixed list of
+    known symbols."""
     if price_str is None:
         return 0.0
     try:
-        cleaned = str(price_str).replace('$', '').replace('€', '').replace('£', '').replace(',', '').strip()
+        text = str(price_str).strip()
+        match = _NUMERIC_PATTERN.search(text)
+        if not match:
+            logger.warning("clean_price found no numeric value in %r", price_str)
+            return 0.0
+        cleaned = match.group(0).replace(',', '')
         return float(cleaned)
     except (ValueError, TypeError) as e:
         logger.warning("clean_price failed for value %r: %s", price_str, e)

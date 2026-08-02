@@ -5,8 +5,8 @@
         <label for="source-select">Source</label>
         <select id="source-select" v-model="source" @change="emitFilters">
           <option value="">All sources</option>
-          <option value="books">Books</option>
-          <option value="crypto">Crypto</option>
+          <option value="WebScraper.io E-Commerce">Retail (WebScraper.io)</option>
+          <option value="CoinPaprika API">Crypto (CoinPaprika)</option>
         </select>
       </div>
 
@@ -55,10 +55,15 @@ const source = ref('')
 const minPrice = ref(null)
 const maxPrice = ref(null)
 
+const SOURCE_LABELS = {
+  'WebScraper.io E-Commerce': 'Retail (WebScraper.io)',
+  'CoinPaprika API': 'Crypto (CoinPaprika)'
+}
+
 const activeTags = computed(() => {
   const tags = []
   if (source.value) {
-    tags.push({ key: 'source', label: `Source: ${source.value}` })
+    tags.push({ key: 'source', label: `Source: ${SOURCE_LABELS[source.value] || source.value}` })
   }
   if (minPrice.value !== null && minPrice.value !== '') {
     tags.push({ key: 'minPrice', label: `Min: ${minPrice.value}` })
@@ -98,8 +103,8 @@ const clearAll = () => {
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background: white;
-  border: 1px solid #E0DEEB;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
 }
 
@@ -118,23 +123,24 @@ const clearAll = () => {
 .filter-field label {
   font-size: 12px;
   font-weight: 600;
-  color: #6b6880;
+  color: var(--color-text-secondary);
 }
 
 .filter-field select,
 .filter-field input {
   padding: 8px 10px;
-  border: 1px solid #E0DEEB;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 14px;
-  color: #333;
+  color: var(--color-text);
+  background: var(--color-surface);
   min-width: 110px;
 }
 
 .filter-field select:focus,
 .filter-field input:focus {
   outline: none;
-  border-color: #5B8C5A;
+  border-color: var(--color-success);
 }
 
 .filter-tags {
@@ -143,7 +149,7 @@ const clearAll = () => {
   gap: 8px;
   flex-wrap: wrap;
   padding-top: 8px;
-  border-top: 1px solid #F0EFF5;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .filter-tag {
@@ -151,8 +157,8 @@ const clearAll = () => {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  background: #EAF2EA;
-  color: #4A7349;
+  background: var(--color-success-bg);
+  color: var(--color-success-strong);
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
@@ -162,21 +168,21 @@ const clearAll = () => {
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #4A7349;
+  color: var(--color-success-strong);
   font-size: 11px;
   padding: 0;
   line-height: 1;
 }
 
 .tag-remove:hover {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .clear-all {
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #4A8C8C;
+  color: var(--color-info);
   font-size: 12px;
   font-weight: 600;
   padding: 4px 6px;

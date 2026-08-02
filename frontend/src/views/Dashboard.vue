@@ -93,6 +93,10 @@
 
         <!-- DATA TABLE -->
         <div class="table-section">
+          <div class="table-controls">
+            <SearchBar @search="handleSearch" />
+            <FilterPanel @filter="handleFilter" />
+          </div>
           <DataTable 
             :items="tableItems" 
             :loading="tableLoading"
@@ -124,6 +128,8 @@ import DataTable from '@/components/DataTable.vue'
 import Watchlist from '@/components/Watchlist.vue'
 import ScrapeButton from '@/components/ScrapeButton.vue'
 import ThreeDBarChart from '@/components/ThreeDBarChart.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import FilterPanel from '@/components/FilterPanel.vue'
 
 // STORE INSTANCES
 const itemsStore = useItemsStore()
@@ -140,7 +146,10 @@ const pageSize = 10
 let refreshInterval = null
 
 // ALL DATA FROM STORES
-const tableItems = computed(() => itemsStore.items ?? [])
+// ✅ Uses the filteredItems getter (search + source + price range) instead
+// of the raw, unfiltered items list, so Search/Filter actually affect the
+// table and pagination reflects the filtered result count.
+const tableItems = computed(() => itemsStore.filteredItems ?? [])
 const totalPages = computed(() => Math.max(1, Math.ceil(tableItems.value.length / pageSize)))
 
 // ✅ RETAIL RECENT ITEMS - Uses store data with calculated changes
@@ -208,6 +217,18 @@ const handlePageChange = (page) => {
   currentPage.value = page
 }
 
+// ✅ SEARCH & FILTER - Update store filters and jump back to page 1 so
+// users don't land on a now-empty/out-of-range page after filtering.
+const handleSearch = (query) => {
+  itemsStore.setSearchQuery(query)
+  currentPage.value = 1
+}
+
+const handleFilter = (filters) => {
+  itemsStore.setFilters(filters)
+  currentPage.value = 1
+}
+
 // LIFECYCLE
 onMounted(async () => {
   try {
@@ -228,14 +249,14 @@ onUnmounted(() => {
 <style scoped>
 .dashboard-page {
   min-height: 100vh;
-  background: #F7F5F2;
+  background: var(--color-bg);
   padding: 0;
 }
 
 .dashboard-header-bar {
-  background: #FFFFFF;
+  background: var(--color-surface);
   padding: 24px 40px;
-  border-bottom: 1px solid #E5E2DD;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -251,14 +272,14 @@ onUnmounted(() => {
 }
 
 .dashboard-header-bar h1 {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 28px;
   font-weight: 600;
   margin: 0;
 }
 
 .last-updated {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 13px;
   font-weight: 400;
 }
@@ -270,8 +291,8 @@ onUnmounted(() => {
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
-  background: #5B8C5A;
-  color: #FFFFFF;
+  background: var(--color-success);
+  color: var(--color-surface);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -280,13 +301,13 @@ onUnmounted(() => {
 }
 
 .refresh-btn:hover:not(:disabled) {
-  background: #4A7349;
+  background: var(--color-success-strong);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(91, 140, 90, 0.35);
 }
 
 .refresh-btn:disabled {
-  background: #9E9BB0;
+  background: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -325,14 +346,14 @@ onUnmounted(() => {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #E5E2DD;
-  border-top-color: #5B8C5A;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-success);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 .loading-state p {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
@@ -349,13 +370,13 @@ onUnmounted(() => {
 }
 
 .section-header h2 {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 20px;
   font-weight: 600;
 }
 
 .section-subtitle {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 14px;
   display: block;
   margin-top: 4px;
@@ -386,15 +407,15 @@ onUnmounted(() => {
   align-items: center;
   padding: 16px 0;
   margin-bottom: 32px;
-  border-top: 1px solid #E5E2DD;
-  border-bottom: 1px solid #E5E2DD;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .source-badge {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -403,7 +424,7 @@ onUnmounted(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #5B8C5A;
+  background: var(--color-success);
   animation: pulse 2s infinite;
 }
 
@@ -414,6 +435,14 @@ onUnmounted(() => {
 
 .table-section {
   margin-top: 8px;
+}
+
+.table-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 @media (max-width: 1200px) {

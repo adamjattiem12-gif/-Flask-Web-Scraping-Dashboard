@@ -1,44 +1,49 @@
 """
 Storage layer.
 
-This file is responsible for saving and loading the application's data.
-Instead of using a database, the application stores data in JSON files.
+Persists application data to a local SQLite database (data/app.db)
+instead of loose JSON files. This gives us safe concurrent writes (two
+overlapping /api/scrape calls can no longer corrupt shared state the way
+plain file overwrites could) and a foundation for real querying later.
 
-It manages four types of data:
+Every function keeps the exact same name/signature/return shape it had
+under the old JSON-file implementation, so routes, scrapers, and tests
+that call load_items(), save_items(), add_history(), etc. did not need
+to change.
+
+It manages five types of data:
 - Items (scraped products, current snapshot)
 - Items History (versioned snapshots of items for Top Movers calculation)
 - Websites (registered websites to scrape)
 - History (records of previous scraping sessions)
+- Statistics (the latest computed summary stats)
 """
 
-# Import the json module to read and write JSON files
 import json
-
-# Import os to work with folders and file paths
-import os
-from pathlib import Path
+import logging
 from datetime import datetime
 
-# Make storage paths relative to the repository root rather than the current
-# working directory, so scraper runs from any folder still write to the same
-# data files.
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_FOLDER = PROJECT_ROOT / "data"
+from services.db import get_connection, init_db
 
-# File paths for each type of stored data
-ITEMS_FILE = DATA_FOLDER / "items.json"
-ITEMS_HISTORY_FILE = DATA_FOLDER / "items_history.json"
-WEBSITES_FILE = DATA_FOLDER / "websites.json"
-HISTORY_FILE = DATA_FOLDER / "history.json"
-STATISTICS_FILE = DATA_FOLDER / "statistics.json"
+logger = logging.getLogger(__name__)
 
-def ensure_data_folder():
-    """
-    Create the data folder if it does not already exist.
+MAX_HISTORY_SNAPSHOTS = 50
 
-    This prevents file errors when attempting to save data.
-    """
-    DATA_FOLDER.mkdir(parents=True, exist_ok=True)
+DEFAULT_WEBSITES = [
+    {
+        "name": "WebScraper E-Commerce Sandbox",
+        "url": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+        "market": "Retail Goods",
+    },
+    {
+        "name": "CoinPaprika API",
+        "url": "https://api.coinpaprika.com/v1/tickers",
+        "market": "Digital Assets",
+    },
+]
+
+# Ensure tables exist as soon as this module is imported.
+init_db()
 
 
 # ==========================
@@ -46,203 +51,245 @@ def ensure_data_folder():
 # ==========================
 
 def load_items():
-
-    ensure_data_folder()
-
-    if not ITEMS_FILE.exists():
-        return []
-
-    if ITEMS_FILE.stat().st_size == 0:
-        return []
-
-    with ITEMS_FILE.open("r") as file:
-        return json.load(file)
+    conn = get_connection()
+    try:
+        rows = conn.execute("SELECT payload FROM items ORDER BY row_id").fetchall()
+        return [json.loads(row["payload"]) for row in rows]
+    finally:
+        conn.close()
 
 
 def save_items(items):
     """
-    Save a list of scraped items to items.json.
+    Replace the current items snapshot with `items`.
 
-    Before overwriting the current snapshot, the existing items are versioned
-    into items_history.json so the frontend can calculate Top Movers by
-    comparing price changes across scrape runs.
-
-    Parameters:
-        items (list): A list containing scraped products.
+    Before overwriting, the existing items are versioned into the
+    items_history table (pruned to the most recent 50 snapshots) so the
+    frontend can calculate Top Movers by comparing price changes across
+    scrape runs.
     """
+    conn = get_connection()
+    try:
+        existing_rows = conn.execute("SELECT payload FROM items ORDER BY row_id").fetchall()
+        existing_items = [json.loads(row["payload"]) for row in existing_rows]
 
-    # Ensure the data folder exists
-    ensure_data_folder()
+        if existing_items:
+            conn.execute(
+                "INSERT INTO items_history (snapshot_at, items_json) VALUES (?, ?)",
+                (datetime.now().isoformat(), json.dumps(existing_items)),
+            )
+            # Prune old snapshots, keep only the most recent MAX_HISTORY_SNAPSHOTS
+            ids = [r["id"] for r in conn.execute(
+                "SELECT id FROM items_history ORDER BY id DESC"
+            ).fetchall()]
+            stale_ids = ids[MAX_HISTORY_SNAPSHOTS:]
+            if stale_ids:
+                conn.executemany("DELETE FROM items_history WHERE id = ?", [(i,) for i in stale_ids])
 
-    # ---- Versioning: snapshot the current items before overwriting ----
-    existing_items = load_items()
-    if existing_items:
-        # Load the existing version history (or start a new list)
-        if ITEMS_HISTORY_FILE.exists() and ITEMS_HISTORY_FILE.stat().st_size > 0:
-            with ITEMS_HISTORY_FILE.open("r") as f:
-                history_snapshots = json.load(f)
-        else:
-            history_snapshots = []
-
-        # Append the outgoing snapshot with a timestamp
-        history_snapshots.append({
-            "snapshot_at": datetime.now().isoformat(),
-            "items": existing_items
-        })
-
-        # Prune old snapshots - keep only the last 50
-        MAX_HISTORY_SNAPSHOTS = 50
-        if len(history_snapshots) > MAX_HISTORY_SNAPSHOTS:
-            history_snapshots = history_snapshots[-MAX_HISTORY_SNAPSHOTS:]
-
-        # Persist the updated version history
-        with ITEMS_HISTORY_FILE.open("w") as f:
-            json.dump(history_snapshots, f, indent=4)
-
-    # Save the new (current) items as formatted JSON
-    with ITEMS_FILE.open("w") as file:
-        json.dump(items, file, indent=4)
+        conn.execute("DELETE FROM items")
+        conn.executemany(
+            "INSERT INTO items (market, payload) VALUES (?, ?)",
+            [(item.get("market", "Unknown"), json.dumps(item)) for item in items],
+        )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def load_items_history():
     """
-    Load all versioned item snapshots from items_history.json.
+    Load all versioned item snapshots.
 
     Returns a list of snapshot objects, each with:
         - "snapshot_at" (str): ISO timestamp when the snapshot was taken.
         - "items" (list): The item list at that point in time.
-
-    Returns an empty list if no history exists yet.
     """
-    ensure_data_folder()
-
-    if not ITEMS_HISTORY_FILE.exists():
-        return []
-
-    if ITEMS_HISTORY_FILE.stat().st_size == 0:
-        return []
-
-    with ITEMS_HISTORY_FILE.open("r") as file:
-        return json.load(file)
+    conn = get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT snapshot_at, items_json FROM items_history ORDER BY id"
+        ).fetchall()
+        return [
+            {"snapshot_at": row["snapshot_at"], "items": json.loads(row["items_json"])}
+            for row in rows
+        ]
+    finally:
+        conn.close()
 
 
 # ==========================
 # WEBSITE STORAGE
 # ==========================
 
+def _website_row_to_dict(row):
+    d = {"id": row["id"], "name": row["name"], "url": row["url"], "market": row["market"]}
+    if row["path_keywords"]:
+        d["path_keywords"] = json.loads(row["path_keywords"])
+    return d
+
+
 def load_websites():
-    ensure_data_folder()
-
-    default_websites = [
-        {
-            "name": "WebScraper E-Commerce Sandbox",
-            "url": "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
-            "market": "Retail Goods"
-        },
-        {
-            "name": "CoinGecko",
-            "url": "https://api.coingecko.com/api/v3/coins/markets",
-            "market": "Digital Assets"
-        }
-    ]
-
-    if not WEBSITES_FILE.exists() or WEBSITES_FILE.stat().st_size == 0:
-        save_websites(default_websites)
-        return default_websites
-
-    with WEBSITES_FILE.open("r") as file:
-        return json.load(file)
+    conn = get_connection()
+    try:
+        rows = conn.execute("SELECT * FROM websites ORDER BY id").fetchall()
+        if not rows:
+            for w in DEFAULT_WEBSITES:
+                conn.execute(
+                    "INSERT INTO websites (name, url, market, path_keywords) VALUES (?, ?, ?, ?)",
+                    (w["name"], w["url"], w["market"], None),
+                )
+            conn.commit()
+            rows = conn.execute("SELECT * FROM websites ORDER BY id").fetchall()
+        return [_website_row_to_dict(row) for row in rows]
+    finally:
+        conn.close()
 
 
 def save_websites(websites):
     """
-    Save all registered websites to websites.json.
-
-    Parameters:
-        websites (list): A list of registered websites.
+    Replace the full website registry. Preserves ids on entries that have
+    one (so URL edits round-trip correctly); entries without an id are
+    inserted fresh.
     """
+    conn = get_connection()
+    try:
+        conn.execute("DELETE FROM websites")
+        for w in websites:
+            path_keywords = json.dumps(w["path_keywords"]) if w.get("path_keywords") else None
+            if w.get("id") is not None:
+                conn.execute(
+                    "INSERT INTO websites (id, name, url, market, path_keywords) VALUES (?, ?, ?, ?, ?)",
+                    (w["id"], w["name"], w["url"], w["market"], path_keywords),
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO websites (name, url, market, path_keywords) VALUES (?, ?, ?, ?)",
+                    (w["name"], w["url"], w["market"], path_keywords),
+                )
+        conn.commit()
+    finally:
+        conn.close()
 
-    # Ensure the data folder exists
-    ensure_data_folder()
 
-    # Save the website list as formatted JSON
-    with WEBSITES_FILE.open("w") as file:
-        json.dump(websites, file, indent=4)
+def add_website(name, url, market, path_keywords=None):
+    """Insert a single new website and return it (with its new id)."""
+    conn = get_connection()
+    try:
+        cur = conn.execute(
+            "INSERT INTO websites (name, url, market, path_keywords) VALUES (?, ?, ?, ?)",
+            (name, url, market, json.dumps(path_keywords) if path_keywords else None),
+        )
+        conn.commit()
+        new_id = cur.lastrowid
+        row = conn.execute("SELECT * FROM websites WHERE id = ?", (new_id,)).fetchone()
+        return _website_row_to_dict(row)
+    finally:
+        conn.close()
+
+
+def delete_website(website_id):
+    """Delete a website by id. Returns True if a row was deleted."""
+    conn = get_connection()
+    try:
+        cur = conn.execute("DELETE FROM websites WHERE id = ?", (website_id,))
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        conn.close()
 
 
 # ==========================
 # HISTORY STORAGE
 # ==========================
 
+def _history_row_to_dict(row):
+    return {
+        "id": row["id"],
+        "timestamp": row["timestamp"],
+        "scraper_type": row["scraper_type"],
+        "market": row["market"],
+        "items_found": row["items_found"],
+        "success": bool(row["success"]),
+        "error": row["error"],
+    }
+
+
 def load_history():
-    """
-    Load the scraping history.
-    """
-
-    ensure_data_folder()
-
-    if not HISTORY_FILE.exists():
-        return []
-
-    # If the file exists but is empty, return an empty list
-    if HISTORY_FILE.stat().st_size == 0:
-        return []
-
-    with HISTORY_FILE.open("r") as file:
-        return json.load(file)
+    conn = get_connection()
+    try:
+        rows = conn.execute("SELECT * FROM history ORDER BY id").fetchall()
+        return [_history_row_to_dict(row) for row in rows]
+    finally:
+        conn.close()
 
 
 def save_history(history):
-    """
-    Save the complete scraping history.
-
-    Parameters:
-        history (list): A list of scrape history records.
-    """
-
-    # Ensure the data folder exists
-    ensure_data_folder()
-
-    # Save the history records as formatted JSON
-    with HISTORY_FILE.open("w") as file:
-        json.dump(history, file, indent=4)
+    """Replace the complete scraping history (used by tests/back-compat)."""
+    conn = get_connection()
+    try:
+        conn.execute("DELETE FROM history")
+        conn.executemany(
+            "INSERT INTO history (timestamp, scraper_type, market, items_found, success, error) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    r.get("timestamp"),
+                    r.get("scraper_type"),
+                    r.get("market"),
+                    r.get("items_found", 0),
+                    1 if r.get("success") else 0,
+                    r.get("error"),
+                )
+                for r in history
+            ],
+        )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def add_history(record):
-    """
-    Add a single scraping record to the history.
+    """Add a single scraping record to the history table."""
+    conn = get_connection()
+    try:
+        conn.execute(
+            "INSERT INTO history (timestamp, scraper_type, market, items_found, success, error) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                record.get("timestamp"),
+                record.get("scraper_type"),
+                record.get("market"),
+                record.get("items_found", 0),
+                1 if record.get("success") else 0,
+                record.get("error"),
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
 
-    Parameters:
-        record (dict): Information about one scraping session,
-        such as timestamp, target website, number of items found,
-        and whether the scrape was successful.
-    """
 
-    # Load the existing history records
-    history = load_history()
-
-    # Add the new record to the history list
-    history.append(record)
-
-    # Save the updated history back to the JSON file
-    save_history(history)
-
+# ==========================
+# STATISTICS STORAGE
+# ==========================
 
 def load_statistics():
-    ensure_data_folder()
-
-    if not STATISTICS_FILE.exists():
-        return {}
-
-    if STATISTICS_FILE.stat().st_size == 0:
-        return {}
-
-    with STATISTICS_FILE.open("r") as file:
-        return json.load(file)
+    conn = get_connection()
+    try:
+        row = conn.execute("SELECT payload FROM statistics WHERE id = 1").fetchone()
+        return json.loads(row["payload"]) if row else {}
+    finally:
+        conn.close()
 
 
 def save_statistics(statistics):
-    ensure_data_folder()
-
-    with STATISTICS_FILE.open("w") as file:
-        json.dump(statistics, file, indent=4)
+    conn = get_connection()
+    try:
+        conn.execute(
+            "INSERT INTO statistics (id, payload) VALUES (1, ?) "
+            "ON CONFLICT(id) DO UPDATE SET payload = excluded.payload",
+            (json.dumps(statistics),),
+        )
+        conn.commit()
+    finally:
+        conn.close()

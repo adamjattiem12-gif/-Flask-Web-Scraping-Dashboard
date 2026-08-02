@@ -10,11 +10,19 @@ import api from '../services/api'
 export const useItemsStore = defineStore('items', {
   state: () => ({
     items: [],           // All items from both markets
-    filteredItems: [],   // Items after search/filter applied
     loading: false,      // True when data is being fetched
     error: null,         // Error message if something fails
     previousItems: [],   // Store previous scrape data for change calculation
     itemHistory: {},     // Cache of historical prices per item ID
+    // ✅ Search & filter state — kept together so all three criteria
+    // (name search, source, price range) combine instead of one
+    // overwriting the results of another.
+    filters: {
+      search: '',
+      source: null,
+      minPrice: null,
+      maxPrice: null
+    },
     // ✅ ADDED: Stats for 3D chart and summary
     stats: {
       total_items: 0,
@@ -73,6 +81,32 @@ export const useItemsStore = defineStore('items', {
      */
     getItemById: (state) => (id) => {
       return state.items.find(item => item.id === id)
+    },
+
+    /**
+     * filteredItems - Applies the current search text, source, and price
+     * range filters together (rather than any one overwriting the others).
+     * This is what the Dashboard's DataTable and pagination should read
+     * from, so search/filter actions actually affect what's displayed.
+     */
+    filteredItems: (state) => {
+      const { search, source, minPrice, maxPrice } = state.filters
+
+      return state.items.filter(item => {
+        if (search && !item.name.toLowerCase().includes(search.toLowerCase())) {
+          return false
+        }
+        if (source && item.source !== source) {
+          return false
+        }
+        if (minPrice !== null && minPrice !== undefined && minPrice !== '' && item.price < minPrice) {
+          return false
+        }
+        if (maxPrice !== null && maxPrice !== undefined && maxPrice !== '' && item.price > maxPrice) {
+          return false
+        }
+        return true
+      })
     }
   },
 
@@ -102,7 +136,6 @@ export const useItemsStore = defineStore('items', {
         
         // Process items with change calculation
         this.items = this.calculateChanges(allItems)
-        this.filteredItems = this.items
         
         // ✅ UPDATE STATS after items are loaded
         this.updateStats()
@@ -182,7 +215,6 @@ export const useItemsStore = defineStore('items', {
         
         // Calculate changes and update
         this.items = this.calculateChanges(freshItems)
-        this.filteredItems = this.items
         
         // ✅ UPDATE STATS after items are updated
         this.updateStats()
@@ -234,31 +266,30 @@ export const useItemsStore = defineStore('items', {
     },
 
     /**
-     * searchItems - Filters items by name
+     * setSearchQuery - Updates the name-search text.
+     * Combines with any active source/price filters (via the
+     * filteredItems getter) instead of overwriting them.
      */
-    searchItems(query) {
-      if (!query || query.trim() === '') {
-        this.filteredItems = this.items
-        return
-      }
-
-      const searchTerm = query.toLowerCase().trim()
-      this.filteredItems = this.items.filter(item =>
-        item.name.toLowerCase().includes(searchTerm)
-      )
+    setSearchQuery(query) {
+      this.filters.search = (query || '').trim()
     },
 
     /**
-     * filterByMarket - Filters items by market type
+     * setFilters - Updates source/price-range filters from FilterPanel.
+     * Combines with the active search text (via the filteredItems
+     * getter) instead of overwriting it.
      */
-    filterByMarket(market) {
-      if (!market || market === 'All') {
-        this.filteredItems = this.items
-      } else {
-        this.filteredItems = this.items.filter(item =>
-          item.market === market
-        )
-      }
+    setFilters({ source = null, minPrice = null, maxPrice = null } = {}) {
+      this.filters.source = source || null
+      this.filters.minPrice = minPrice !== '' ? minPrice : null
+      this.filters.maxPrice = maxPrice !== '' ? maxPrice : null
+    },
+
+    /**
+     * clearFilters - Resets search text and source/price filters.
+     */
+    clearFilters() {
+      this.filters = { search: '', source: null, minPrice: null, maxPrice: null }
     },
 
     /**
@@ -266,9 +297,9 @@ export const useItemsStore = defineStore('items', {
      */
     resetItems() {
       this.items = []
-      this.filteredItems = []
       this.previousItems = []
       this.itemHistory = {}
+      this.filters = { search: '', source: null, minPrice: null, maxPrice: null }
       this.stats = {
         total_items: 0,
         markets: {

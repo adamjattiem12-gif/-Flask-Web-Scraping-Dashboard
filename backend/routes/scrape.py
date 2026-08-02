@@ -2,7 +2,7 @@ import logging
 import time
 from datetime import datetime
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from scrapers.crypto_scraper import scrape_crypto
 from scrapers.ecommerce_scraper import scrape_ecommerce
@@ -82,15 +82,18 @@ def calculate_statistics(items, history_limit=100):
     }
 
 
-def run_scraper_with_fallback(scraper_func, scraper_type, registry_url, default_url, market_name):
+def run_scraper_with_fallback(scraper_func, scraper_type, registry_url, default_url, market_name, path_keywords=None):
     target_url = registry_url
     original_failure = None
 
-    is_valid, reason = validate_scrape_url(target_url, scraper_type)
+    is_valid, reason = validate_scrape_url(target_url, scraper_type, path_keywords=path_keywords)
     if not is_valid:
         original_failure = f"URL_VALIDATION_FAILED: {reason}"
         logger.warning(f"{market_name} URL validation failed for {target_url}, falling back to {default_url}")
         target_url = default_url
+        # The fallback URL is one of our own known-good defaults, so it
+        # should be checked against the built-in keyword list rather than
+        # a possibly-unrelated custom one from the registry entry.
         is_valid, reason = validate_scrape_url(target_url, scraper_type)
         if not is_valid:
             raise ScraperError(market_name, registry_url, original_failure)
@@ -130,27 +133,70 @@ def run_scraper_with_fallback(scraper_func, scraper_type, registry_url, default_
             raise e
 
 
+VALID_MARKETS = ('Retail Goods', 'Digital Assets')
+
+
+def _get_requested_market():
+    """
+    Reads the optional 'market' parameter from the query string or JSON
+    body. Returns one of VALID_MARKETS, or None to scrape everything.
+    """
+    market = request.args.get('market')
+    if not market and request.is_json:
+        body = request.get_json(silent=True) or {}
+        market = body.get('market')
+
+    if not market or market == 'All':
+        return None
+
+    if market not in VALID_MARKETS:
+        raise ValueError(f"Unknown market '{market}'. Expected one of {VALID_MARKETS} or omitted for both.")
+
+    return market
+
+
 @scrape_bp.route('/api/scrape', methods=['POST'])
 def scrape():
     """
     POST /api/scrape
+    POST /api/scrape?market=Retail%20Goods
+    POST /api/scrape?market=Digital%20Assets
 
-    Triggers a scrape of both e-commerce and crypto sources.
+    Triggers a scrape of e-commerce and/or crypto sources. By default both
+    markets are scraped. Passing ?market=Retail Goods or
+    ?market=Digital Assets (or the same key in a JSON body) scrapes only
+    that market, leaving the other market's stored items untouched.
     Saves results to storage and logs the event.
     """
     logger.info("=== SCRAPE ENDPOINT CALLED ===")
 
     try:
+        requested_market = _get_requested_market()
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e), "data": None}), 400
+
+    scrape_ecommerce_market = requested_market in (None, "Retail Goods")
+    scrape_crypto_market = requested_market in (None, "Digital Assets")
+
+    try:
         logger.info("Step 1: Resolving scrape URLs from website registry...")
         websites = load_websites()
-        ecommerce_url = next(
-            (w['url'] for w in websites if w.get('market') in ('E-Commerce', 'Retail Goods')),
+        ecommerce_site = next(
+            (w for w in websites if w.get('market') in ('E-Commerce', 'Retail Goods')),
+            None
+        )
+        crypto_site = next(
+            (w for w in websites if w.get('market') in ('Cryptocurrency', 'Digital Assets')),
+            None
+        )
+        ecommerce_url = ecommerce_site['url'] if ecommerce_site else \
             "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets"
-        )
-        crypto_url = next(
-            (w['url'] for w in websites if w.get('market') in ('Cryptocurrency', 'Digital Assets')),
+        crypto_url = crypto_site['url'] if crypto_site else \
             "https://api.coinpaprika.com/v1/tickers"
-        )
+        # Custom sites registered via POST /api/websites can carry their own
+        # path_keywords so validate_scrape_url doesn't need editing per site.
+        ecommerce_keywords = ecommerce_site.get('path_keywords') if ecommerce_site else None
+        crypto_keywords = crypto_site.get('path_keywords') if crypto_site else None
         logger.info(f"  E-Commerce URL: {ecommerce_url}")
         logger.info(f"  Cryptocurrency URL: {crypto_url}")
 
@@ -161,54 +207,62 @@ def scrape():
         ec_error_reason = None
         cr_error_reason = None
 
-        logger.info("Step 2: Scraping e-commerce...")
-        try:
-            ecommerce_items = run_scraper_with_fallback(
-                scrape_ecommerce,
-                'ecommerce',
-                ecommerce_url,
-                "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
-                "Retail Goods"
-            )
-            logger.info(f"E-commerce scrape complete: {len(ecommerce_items)} items")
-        except ScraperError as e:
-            logger.error(f"E-commerce scrape failed: {e.reason}")
-            ec_failed = True
-            ec_error_reason = e.reason
-            add_history({
-                "timestamp": datetime.now().isoformat(),
-                "scraper_type": "ecommerce",
-                "market": "Retail Goods",
-                "items_found": 0,
-                "success": False,
-                "error": e.reason
-            })
+        if scrape_ecommerce_market:
+            logger.info("Step 2: Scraping e-commerce...")
+            try:
+                ecommerce_items = run_scraper_with_fallback(
+                    scrape_ecommerce,
+                    'ecommerce',
+                    ecommerce_url,
+                    "https://webscraper.io/test-sites/e-commerce/allinone/computers/tablets",
+                    "Retail Goods",
+                    path_keywords=ecommerce_keywords
+                )
+                logger.info(f"E-commerce scrape complete: {len(ecommerce_items)} items")
+            except ScraperError as e:
+                logger.error(f"E-commerce scrape failed: {e.reason}")
+                ec_failed = True
+                ec_error_reason = e.reason
+                add_history({
+                    "timestamp": datetime.now().isoformat(),
+                    "scraper_type": "ecommerce",
+                    "market": "Retail Goods",
+                    "items_found": 0,
+                    "success": False,
+                    "error": e.reason
+                })
+        else:
+            logger.info("Step 2: Skipping e-commerce (market-specific scrape requested)")
 
-        if not ec_failed:
+        if not ec_failed and scrape_ecommerce_market and scrape_crypto_market:
             time.sleep(2)
 
-        logger.info("Step 3: Scraping crypto...")
-        try:
-            crypto_items = run_scraper_with_fallback(
-                scrape_crypto,
-                'crypto',
-                crypto_url,
-                "https://api.coinpaprika.com/v1/tickers",
-                "Digital Assets"
-            )
-            logger.info(f"Crypto scrape complete: {len(crypto_items)} items")
-        except ScraperError as e:
-            logger.error(f"Crypto scrape failed: {e.reason}")
-            cr_failed = True
-            cr_error_reason = e.reason
-            add_history({
-                "timestamp": datetime.now().isoformat(),
-                "scraper_type": "crypto",
-                "market": "Digital Assets",
-                "items_found": 0,
-                "success": False,
-                "error": e.reason
-            })
+        if scrape_crypto_market:
+            logger.info("Step 3: Scraping crypto...")
+            try:
+                crypto_items = run_scraper_with_fallback(
+                    scrape_crypto,
+                    'crypto',
+                    crypto_url,
+                    "https://api.coinpaprika.com/v1/tickers",
+                    "Digital Assets",
+                    path_keywords=crypto_keywords
+                )
+                logger.info(f"Crypto scrape complete: {len(crypto_items)} items")
+            except ScraperError as e:
+                logger.error(f"Crypto scrape failed: {e.reason}")
+                cr_failed = True
+                cr_error_reason = e.reason
+                add_history({
+                    "timestamp": datetime.now().isoformat(),
+                    "scraper_type": "crypto",
+                    "market": "Digital Assets",
+                    "items_found": 0,
+                    "success": False,
+                    "error": e.reason
+                })
+        else:
+            logger.info("Step 3: Skipping crypto (market-specific scrape requested)")
 
         if ec_failed and cr_failed:
             return jsonify({
@@ -224,6 +278,17 @@ def scrape():
             }), 500
 
         all_items = ecommerce_items + crypto_items
+
+        # If this was a market-specific scrape, the other market's items were
+        # never touched above (they're still []), so pull them from storage
+        # to avoid wiping them out when we save.
+        if requested_market is not None:
+            existing_items = load_items()
+            if not scrape_ecommerce_market:
+                all_items = [i for i in existing_items if i.get('market') == 'Retail Goods'] + all_items
+            if not scrape_crypto_market:
+                all_items = all_items + [i for i in existing_items if i.get('market') == 'Digital Assets']
+
         logger.info(f"Step 4: Combined {len(all_items)} items total")
 
         logger.info("Step 5: Validating data...")

@@ -1,5 +1,9 @@
 <template>
   <div class="app-container">
+    <div v-if="!connectivity.isOnline" class="connectivity-banner" role="alert">
+      ⚠️ Can't reach the Flask server. Is the backend running?
+    </div>
+
     <button 
       class="hamburger-btn" 
       @click="toggleSidebar" 
@@ -20,7 +24,7 @@
 
     <Sidebar :is-open="sidebarOpen" @close="closeSidebar" />
     
-    <main class="main-content" :class="{ 'sidebar-open': sidebarOpen }">
+    <main class="main-content" :class="{ 'sidebar-open': sidebarOpen, 'has-banner': !connectivity.isOnline }">
       <router-view />
     </main>
   </div>
@@ -29,6 +33,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
+import { useThemeStore } from '@/stores/themeStore'
+import { useConnectivityStore } from '@/stores/connectivityStore'
+
+const theme = useThemeStore()
+const connectivity = useConnectivityStore()
+theme.init()
+connectivity.init()
 
 const sidebarOpen = ref(false)
 
@@ -75,8 +86,9 @@ onUnmounted(() => {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #F7F5F2;
-  color: #2D2A3E;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .app-container {
@@ -91,13 +103,37 @@ body {
   transition: margin-left 0.3s ease;
 }
 
+.main-content.has-banner {
+  padding-top: 44px;
+}
+
+.connectivity-banner {
+  position: fixed;
+  top: 0;
+  left: 240px;
+  right: 0;
+  z-index: 200;
+  background: #B3261E;
+  color: #ffffff;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .connectivity-banner {
+    left: 0;
+  }
+}
+
 .hamburger-btn {
   display: none;
   position: fixed;
   top: 16px;
   left: 16px;
   z-index: 1000;
-  background: #2D2A3E;
+  background: var(--color-sidebar);
   border: none;
   border-radius: 8px;
   padding: 10px 12px;
@@ -108,7 +144,8 @@ body {
 }
 
 .hamburger-btn:hover {
-  background: #3D3A4E;
+  background: var(--color-sidebar);
+  opacity: 0.85;
   transform: scale(1.05);
 }
 
@@ -146,7 +183,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(0 0 0 / 50%);
   z-index: 99;
   animation: fadeIn 0.3s ease;
 }

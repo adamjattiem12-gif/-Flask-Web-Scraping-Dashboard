@@ -2,7 +2,12 @@
   <div class="page-container">
     <h1>₿ Digital Assets</h1>
     <p class="subtitle">Track digital-asset prices and market movements here.</p>
-    
+
+    <!-- Scrape Button - scoped to Digital Assets only -->
+    <div class="scrape-section">
+      <ScrapeButton market="Digital Assets" @scrape-complete="refreshCryptoItems" />
+    </div>
+
     <!-- Loading State -->
     <div v-if="itemsStore.loading" class="loading">
       <div class="spinner"></div>
@@ -34,9 +39,14 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useItemsStore } from '../stores/itemsStore'
+import ScrapeButton from '../components/ScrapeButton.vue'
 
 const itemsStore = useItemsStore()
 const cryptoItems = computed(() => itemsStore.getCryptoItems)
+
+const refreshCryptoItems = async () => {
+  await itemsStore.fetchItems()
+}
 
 onMounted(() => {
   itemsStore.fetchItems()
@@ -46,21 +56,25 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 24px;
-  background: #F7F5F2;
+  background: var(--color-bg);
   min-height: 100vh;
 }
 
 h1 {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 28px;
   margin-bottom: 4px;
 }
 
 .subtitle {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-size: 16px;
   margin-top: 0;
   margin-bottom: 32px;
+}
+
+.scrape-section {
+  margin: 16px 0 24px 0;
 }
 
 .items-grid {
@@ -71,16 +85,16 @@ h1 {
 }
 
 .item-card {
-  background: white;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 24px;
   transition: all 0.2s ease;
-  border-top: 4px solid #4A8C8C;
+  border-top: 4px solid var(--color-info);
 }
 
 .item-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px var(--color-shadow);
   transform: translateY(-2px);
 }
 
@@ -93,14 +107,14 @@ h1 {
 
 .item-header h3 {
   margin: 0;
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 16px;
   font-weight: 600;
 }
 
 .badge {
   display: inline-block;
-  background: #4A8C8C;
+  background: var(--color-info);
   color: white;
   padding: 2px 10px;
   border-radius: 4px;
@@ -112,7 +126,7 @@ h1 {
 .price {
   font-size: 24px;
   font-weight: bold;
-  color: #4A8C8C;
+  color: var(--color-info);
   margin: 8px 0 4px 0;
 }
 
@@ -123,15 +137,15 @@ h1 {
 }
 
 .change.up {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .change.down {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .volume {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 13px;
   margin: 4px 0 0 0;
 }
@@ -139,12 +153,12 @@ h1 {
 .loading {
   text-align: center;
   padding: 60px 20px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
 }
 
 .spinner {
-  border: 3px solid #F7F5F2;
-  border-top: 3px solid #4A8C8C;
+  border: 3px solid var(--color-bg);
+  border-top: 3px solid var(--color-info);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -160,6 +174,6 @@ h1 {
 .error {
   text-align: center;
   padding: 40px;
-  color: #C1666B;
+  color: var(--color-danger);
 }
 </style>

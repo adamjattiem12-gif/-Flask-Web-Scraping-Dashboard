@@ -29,14 +29,14 @@ defineProps({
 
 <style scoped>
 .top-movers {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 20px 24px;
 }
 
 .section-title {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -54,12 +54,12 @@ defineProps({
   gap: 12px;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #F7F5F2;
+  background: var(--color-bg);
   font-size: 14px;
 }
 
 .mover-rank {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-weight: 600;
   width: 28px;
 }
@@ -67,11 +67,11 @@ defineProps({
 .mover-name {
   flex: 1;
   font-weight: 500;
-  color: #2D2A3E;
+  color: var(--color-text);
 }
 
 .mover-price {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 
@@ -82,17 +82,17 @@ defineProps({
 }
 
 .mover-change.positive {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .mover-change.negative {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .empty-state {
   text-align: center;
   padding: 20px 0;
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 </style>

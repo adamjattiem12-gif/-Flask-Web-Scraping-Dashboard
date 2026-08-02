@@ -66,8 +66,8 @@ onMounted(() => {
 
 <style scoped>
 .watchlist {
-  background: #FFFFFF;
-  border: 1px solid #E5E2DD;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 20px 24px;
   min-height: 200px;
@@ -81,16 +81,16 @@ onMounted(() => {
 }
 
 .section-title {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 16px;
   font-weight: 600;
   margin: 0;
 }
 
 .item-count {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-size: 13px;
-  background: #F7F5F2;
+  background: var(--color-bg);
   padding: 2px 12px;
   border-radius: 20px;
 }
@@ -99,19 +99,19 @@ onMounted(() => {
 .empty-state {
   text-align: center;
   padding: 20px 0;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
 }
 
 .empty-state p {
   margin: 0;
   font-size: 14px;
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
 }
 
 .hint {
   font-size: 13px !important;
   margin-top: 4px !important;
-  color: #9E9BB0 !important;
+  color: var(--color-text-muted) !important;
 }
 
 /* ✅ WATCHLIST ITEMS */
@@ -127,12 +127,12 @@ onMounted(() => {
   gap: 12px;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #F7F5F2;
+  background: var(--color-bg);
   font-size: 14px;
 }
 
 .watch-rank {
-  color: #9E9BB0;
+  color: var(--color-text-muted);
   font-weight: 600;
   width: 28px;
   font-size: 13px;
@@ -141,12 +141,12 @@ onMounted(() => {
 .watch-name {
   flex: 1;
   font-weight: 500;
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 14px;
 }
 
 .watch-price {
-  color: #5C5A6B;
+  color: var(--color-text-secondary);
   font-weight: 500;
   font-size: 14px;
 }
@@ -159,17 +159,17 @@ onMounted(() => {
 }
 
 .watch-change.positive {
-  color: #5B8C5A;
+  color: var(--color-success);
 }
 
 .watch-change.negative {
-  color: #C1666B;
+  color: var(--color-danger);
 }
 
 .remove-btn {
   background: none;
   border: none;
-  color: #C1666B;
+  color: var(--color-danger);
   cursor: pointer;
   font-size: 14px;
   padding: 0 4px;
@@ -179,7 +179,7 @@ onMounted(() => {
 
 .remove-btn:hover {
   opacity: 1;
-  color: #A85257;
+  color: var(--color-danger-strong);
   transform: scale(1.2);
 }
 
@@ -187,14 +187,14 @@ onMounted(() => {
 .loading-state {
   text-align: center;
   padding: 30px 0;
-  color: #9E9BB0;
+  color: var(--color-text-muted);
 }
 
 .spinner {
   width: 30px;
   height: 30px;
-  border: 3px solid #F7F5F2;
-  border-top: 3px solid #5B8C5A;
+  border: 3px solid var(--color-bg);
+  border-top: 3px solid var(--color-success);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 12px;

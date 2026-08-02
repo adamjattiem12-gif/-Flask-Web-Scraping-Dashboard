@@ -1,17 +1,33 @@
 <template>
-  <div ref="canvasContainer" class="chart"></div>
+  <div class="chart-wrapper">
+    <span v-if="isDemoData" class="demo-badge" title="No live statistics yet — showing placeholder data">
+      🧪 Demo data
+    </span>
+    <div ref="canvasContainer" class="chart"></div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useStatsStore } from "@/stores/statsStore";
 import { useItemsStore } from "@/stores/itemsStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { createThreeChart } from "@/utils/three-helpers";
 
 const canvasContainer = ref(null);
 const statsStore = useStatsStore();
 const itemsStore = useItemsStore();
+const themeStore = useThemeStore();
 let chart = null;
+
+// True whenever we don't have real backend stats yet, so the fallback
+// numbers baked into three-helpers.js are being shown instead. Surfaced
+// as a visible badge so nobody mistakes placeholder bars for live data
+// during a demo.
+const isDemoData = computed(() => {
+  const stats = statsStore.stats || {};
+  return !stats.total_items;
+});
 
 // ✅ Build chart data from stats store with fallback
 const getChartData = () => {
@@ -33,6 +49,7 @@ const getChartData = () => {
   
   console.log('📊 Chart data:', chartData);
   return chartData;
+
 };
 
 // ✅ Render the chart with container checks
@@ -97,6 +114,17 @@ watch(
   { deep: true }
 );
 
+// ✅ Watch theme changes - CSS variables don't reach the WebGL canvas, so
+// the chart needs to be told explicitly to re-color itself.
+watch(
+  () => themeStore.theme,
+  () => {
+    if (chart) {
+      chart.updateTheme();
+    }
+  }
+);
+
 // ✅ Cleanup
 onUnmounted(() => {
   console.log('🗑️ Destroying chart');
@@ -108,15 +136,33 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.chart-wrapper {
+  position: relative;
+}
+
+.demo-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  background: rgba(45, 42, 62, 0.85);
+  color: var(--color-warning-strong);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
 .chart {
   width: 100%;
   height: 360px;
   margin: 0;
   border-radius: 12px;
   overflow: hidden;
-  background: #F7F5F2;
-  border: 1px solid #E5E2DD;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 /* ✅ Responsive - full width on smaller screens */

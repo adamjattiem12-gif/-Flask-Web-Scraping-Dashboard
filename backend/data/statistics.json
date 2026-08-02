@@ -1,18 +1,18 @@
 {
     "total_items": 31,
     "active_sites": 2,
-    "success_rate": 54.5,
-    "last_scrape": "2026-07-31T15:42:22.929624",
+    "success_rate": 65.0,
+    "last_scrape": "2026-08-02T13:42:57.306013",
     "markets": {
         "Retail Goods": {
             "item_count": 21,
             "avg_price": 232.04,
-            "last_updated": "2026-07-31T15:42:20.228352"
+            "last_updated": "2026-08-02T13:42:57.248209"
         },
         "Digital Assets": {
             "item_count": 10,
-            "avg_price": 6809.6,
-            "last_updated": "2026-07-31T15:42:22.873101"
+            "avg_price": 6753.46,
+            "last_updated": "2026-08-02T13:42:43.596188"
         }
     }
 }
