@@ -117,19 +117,14 @@ export const useItemsStore = defineStore('items', {
      * - Crypto: CoinPaprika API
      */
     async fetchItems() {
-      this.loading = true
-      this.error = null
+  this.loading = true
+  this.error = null
 
-      try {
-        const [retailResponse, cryptoResponse] = await Promise.all([
-          api.get('/api/items', { params: { market: 'Retail Goods', per_page: 100 } }),
-          api.get('/api/items', { params: { market: 'Digital Assets', per_page: 100 } })
-        ])
-        const retailItems = retailResponse.data.items
-        const cryptoItems = cryptoResponse.data.items
+  try {
 
-        // Combine both datasets
-        const allItems = [...retailItems, ...cryptoItems]
+      const response = await api.get('/api/display-items')
+
+      const allItems = response.data
         
         // Store previous items before updating
         this.previousItems = [...this.items]
@@ -192,39 +187,44 @@ export const useItemsStore = defineStore('items', {
     },
 
     /**
-     * updateItemsAfterScrape - Updates items after a scrape
-     */
-    async updateItemsAfterScrape(newItems = null) {
-      try {
-        let freshItems = newItems
-        
-        if (!freshItems) {
-          // Fetch fresh data from both APIs
-          const [retailRes, cryptoRes] = await Promise.all([
-            api.get('/api/items', { params: { market: 'Retail Goods', per_page: 100 } }),
-            api.get('/api/items', { params: { market: 'Digital Assets', per_page: 100 } })
-          ])
+/**
+ * updateItemsAfterScrape - Updates items after a scrape
+ */
+async updateItemsAfterScrape(newItems = null) {
 
-          const retailItems = retailRes.data.items
-          const cryptoItems = cryptoRes.data.items
-          freshItems = [...retailItems, ...cryptoItems]
-        }
-        
-        // Store previous items for change calculation
-        this.previousItems = [...this.items]
-        
-        // Calculate changes and update
-        this.items = this.calculateChanges(freshItems)
-        
-        // ✅ UPDATE STATS after items are updated
-        this.updateStats()
-        
-        return this.items
-      } catch (error) {
-        this.error = `Failed to update items: ${error.error || error.message}`
-        throw error
-      }
-    },
+  try {
+
+    let freshItems = newItems
+
+    // If nothing was passed in, load the current display items
+    if (!freshItems) {
+
+      const response = await api.get('/api/display-items')
+
+      freshItems = response.data
+
+    }
+
+    // Store previous items for change calculation
+    this.previousItems = [...this.items]
+
+    // Update table
+    this.items = this.calculateChanges(freshItems)
+
+    // Update chart statistics
+    this.updateStats()
+
+    return this.items
+
+  } catch (error) {
+
+    this.error = `Failed to update items: ${error.message}`
+
+    throw error
+
+  }
+
+},
 
     /**
      * ✅ updateStats - Calculates and updates stats for the 3D chart

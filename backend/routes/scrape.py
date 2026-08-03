@@ -336,6 +336,12 @@ def scrape():
         logger.info("Step 6: Saving items...")
         try:
             save_items(all_items)
+
+            from routes.display import current_items
+
+            current_items.clear()
+            current_items.extend(all_items)
+
             logger.info(f"Items saved: {len(all_items)}")
         except Exception as e:
             logger.error(f"Failed to save items: {str(e)}")

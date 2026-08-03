@@ -108,6 +108,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import axios from 'axios'
 
 // STORES
 import { useItemsStore } from '@/stores/itemsStore'
@@ -163,20 +164,56 @@ const updateTimestamp = () => {
   lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
 }
 
-const refreshAllData = async () => {
-  isRefreshing.value = true
-  tableLoading.value = true
+const loadDashboard = async () => {
+  isLoading.value = true
+
   try {
     await itemsStore.fetchItems()
     await statsStore.fetchStats()
+
     updateTimestamp()
+
     totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
+
     errorMessage.value = ''
   } catch (error) {
-    errorMessage.value = error.message || 'Failed to load data'
+    errorMessage.value = error.message || 'Failed to load dashboard'
   } finally {
+    isLoading.value = false
+  }
+}
+
+
+const refreshAllData = async () => {
+  isRefreshing.value = true
+  tableLoading.value = true
+
+  try {
+
+    // Clear the temporary display items on the backend
+    await axios.post('/api/display-items/clear')
+
+    // Clear the Vue table immediately
+    itemsStore.items = []
+
+    // Refresh only the statistics
+    await statsStore.fetchStats()
+
+    updateTimestamp()
+
+    totalPages.value = 0
+
+    errorMessage.value = ''
+
+  } catch (error) {
+
+    errorMessage.value = error.message || 'Failed to load data'
+
+  } finally {
+
     isRefreshing.value = false
     tableLoading.value = false
+
   }
 }
 
@@ -198,12 +235,17 @@ const handlePageChange = (page) => {
 // LIFECYCLE
 onMounted(async () => {
   try {
-    await refreshAllData()
-    refreshInterval = setInterval(refreshAllData, 60000)
+
+    // Load the dashboard normally
+    await loadDashboard()
+
+    // Optional: if you still want automatic refresh every minute
+    refreshInterval = setInterval(loadDashboard, 60000)
+
   } catch (error) {
+
     console.error('Error loading dashboard:', error)
-  } finally {
-    isLoading.value = false
+
   }
 })
 

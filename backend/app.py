@@ -12,6 +12,7 @@ from routes.history import history_bp
 from routes.websites import website_bp
 from services.scheduler import init_scheduler, shutdown_scheduler
 import atexit
+from routes.display import display_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +23,7 @@ app.register_blueprint(statistics_bp)
 app.register_blueprint(scrape_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(history_bp)
+app.register_blueprint(display_bp)
 app.register_blueprint(website_bp)
 
 logger = logging.getLogger(__name__)

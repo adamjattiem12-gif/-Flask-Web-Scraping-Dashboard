@@ -22,7 +22,7 @@ from services.storage import (
     load_statistics,
     save_statistics
 )
-
+from routes.display import set_current_items
 from utils.cleaners import clean_items, clean_price, clean_rating
 from utils.exceptions import ScraperError
 
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
         # Save everything
         save_items(all_items)
-
+        set_current_items(all_items)
         # Load statistics
         statistics = load_statistics()
 
