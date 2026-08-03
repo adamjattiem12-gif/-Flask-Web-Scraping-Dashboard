@@ -1,5 +1,10 @@
 <template>
   <div class="data-table-wrapper">
+    <div class="table-toolbar">
+      <SearchBar @search="handleSearch" />
+      <FilterPanel @filter="handleFilter" />
+    </div>
+
     <!-- Error state -->
     <div v-if="error" class="table-message error-message">
       <p>{{ error }}</p>
@@ -95,8 +100,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useWatchlistStore } from '@/stores/watchlistStore'
+import { useItemsStore } from '@/stores/itemsStore'
+import SearchBar from '@/components/SearchBar.vue'
+import FilterPanel from '@/components/FilterPanel.vue'
 
 const watchlistStore = useWatchlistStore()
+const itemsStore = useItemsStore()
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -166,10 +175,24 @@ const paginatedItems = computed(() => {
 })
 
 const pageNumbers = computed(() => {
+  const totalPages = Math.max(1, Math.ceil(filteredItems.value.length / pageSize))
   const pages = []
-  for (let i = 1; i <= props.totalPages; i++) pages.push(i)
+  for (let i = 1; i <= totalPages; i++) pages.push(i)
   return pages
 })
+
+const filteredItems = computed(() => {
+  if (!Array.isArray(props.items)) return []
+  return props.items
+})
+
+const handleSearch = (query) => {
+  itemsStore.setSearchQuery(query)
+}
+
+const handleFilter = (filters) => {
+  itemsStore.setFilters(filters)
+}
 
 const getSourceClass = (source) => {
   if (source === 'WebScraper.io' || source === 'WebScraper.io E-Commerce') return 'source-retail'
@@ -194,7 +217,8 @@ const getScrapedTime = (item) => {
 }
 
 const goToPage = (page) => {
-  if (page < 1 || page > props.totalPages || page === props.currentPage) return
+  const maxPage = Math.max(1, Math.ceil(filteredItems.value.length / pageSize))
+  if (page < 1 || page > maxPage || page === props.currentPage) return
   if (props.onPageChange) props.onPageChange(page)
   emit('page-change', page)
 }
@@ -215,6 +239,14 @@ const formatCurrency = (price, currency) => {
 <style scoped>
 .data-table-wrapper {
   width: 100%;
+}
+
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .data-table {

@@ -134,11 +134,11 @@ const tableLoading = ref(false)
 const lastUpdated = ref('')
 const errorMessage = ref('')
 const currentPage = ref(1)
-const totalPages = ref(1)
+const totalPages = computed(() => Math.max(1, Math.ceil((itemsStore.filteredItems ?? []).length / 10)))
 let refreshInterval = null
 
 // ALL DATA FROM STORES
-const tableItems = computed(() => itemsStore.items ?? [])
+const tableItems = computed(() => itemsStore.filteredItems ?? [])
 
 const retailRecentItems = computed(() => {
   const items = itemsStore.getRetailItems ?? []
@@ -173,7 +173,7 @@ const loadDashboard = async () => {
 
     updateTimestamp()
 
-    totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
+    currentPage.value = 1
 
     errorMessage.value = ''
   } catch (error) {
@@ -201,7 +201,7 @@ const refreshAllData = async () => {
 
     updateTimestamp()
 
-    totalPages.value = 0
+    currentPage.value = 1
 
     errorMessage.value = ''
 
