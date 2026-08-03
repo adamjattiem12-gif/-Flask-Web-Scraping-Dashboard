@@ -100,7 +100,7 @@
         </div>
 
         <!-- ✅ THREE.JS 3D BAR CHART -->
-        <ThreeDBarChart />
+        <ThreeDBarChart v-if="showChart" ref="chartRef" />
       </template>
     </div>
   </div>
@@ -126,6 +126,8 @@ import ThreeDBarChart from '@/components/ThreeDBarChart.vue'
 // STORE INSTANCES
 const itemsStore = useItemsStore()
 const statsStore = useStatsStore()
+const chartRef = ref(null)
+const showChart = ref(true)
 
 // STATE
 const isLoading = ref(true)
@@ -144,7 +146,8 @@ const retailRecentItems = computed(() => {
   const items = itemsStore.getRetailItems ?? []
   return items.slice(0, 3).map(item => ({
     name: item.name,
-    change: item.change ?? 0
+    price: item.price,
+    change: null
   }))
 })
 
@@ -152,7 +155,7 @@ const cryptoRecentItems = computed(() => {
   const items = itemsStore.getCryptoItems ?? []
   return items.slice(0, 3).map(item => ({
     name: item.name,
-    change: item.change ?? 0
+    change: item.change ?? item.extra?.change_24h ?? null
   }))
 })
 
@@ -170,6 +173,7 @@ const loadDashboard = async () => {
   try {
     await itemsStore.fetchItems()
     await statsStore.fetchStats()
+    chartRef.value?.reset()
 
     updateTimestamp()
 
@@ -187,6 +191,7 @@ const loadDashboard = async () => {
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
+  showChart.value = false
 
   try {
 
@@ -198,6 +203,7 @@ const refreshAllData = async () => {
 
     // Refresh only the statistics
     await statsStore.fetchStats()
+    chartRef.value?.reset()
 
     updateTimestamp()
 
@@ -221,6 +227,9 @@ const handleScrapeComplete = async () => {
   console.log('🔄 Scrape complete! Updating data...')
   await itemsStore.updateItemsAfterScrape()
   await statsStore.fetchStats()
+  showChart.value = true
+  await new Promise(resolve => requestAnimationFrame(resolve))
+  chartRef.value?.reset()
   statsStore.updateLastScrape()
   updateTimestamp()
   totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
@@ -257,7 +266,7 @@ onUnmounted(() => {
 <style scoped>
 .dashboard-page {
   min-height: 100vh;
-  background: #F7F5F2;
+  background: var(--color-bg);
   padding: 0;
 }
 
@@ -266,9 +275,9 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #FFFFFF;
+  background: var(--color-surface);
   padding: 16px 40px;
-  border-bottom: 1px solid #E5E2DD;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -285,7 +294,7 @@ onUnmounted(() => {
 }
 
 .dashboard-header-bar h1 {
-  color: #2D2A3E;
+  color: var(--color-text);
   font-size: 28px;
   font-weight: 600;
   margin: 0;
@@ -304,11 +313,14 @@ onUnmounted(() => {
   flex-wrap: wrap;
 }
 
+.header-right :deep(.scrape-button-wrapper) { padding: 0; }
+
 .refresh-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 24px;
+  height: 42px;
   border: none;
   border-radius: 8px;
   background: #5B8C5A;

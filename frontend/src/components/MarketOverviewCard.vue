@@ -18,9 +18,13 @@
       <div v-if="recentItems && recentItems.length > 0">
         <div v-for="item in recentItems" :key="item.name" class="activity-item">
           <span class="activity-name">{{ item.name }}</span>
-          <span class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-            {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change ?? 0).toFixed(2) }}%
+          <span v-if="item.price !== null && item.price !== undefined" class="activity-price">
+            ${{ Number(item.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
+          <span v-if="item.change !== null && item.change !== undefined" class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
+            {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change).toFixed(2) }}%
+          </span>
+          <span v-else class="activity-change unavailable">—</span>
         </div>
       </div>
       <div v-else class="activity-empty">
@@ -122,6 +126,13 @@ defineProps({
 
 .activity-change.negative {
   color: var(--color-danger);
+}
+
+.activity-price {
+  margin-left: auto;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .activity-empty {

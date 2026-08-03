@@ -31,6 +31,9 @@
           {{ item.extra?.change_24h >= 0 ? '▲' : '▼' }} {{ Math.abs(Number(item.extra?.change_24h || 0)).toFixed(2) }}% (24h)
         </p>
         <p class="volume">Volume: ${{ (item.extra?.volume || 0).toLocaleString() }}</p>
+        <button class="watch-btn" :class="{ watched: watchlistStore.isWatched(item.id) }" @click="watchlistStore.toggleWatch(item.id)">
+          {{ watchlistStore.isWatched(item.id) ? '★ In Watchlist' : '☆ Add to Watchlist' }}
+        </button>
       </div>
     </div>
   </div>
@@ -39,9 +42,11 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useItemsStore } from '../stores/itemsStore'
+import { useWatchlistStore } from '../stores/watchlistStore'
 import ScrapeButton from '../components/ScrapeButton.vue'
 
 const itemsStore = useItemsStore()
+const watchlistStore = useWatchlistStore()
 const cryptoItems = computed(() => itemsStore.getCryptoItems)
 
 const refreshCryptoItems = async () => {
@@ -149,6 +154,17 @@ h1 {
   font-size: 13px;
   margin: 4px 0 0 0;
 }
+
+.watch-btn {
+  margin-top: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.watch-btn.watched { color: var(--color-warning); border-color: var(--color-warning); }
 
 .loading {
   text-align: center;

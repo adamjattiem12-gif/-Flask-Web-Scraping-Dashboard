@@ -48,7 +48,7 @@ export function createThreeChart(container, data) {
   );
 
   // ✅ Position the camera so all bars are visible (moved back for better view)
-  camera.position.set(10, 8, 18);
+  camera.position.set(12, 8, 21);
   camera.lookAt(0, 4, 0);
 
   // Create the WebGL renderer that draws the scene.
@@ -77,6 +77,7 @@ export function createThreeChart(container, data) {
   controls.dampingFactor = 0.05;
   controls.enablePan = true;
   controls.target.set(0, 4, 0);
+  controls.autoRotate = false;
   
   // ✅ Add a directional light to illuminate the bars (brighter)
   const light = new THREE.DirectionalLight(0xffffff, 2.5);
@@ -111,9 +112,12 @@ export function createThreeChart(container, data) {
 
   // Store references to all bars so they can be updated later.
   const bars = [];
+  const barSets = {};
 
   // Creates a single 3D bar and adds it to the scene.
-  function createBar(height, color, x, info) {
+  // Bar height consistently represents item counts; average price is shown
+  // only as secondary tooltip context and is never confused with the height.
+  function createBar(key, height, color, x, info) {
     // Define the size of the bar.
     const barHeight = Math.max(height, 0.5);
     const geometry = new THREE.BoxGeometry(2, barHeight, 2);
@@ -159,13 +163,14 @@ export function createThreeChart(container, data) {
     wireframe.scale.y = 0;
     scene.add(wireframe);
     bars.push(wireframe);
+    barSets[key] = { bar: cube, outline: wireframe };
   }
 
   // ✅ Create the Retail Goods bar
-  createBar(
+  createBar('retail',
     chartData.markets["Retail Goods"]?.item_count || 0,
     0xff9900,
-    -8,
+    -7,
     {
       name: "Retail Goods",
       items: chartData.markets["Retail Goods"]?.item_count || 0,
@@ -174,7 +179,7 @@ export function createThreeChart(container, data) {
   );
 
   // ✅ Create the Digital Assets bar
-  createBar(
+  createBar('digital',
     chartData.markets["Digital Assets"]?.item_count || 0,
     0x00aaff,
     0,
@@ -186,10 +191,10 @@ export function createThreeChart(container, data) {
   );
 
   // ✅ Create the Total Items bar
-  createBar(
+  createBar('total',
     chartData.total_items || 0,
     0x00ff88,
-    8,
+    7,
     {
       name: "Total Items",
       items: chartData.total_items || 0,
@@ -233,13 +238,17 @@ export function createThreeChart(container, data) {
       const info = hoveredBar.userData;
 
       tooltip.style.display = "block";
-      tooltip.style.left = (event.clientX - rect.left + 15) + "px";
-      tooltip.style.top = (event.clientY - rect.top + 15) + "px";
+      const tooltipWidth = 220;
+      const tooltipHeight = 90;
+      const left = Math.min(event.clientX - rect.left + 15, rect.width - tooltipWidth - 8);
+      const top = Math.min(event.clientY - rect.top + 15, rect.height - tooltipHeight - 8);
+      tooltip.style.left = Math.max(8, left) + "px";
+      tooltip.style.top = Math.max(8, top) + "px";
 
       tooltip.innerHTML = `
         <strong style="font-size:15px;">${info.name}</strong><br>
         <span style="color:#ccc;">Items:</span> ${info.items}<br>
-        ${Number.isFinite(Number(info.price)) && Number(info.price) > 0 ? `<span style="color:#ccc;">Average Price:</span> R${Number(info.price).toFixed(2)}` : ''}
+        ${Number.isFinite(Number(info.price)) && Number(info.price) > 0 ? `<span style="color:#ccc;">Average Price:</span> $${Number(info.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : ''}
       `;
     } else {
       tooltip.style.display = "none";
@@ -308,31 +317,34 @@ export function createThreeChart(container, data) {
       
       console.log('🔄 Updating 3D chart with:', updateData);
       
-      // Update the height of each bar when new statistics arrive.
-      // Bars are stored in order: Retail, wireframe, Digital, wireframe, Total, wireframe
-      if (bars.length >= 6) {
-        // Retail bar (index 0) 
+      // Update by semantic key, rather than relying on array positions.
+      if (barSets.retail && barSets.digital && barSets.total) {
         const retailItems = updateData.markets["Retail Goods"]?.item_count || 0;
-        bars[0].userData.targetHeight = Math.max(retailItems, 0.5);
+        barSets.retail.bar.userData.targetHeight = Math.max(retailItems, 0.5);
         // Update userData
-        bars[0].userData.items = retailItems;
-        bars[0].userData.price = updateData.markets["Retail Goods"]?.avg_price || 0;
-        bars[0].userData.colorPulse = 1;
+        barSets.retail.bar.userData.items = retailItems;
+        barSets.retail.bar.userData.price = updateData.markets["Retail Goods"]?.avg_price || 0;
         
         // Digital bar (index 2)
         const digitalItems = updateData.markets["Digital Assets"]?.item_count || 0;
-        bars[2].userData.targetHeight = Math.max(digitalItems, 0.5);
-        bars[2].userData.items = digitalItems;
-        bars[2].userData.price = updateData.markets["Digital Assets"]?.avg_price || 0;
-        bars[2].userData.colorPulse = 1;
+        barSets.digital.bar.userData.targetHeight = Math.max(digitalItems, 0.5);
+        barSets.digital.bar.userData.items = digitalItems;
+        barSets.digital.bar.userData.price = updateData.markets["Digital Assets"]?.avg_price || 0;
         
         // Total bar (index 4)
         const totalItems = updateData.total_items || 0;
-        bars[4].userData.targetHeight = Math.max(totalItems, 0.5);
-        bars[4].userData.items = totalItems;
-        bars[4].userData.price = null;
-        bars[4].userData.colorPulse = 1;
+        barSets.total.bar.userData.targetHeight = Math.max(totalItems, 0.5);
+        barSets.total.bar.userData.items = totalItems;
+        barSets.total.bar.userData.price = null;
       }
+    },
+
+    reset(newData) {
+      // Restart the existing bars from zero, then animate them to fresh data.
+      bars.forEach((mesh) => {
+        if (mesh.userData?.name) mesh.scale.y = 0;
+      });
+      this.updateBars(newData);
     },
 
     // Clean up the renderer when the component is destroyed.

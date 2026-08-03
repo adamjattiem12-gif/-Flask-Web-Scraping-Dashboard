@@ -24,11 +24,13 @@
       <div v-for="item in retailItems" :key="item.id" class="item-card">
         <div class="item-header">
           <h3>{{ item.name }}</h3>
-          <span class="badge">⭐ {{ item.extra?.rating || 'N/A' }}</span>
         </div>
         <p class="price">${{ item.price }}</p>
         <p class="source">{{ item.source }}</p>
         <p class="review-count">{{ item.extra?.review_count || 0 }} reviews</p>
+        <button class="watch-btn" :class="{ watched: watchlistStore.isWatched(item.id) }" @click="watchlistStore.toggleWatch(item.id)">
+          {{ watchlistStore.isWatched(item.id) ? '★ In Watchlist' : '☆ Add to Watchlist' }}
+        </button>
       </div>
     </div>
   </div>
@@ -37,9 +39,11 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useItemsStore } from '../stores/itemsStore'
+import { useWatchlistStore } from '../stores/watchlistStore'
 import ScrapeButton from '../components/ScrapeButton.vue'
 
 const itemsStore = useItemsStore()
+const watchlistStore = useWatchlistStore()
 const retailItems = computed(() => itemsStore.getRetailItems)
 
 const refreshRetailItems = async () => {
@@ -138,6 +142,17 @@ h1 {
   font-size: 13px;
   margin: 4px 0 0 0;
 }
+
+.watch-btn {
+  margin-top: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.watch-btn.watched { color: var(--color-warning); border-color: var(--color-warning); }
 
 .loading {
   text-align: center;

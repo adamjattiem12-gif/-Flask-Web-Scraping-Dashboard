@@ -88,21 +88,23 @@ const formatTime = (date) => {
 
 <style scoped>
 .scrape-button-wrapper {
-  padding: 16px 0;
+  padding: 0 0 24px;
+  min-width: 180px;
 }
 
 .scrape-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 32px;
+  padding: 10px 24px;
   border: none;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 180px;
+  height: 42px;
   justify-content: center;
 }
 
@@ -150,7 +152,7 @@ const formatTime = (date) => {
 }
 
 .status-message {
-  margin: 8px 0 0;
+  margin-top: 6px;
   font-size: 14px;
   font-weight: 500;
 }
@@ -168,7 +170,7 @@ const formatTime = (date) => {
 }
 
 .last-scrape {
-  margin: 4px 0 0;
+  margin-top: 4px;
   font-size: 13px;
   color: var(--color-text-muted);
 }
