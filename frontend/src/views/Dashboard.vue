@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-page">
-    <!-- HEADER -->
+    <!-- ✅ STICKY HEADER -->
     <div class="dashboard-header-bar">
       <div class="header-left">
         <h1>📊 Dashboard</h1>
@@ -9,6 +9,8 @@
         </span>
       </div>
       <div class="header-right">
+        <!-- Scrape Button moved inside header -->
+        <ScrapeButton @scrape-complete="handleScrapeComplete" />
         <button class="refresh-btn" @click="refreshAllData" :disabled="isRefreshing">
           <span class="refresh-icon">⟳</span>
           {{ isRefreshing ? 'Refreshing...' : 'Refresh' }}
@@ -24,6 +26,14 @@
       </div>
 
       <template v-else>
+        <!-- Source Badge (moved to content area) -->
+        <div class="source-badge-container">
+          <div class="source-badge">
+            <span class="badge-dot"></span>
+            WebScraper.io · CoinPaprika
+          </div>
+        </div>
+
         <!-- STAT CARDS -->
         <div class="stats-grid">
           <StatCard
@@ -52,8 +62,6 @@
           <span class="section-subtitle">Market Overview · Updated from your latest scrape</span>
         </div>
 
-        
-
         <!-- MARKET OVERVIEW -->
         <div class="markets-grid">
           <MarketOverviewCard
@@ -78,25 +86,8 @@
           <Watchlist />
         </div>
 
-        <!-- SCRAPE BUTTON -->
-        <div class="action-bar">
-          <div class="source-badge">
-            <span class="badge-dot"></span>
-            WebScraper.io · CoinPaprika
-          </div>
-          <ScrapeButton @scrape-complete="handleScrapeComplete" />
-        </div>
-
-        <div class="three-chart-wrapper">
-          <ThreeDBarChart />
-        </div>
-
         <!-- DATA TABLE -->
         <div class="table-section">
-          <div class="table-controls">
-            <SearchBar @search="handleSearch" />
-            <FilterPanel @filter="handleFilter" />
-          </div>
           <DataTable 
             :items="tableItems" 
             :loading="tableLoading"
@@ -107,10 +98,12 @@
             @retry="refreshAllData"
           />
         </div>
+
+        <!-- ✅ THREE.JS 3D BAR CHART -->
+        <ThreeDBarChart />
       </template>
     </div>
   </div>
-  <!-- ✅ THREE.JS 3D BAR CHART -->
 </template>
 
 <script setup>
@@ -128,8 +121,6 @@ import DataTable from '@/components/DataTable.vue'
 import Watchlist from '@/components/Watchlist.vue'
 import ScrapeButton from '@/components/ScrapeButton.vue'
 import ThreeDBarChart from '@/components/ThreeDBarChart.vue'
-import SearchBar from '@/components/SearchBar.vue'
-import FilterPanel from '@/components/FilterPanel.vue'
 
 // STORE INSTANCES
 const itemsStore = useItemsStore()
@@ -142,17 +133,12 @@ const tableLoading = ref(false)
 const lastUpdated = ref('')
 const errorMessage = ref('')
 const currentPage = ref(1)
-const pageSize = 10
+const totalPages = ref(1)
 let refreshInterval = null
 
 // ALL DATA FROM STORES
-// ✅ Uses the filteredItems getter (search + source + price range) instead
-// of the raw, unfiltered items list, so Search/Filter actually affect the
-// table and pagination reflects the filtered result count.
-const tableItems = computed(() => itemsStore.filteredItems ?? [])
-const totalPages = computed(() => Math.max(1, Math.ceil(tableItems.value.length / pageSize)))
+const tableItems = computed(() => itemsStore.items ?? [])
 
-// ✅ RETAIL RECENT ITEMS - Uses store data with calculated changes
 const retailRecentItems = computed(() => {
   const items = itemsStore.getRetailItems ?? []
   return items.slice(0, 3).map(item => ({
@@ -161,7 +147,6 @@ const retailRecentItems = computed(() => {
   }))
 })
 
-// ✅ CRYPTO RECENT ITEMS - Uses store data with calculated changes
 const cryptoRecentItems = computed(() => {
   const items = itemsStore.getCryptoItems ?? []
   return items.slice(0, 3).map(item => ({
@@ -170,7 +155,6 @@ const cryptoRecentItems = computed(() => {
   }))
 })
 
-// ✅ TOP MOVERS - Uses store getter (cleaner)
 const topMoversData = computed(() => itemsStore.getTopMovers)
 
 // METHODS
@@ -179,7 +163,6 @@ const updateTimestamp = () => {
   lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
 }
 
-// ✅ MAIN REFRESH FUNCTION
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
@@ -187,7 +170,7 @@ const refreshAllData = async () => {
     await itemsStore.fetchItems()
     await statsStore.fetchStats()
     updateTimestamp()
-    if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+    totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
     errorMessage.value = ''
   } catch (error) {
     errorMessage.value = error.message || 'Failed to load data'
@@ -197,36 +180,19 @@ const refreshAllData = async () => {
   }
 }
 
-// ✅ SCRAPE COMPLETE - Store handles everything
 const handleScrapeComplete = async () => {
   console.log('🔄 Scrape complete! Updating data...')
-  
-  // Store handles change calculation and timestamp updates
   await itemsStore.updateItemsAfterScrape()
   await statsStore.fetchStats()
   statsStore.updateLastScrape()
-  
   updateTimestamp()
-  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+  totalPages.value = Math.ceil((itemsStore.items ?? []).length / 10)
   errorMessage.value = ''
-  
   console.log('✅ Data updated with real changes')
 }
 
 const handlePageChange = (page) => {
   currentPage.value = page
-}
-
-// ✅ SEARCH & FILTER - Update store filters and jump back to page 1 so
-// users don't land on a now-empty/out-of-range page after filtering.
-const handleSearch = (query) => {
-  itemsStore.setSearchQuery(query)
-  currentPage.value = 1
-}
-
-const handleFilter = (filters) => {
-  itemsStore.setFilters(filters)
-  currentPage.value = 1
 }
 
 // LIFECYCLE
@@ -249,19 +215,24 @@ onUnmounted(() => {
 <style scoped>
 .dashboard-page {
   min-height: 100vh;
-  background: var(--color-bg);
+  background: #F7F5F2;
   padding: 0;
 }
 
+/* ✅ STICKY HEADER - FIXED AT TOP */
 .dashboard-header-bar {
-  background: var(--color-surface);
-  padding: 24px 40px;
-  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #FFFFFF;
+  padding: 16px 40px;
+  border-bottom: 1px solid #E5E2DD;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .header-left {
@@ -272,16 +243,23 @@ onUnmounted(() => {
 }
 
 .dashboard-header-bar h1 {
-  color: var(--color-text);
+  color: #2D2A3E;
   font-size: 28px;
   font-weight: 600;
   margin: 0;
 }
 
 .last-updated {
-  color: var(--color-text-muted);
+  color: #9E9BB0;
   font-size: 13px;
   font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .refresh-btn {
@@ -291,25 +269,28 @@ onUnmounted(() => {
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
-  background: var(--color-success);
-  color: var(--color-surface);
+  background: #5B8C5A;
+  color: #FFFFFF;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(91, 140, 90, 0.2);
+  white-space: nowrap;
 }
 
 .refresh-btn:hover:not(:disabled) {
-  background: var(--color-success-strong);
+  background: #4A7349;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(91, 140, 90, 0.35);
 }
 
 .refresh-btn:disabled {
-  background: var(--color-text-muted);
+  background: #9E9BB0;
   cursor: not-allowed;
   opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 
 .refresh-icon {
@@ -330,8 +311,40 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
+/* ✅ CONTENT AREA - Adds top padding to prevent content hiding behind sticky header */
 .dashboard-content {
-  padding: 32px 40px 40px 40px;
+  padding: 24px 40px 40px 40px;
+}
+
+/* ✅ SOURCE BADGE - Moved to content area */
+.source-badge-container {
+  padding: 8px 0 16px 0;
+}
+
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #5C5A6B;
+  font-size: 14px;
+  font-weight: 500;
+  background: #FFFFFF;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #E5E2DD;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5B8C5A;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 .loading-state {
@@ -346,14 +359,14 @@ onUnmounted(() => {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-success);
+  border: 3px solid #E5E2DD;
+  border-top-color: #5B8C5A;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 .loading-state p {
-  color: var(--color-text-muted);
+  color: #9E9BB0;
   font-size: 14px;
 }
 
@@ -370,21 +383,16 @@ onUnmounted(() => {
 }
 
 .section-header h2 {
-  color: var(--color-text);
+  color: #2D2A3E;
   font-size: 20px;
   font-weight: 600;
 }
 
 .section-subtitle {
-  color: var(--color-text-muted);
+  color: #9E9BB0;
   font-size: 14px;
   display: block;
   margin-top: 4px;
-}
-
-/* ✅ 3D CHART WRAPPER - Add some spacing */
-.three-chart-wrapper {
-  margin-bottom: 32px;
 }
 
 .markets-grid {
@@ -401,50 +409,16 @@ onUnmounted(() => {
   margin-bottom: 32px;
 }
 
-.action-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  margin-bottom: 32px;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.source-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-success);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
 .table-section {
   margin-top: 8px;
 }
 
-.table-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 20px;
+/* ✅ 3D CHART WRAPPER */
+.three-chart-wrapper {
+  margin-bottom: 32px;
 }
 
+/* RESPONSIVE */
 @media (max-width: 1200px) {
   .stats-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -462,33 +436,40 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .dashboard-header-bar {
-    padding: 16px 20px;
+    padding: 12px 16px;
     flex-direction: column;
     align-items: flex-start;
   }
+
   .header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
+    width: 100%;
   }
+
   .last-updated {
     font-size: 12px;
   }
-  .dashboard-content {
-    padding: 20px;
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-start;
   }
+
+  .dashboard-content {
+    padding: 16px;
+  }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
+
   .dashboard-header-bar h1 {
     font-size: 24px;
   }
-  .action-bar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
+
   .refresh-btn {
     width: 100%;
     justify-content: center;
@@ -497,16 +478,29 @@ onUnmounted(() => {
 
 @media (max-width: 375px) {
   .dashboard-header-bar {
-    padding: 12px 16px;
+    padding: 10px 12px;
   }
+
   .dashboard-content {
-    padding: 16px;
+    padding: 12px;
   }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
+
   .dashboard-header-bar h1 {
     font-size: 20px;
+  }
+
+  .header-right {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h1>:shopping_trolley: Retail Goods</h1>
+    <h1>🛒 Retail Goods</h1>
     <p class="subtitle">Track prices, availability, and changes for your retail sources here.</p>
 
     <!-- Scrape Button with auto-refresh -->
@@ -16,7 +16,7 @@
 
     <!-- Error State -->
     <div v-else-if="itemsStore.error" class="error">
-      :x: {{ itemsStore.error }}
+      ❌ {{ itemsStore.error }}
     </div>
 
     <!-- Items Grid -->
@@ -24,7 +24,8 @@
       <div v-for="item in retailItems" :key="item.id" class="item-card">
         <div class="item-header">
           <h3>{{ item.name }}</h3>
-          <span class="badge">:star: {{ item.extra?.rating || 'N/A' }}</span>
+          <!-- ✅ STAR ICON REMOVED -->
+          <!-- <span class="badge">⭐ {{ item.extra?.rating || 'N/A' }}</span> -->
         </div>
         <p class="price">${{ item.price }}</p>
         <p class="source">{{ item.source }}</p>
@@ -42,7 +43,7 @@ import ScrapeButton from '../components/ScrapeButton.vue'
 const itemsStore = useItemsStore()
 const retailItems = computed(() => itemsStore.getRetailItems)
 
-// :white_check_mark: NEW: Refresh retail items when scrape completes
+// Refresh retail items when scrape completes
 const refreshRetailItems = async () => {
   await itemsStore.fetchItems()
 }
@@ -108,9 +109,11 @@ h1 {
   color: #2D2A3E;
   font-size: 16px;
   font-weight: 600;
+  flex: 1;
 }
 
-.badge {
+/* ✅ Badge removed - no longer needed */
+/* .badge {
   display: inline-block;
   background: #D4914A;
   color: white;
@@ -119,7 +122,7 @@ h1 {
   font-size: 12px;
   font-weight: bold;
   white-space: nowrap;
-}
+} */
 
 .price {
   font-size: 24px;
@@ -165,5 +168,43 @@ h1 {
   text-align: center;
   padding: 40px;
   color: #C1666B;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 16px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  
+  .item-card {
+    padding: 16px;
+  }
+  
+  .price {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 375px) {
+  .page-container {
+    padding: 12px;
+  }
+  
+  h1 {
+    font-size: 20px;
+  }
+  
+  .items-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
