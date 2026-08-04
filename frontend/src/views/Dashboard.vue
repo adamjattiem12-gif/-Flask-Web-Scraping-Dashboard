@@ -161,7 +161,29 @@ const cryptoRecentItems = computed(() => {
 
 const topMoversData = computed(() => itemsStore.getTopMovers)
 
+// ============================================
+// FIX: RESET SEARCH FILTER WHEN LEAVING PAGE
+// ============================================
+
+// Simple function to clear the search filter
+const clearSearchFilter = () => {
+  try {
+    // Try to reset the search in the store
+    if (itemsStore.searchQuery !== undefined) {
+      itemsStore.searchQuery = ''
+    }
+    // Reset pagination
+    currentPage.value = 1
+    console.log('✅ Search filters cleared')
+  } catch (error) {
+    console.warn('Could not clear search filter:', error)
+  }
+}
+
+// ============================================
 // METHODS
+// ============================================
+
 const updateTimestamp = () => {
   const now = new Date()
   lastUpdated.value = now.toLocaleTimeString() + ' · ' + now.toLocaleDateString()
@@ -171,6 +193,9 @@ const loadDashboard = async () => {
   isLoading.value = true
 
   try {
+    // Clear search filter when loading the page
+    clearSearchFilter()
+    
     await itemsStore.fetchItems()
     await statsStore.fetchStats()
     chartRef.value?.reset()
@@ -187,14 +212,12 @@ const loadDashboard = async () => {
   }
 }
 
-
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
   showChart.value = false
 
   try {
-
     // Clear the temporary display items on the backend
     await axios.post('/api/display-items/clear')
 
@@ -212,14 +235,10 @@ const refreshAllData = async () => {
     errorMessage.value = ''
 
   } catch (error) {
-
     errorMessage.value = error.message || 'Failed to load data'
-
   } finally {
-
     isRefreshing.value = false
     tableLoading.value = false
-
   }
 }
 
@@ -241,20 +260,20 @@ const handlePageChange = (page) => {
   currentPage.value = page
 }
 
+// ============================================
 // LIFECYCLE
+// ============================================
+
 onMounted(async () => {
   try {
-
-    // Load the dashboard normally
+    // Load the dashboard
     await loadDashboard()
 
-    // Optional: if you still want automatic refresh every minute
+    // Auto-refresh every minute
     refreshInterval = setInterval(loadDashboard, 60000)
 
   } catch (error) {
-
     console.error('Error loading dashboard:', error)
-
   }
 })
 

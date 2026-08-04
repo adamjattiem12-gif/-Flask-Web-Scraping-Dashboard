@@ -115,16 +115,22 @@ export const useItemsStore = defineStore('items', {
      * fetchItems - Gets all items from REAL APIs
      * - Retail: WebScraper.io E-Commerce Sandbox
      * - Crypto: CoinPaprika API
+     * 
+     * ✅ FIXED: Now clears filters before fetching fresh data
      */
-    async fetchItems() {
-  this.loading = true
-  this.error = null
+    async fetchItems(keepFilters = false) {
+      this.loading = true
+      this.error = null
 
-  try {
+      try {
+        // ✅ FIX: Clear filters unless explicitly told to keep them
+        if (!keepFilters) {
+          this.clearFilters()
+          console.log('🧹 Filters cleared before fetch')
+        }
 
-      const response = await api.get('/api/display-items')
-
-      const allItems = response.data
+        const response = await api.get('/api/display-items')
+        const allItems = response.data
         
         // Store previous items before updating
         this.previousItems = [...this.items]
@@ -187,44 +193,38 @@ export const useItemsStore = defineStore('items', {
     },
 
     /**
-/**
- * updateItemsAfterScrape - Updates items after a scrape
- */
-async updateItemsAfterScrape(newItems = null) {
+     * updateItemsAfterScrape - Updates items after a scrape
+     * ✅ FIXED: Now clears filters after scrape to show fresh data
+     */
+    async updateItemsAfterScrape(newItems = null) {
+      try {
+        let freshItems = newItems
 
-  try {
+        // If nothing was passed in, load the current display items
+        if (!freshItems) {
+          const response = await api.get('/api/display-items')
+          freshItems = response.data
+        }
 
-    let freshItems = newItems
+        // Store previous items for change calculation
+        this.previousItems = [...this.items]
 
-    // If nothing was passed in, load the current display items
-    if (!freshItems) {
+        // Update table
+        this.items = this.calculateChanges(freshItems)
 
-      const response = await api.get('/api/display-items')
+        // Update chart statistics
+        this.updateStats()
+        
+        // ✅ FIX: Clear filters after scrape to show all fresh data
+        this.clearFilters()
+        console.log('🧹 Filters cleared after scrape')
 
-      freshItems = response.data
-
-    }
-
-    // Store previous items for change calculation
-    this.previousItems = [...this.items]
-
-    // Update table
-    this.items = this.calculateChanges(freshItems)
-
-    // Update chart statistics
-    this.updateStats()
-
-    return this.items
-
-  } catch (error) {
-
-    this.error = `Failed to update items: ${error.message}`
-
-    throw error
-
-  }
-
-},
+        return this.items
+      } catch (error) {
+        this.error = `Failed to update items: ${error.message}`
+        throw error
+      }
+    },
 
     /**
      * ✅ updateStats - Calculates and updates stats for the 3D chart
@@ -272,6 +272,7 @@ async updateItemsAfterScrape(newItems = null) {
      */
     setSearchQuery(query) {
       this.filters.search = (query || '').trim()
+      console.log('🔍 Search set to:', this.filters.search)
     },
 
     /**
@@ -283,13 +284,21 @@ async updateItemsAfterScrape(newItems = null) {
       this.filters.source = source || null
       this.filters.minPrice = minPrice !== '' ? minPrice : null
       this.filters.maxPrice = maxPrice !== '' ? maxPrice : null
+      console.log('🎯 Filters set to:', this.filters)
     },
 
     /**
      * clearFilters - Resets search text and source/price filters.
+     * ✅ FIXED: Now properly resets all filters
      */
     clearFilters() {
-      this.filters = { search: '', source: null, minPrice: null, maxPrice: null }
+      this.filters = { 
+        search: '', 
+        source: null, 
+        minPrice: null, 
+        maxPrice: null 
+      }
+      console.log('🧹 All filters cleared')
     },
 
     /**
@@ -299,7 +308,12 @@ async updateItemsAfterScrape(newItems = null) {
       this.items = []
       this.previousItems = []
       this.itemHistory = {}
-      this.filters = { search: '', source: null, minPrice: null, maxPrice: null }
+      this.filters = { 
+        search: '', 
+        source: null, 
+        minPrice: null, 
+        maxPrice: null 
+      }
       this.stats = {
         total_items: 0,
         markets: {
@@ -308,6 +322,18 @@ async updateItemsAfterScrape(newItems = null) {
         }
       }
       this.error = null
+      console.log('🔄 All items reset')
+    },
+
+    /**
+     * ✅ NEW: Force refresh with filters cleared
+     * Use this when you want to completely reset the view
+     */
+    async refreshWithClearFilters() {
+      console.log('🔄 Refreshing with filters cleared...')
+      this.clearFilters()
+      await this.fetchItems(true) // true = keep filters (already cleared)
+      console.log('✅ Refresh complete')
     }
   }
 })
