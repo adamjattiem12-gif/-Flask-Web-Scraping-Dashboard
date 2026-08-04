@@ -17,7 +17,7 @@ const FALLBACK_DATA = {
   }
 };
 
-// ✅ Theme-aware colors for the WebGL scene. CSS variables only affect DOM
+// Theme-aware colors for the WebGL scene. CSS variables only affect DOM
 // elements, not canvas/WebGL drawing, so the renderer's clear color and grid
 // have to be set explicitly here and kept in sync with the app theme.
 const THEME_COLORS = {
@@ -73,9 +73,18 @@ export function createThreeChart(container, data) {
   container.appendChild(renderer.domElement);
   
   const controls = new OrbitControls(camera, renderer.domElement);
+
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
+
   controls.enablePan = true;
+
+  controls.minDistance = 8; //Closet the user can zoom in
+  controls.maxDistance = 25; //furthest the user can zoom out
+
+  controls.maxPolarAngle = Math.PI / 2.2;
+  controls.minPolarAngle = Math.PI / 6;
+
   controls.target.set(0, 4, 0);
   controls.autoRotate = false;
   
@@ -349,9 +358,7 @@ export function createThreeChart(container, data) {
 
     // Clean up the renderer when the component is destroyed.
     destroy() {
-      // Stop the requestAnimationFrame loop — previously this was never
-      // captured/cancelled, so it kept running (and consuming CPU) even
-      // after the chart was unmounted.
+      cancelAnimationFrame(animationFrameId);
       if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;

@@ -26,8 +26,8 @@ onMounted(async () => {
   try {
     await statsStore.fetchStats()
     chart?.updateBars(statsStore.stats)
-  } catch (error) {
-    console.warn('Chart stats unavailable; showing fallback data.', error)
+  } catch (error) 
+  { console.warn('Chart stats unavailable; showing fallback data.', error)
   }
 })
 
