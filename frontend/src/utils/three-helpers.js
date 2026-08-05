@@ -80,7 +80,7 @@ export function createThreeChart(container, data) {
   controls.enablePan = true;
 
   controls.minDistance = 8; //Closet the user can zoom in
-  controls.maxDistance = 25; //furthest the user can zoom out
+  controls.maxDistance = 42; //furthest the user can zoom out
 
   controls.maxPolarAngle = Math.PI / 2.2;
   controls.minPolarAngle = Math.PI / 6;
