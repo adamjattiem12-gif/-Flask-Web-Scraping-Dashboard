@@ -35,19 +35,19 @@ WebScraper.io · CoinPaprika
 </div>
 <div class="stats-grid">
 <StatCard
-icon=" "
+icon="📦"
 label="Total Items"
 :value="statsStore.stats?.total_items ?? 0"
 subtitle="across 2 markets"
 />
 <StatCard
-icon=" "
+icon="🌐"
 label="Active Sources"
-:value="statsStore.stats?.active_sites?? 0"
-subtitle="WebScraper.io· CoinPaprika"
+:value="statsStore.stats?.active_sites ?? 0"
+subtitle="WebScraper.io · CoinPaprika"
 />
 <StatCard
-icon=" "
+icon="📈"
 label="Success Rate"
 :value="statsStore.stats?.success_rate ?? '0%'"
 subtitle="last 7 days"
