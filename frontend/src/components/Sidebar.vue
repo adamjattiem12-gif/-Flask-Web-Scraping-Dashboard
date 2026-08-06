@@ -46,12 +46,12 @@ isCollapsed: { type: Boolean, default: false }
 defineEmits(['close', 'toggle-collapse'])
 const themeStore = useThemeStore()
 const navItems = [
-{ path: '/', label: 'Dashboard', icon: ' ' },
-{ path: '/retail-goods', label: 'Retail Goods', icon: ' ' },
-{ path: '/digital-assets', label: 'Digital Assets', icon: '₿' },
-{ path: '/watchlist', label: 'Watchlist', icon: ' ' },
-{ path: '/history', label: 'History', icon: ' ' },
-{ path: '/websites', label: 'Websites', icon: ' ' }
+  { path: '/', label: 'Dashboard', icon: '🏠' },
+  { path: '/retail-goods', label: 'Retail Goods', icon: '🛒' },
+  { path: '/digital-assets', label: 'Digital Assets', icon: '💹' },
+  { path: '/watchlist', label: 'Watchlist', icon: '⭐' },
+  { path: '/history', label: 'History', icon: '📰' },
+  { path: '/websites', label: 'Websites', icon: '🌐' }
 ]
 </script>
 <style scoped>
