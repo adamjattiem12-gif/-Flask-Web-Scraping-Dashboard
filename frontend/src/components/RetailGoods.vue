@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h1>🛒 Retail Goods</h1>
+    <h1> Retail Goods</h1>
     <p class="subtitle">Track prices, availability, and changes for your retail sources here.</p>
 
     <!-- Scrape Button with auto-refresh -->

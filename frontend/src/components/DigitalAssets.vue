@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h1>₿ Digital Assets</h1>
+    <h1>Digital Assets</h1>
     <p class="subtitle">Track digital-asset prices and market movements here.</p>
 
     <!-- Scrape Button with auto-refresh -->

@@ -12,7 +12,7 @@ from flask import Blueprint, jsonify, request
 from scrapers.crypto_scraper import scrape_crypto
 from scrapers.ecommerce_scraper import scrape_ecommerce
 from services.storage import add_history, load_history, load_items, load_websites, save_items, save_statistics
-from services.db import init_db
+from services.db import init_db, get_connection
 from utils.exceptions import ScraperError
 from utils.validators import health_check, validate_scrape_url
 
@@ -339,7 +339,7 @@ def scrape():
 
         logger.info("Data validation passed")
 
-        # ✅ FIX: Ensure database exists before saving (in case clear-all deleted app.db)
+        # ✅ FIX: Ensure database exists before saving
         logger.info("Step 6: Ensuring database exists...")
         init_db()
         logger.info("Database tables ready")
@@ -379,7 +379,7 @@ def scrape():
 
         logger.info("Step 9: Saving statistics to storage...")
         save_statistics(stats)
-        logger.info("Statistics persisted to statistics.json")
+        logger.info("Statistics persisted")
 
         logger.info("Step 10: Logging scrape event to history...")
         ts = datetime.now().isoformat()
@@ -486,34 +486,25 @@ def scrape_status():
 
 
 # ============================================================
-# ✅ CLEAR ALL DATA — Delete all files and recreate database
+# ✅ CLEAR ALL DATA — Clear database tables (works on Render)
 # ============================================================
 
 @scrape_bp.route('/api/clear-all', methods=['POST'])
 def clear_all_data():
-    """Delete all data files and recreate database for a fresh start."""
-    import os
-    from pathlib import Path
-    
+    """Clear all data from database tables (works on Render's ephemeral storage)."""
     try:
-        data_folder = Path(__file__).resolve().parent.parent / "data"
-        files_to_delete = ["app.db", "statistics.json", "items.json", "history.json", "items_history.json"]
-        deleted = []
+        conn = get_connection()
+        conn.execute("DELETE FROM items")
+        conn.execute("DELETE FROM items_history")
+        conn.execute("DELETE FROM history")
+        conn.execute("DELETE FROM statistics")
+        conn.commit()
+        conn.close()
         
-        for file in files_to_delete:
-            file_path = data_folder / file
-            if file_path.exists():
-                os.remove(file_path)
-                deleted.append(file)
-                logger.info(f"Deleted {file}")
-        
-        # ✅ Recreate database tables
-        init_db()
-        logger.info("Database tables recreated")
-        
+        logger.info("All data cleared from database")
         return jsonify({
             "status": "success",
-            "message": f"Deleted {len(deleted)} files. Database recreated."
+            "message": "All data cleared"
         }), 200
     except Exception as e:
         logger.error(f"Failed to clear data: {str(e)}")
@@ -523,7 +514,7 @@ def clear_all_data():
         }), 500
 
 
-if __name__ == '__main__':
+if __name__ == '_main_':
     print("scrape_bp imported successfully")
     print("All imports working")
     print("\nStorage functions available:")
