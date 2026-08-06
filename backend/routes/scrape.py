@@ -1,12 +1,18 @@
+# ============================================================
+# FILE: backend/routes/scrape.py (FULL)
+# ============================================================
+
 import logging
 import time
 from datetime import datetime
+from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
 from scrapers.crypto_scraper import scrape_crypto
 from scrapers.ecommerce_scraper import scrape_ecommerce
 from services.storage import add_history, load_history, load_items, load_websites, save_items, save_statistics
+from services.db import init_db
 from utils.exceptions import ScraperError
 from utils.validators import health_check, validate_scrape_url
 
@@ -333,15 +339,14 @@ def scrape():
 
         logger.info("Data validation passed")
 
-        logger.info("Step 6: Saving items...")
+        # ✅ FIX: Ensure database exists before saving (in case clear-all deleted app.db)
+        logger.info("Step 6: Ensuring database exists...")
+        init_db()
+        logger.info("Database tables ready")
+
+        logger.info("Step 7: Saving items...")
         try:
             save_items(all_items)
-
-            from routes.display import current_items
-
-            current_items.clear()
-            current_items.extend(all_items)
-
             logger.info(f"Items saved: {len(all_items)}")
         except Exception as e:
             logger.error(f"Failed to save items: {str(e)}")
@@ -368,15 +373,15 @@ def scrape():
                 "data": None
             }), 500
 
-        logger.info("Step 7: Calculating statistics...")
+        logger.info("Step 8: Calculating statistics...")
         stats = calculate_statistics(all_items)
         logger.info("Statistics calculated")
 
-        logger.info("Step 8: Saving statistics to storage...")
+        logger.info("Step 9: Saving statistics to storage...")
         save_statistics(stats)
         logger.info("Statistics persisted to statistics.json")
 
-        logger.info("Step 9: Logging scrape event to history...")
+        logger.info("Step 10: Logging scrape event to history...")
         ts = datetime.now().isoformat()
         if not ec_failed:
             add_history({
@@ -474,6 +479,44 @@ def scrape_status():
         }), 200
     except Exception as e:
         logger.error(f"Error getting scrape status: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
+# ============================================================
+# ✅ CLEAR ALL DATA — Delete all files and recreate database
+# ============================================================
+
+@scrape_bp.route('/api/clear-all', methods=['POST'])
+def clear_all_data():
+    """Delete all data files and recreate database for a fresh start."""
+    import os
+    from pathlib import Path
+    
+    try:
+        data_folder = Path(__file__).resolve().parent.parent / "data"
+        files_to_delete = ["app.db", "statistics.json", "items.json", "history.json", "items_history.json"]
+        deleted = []
+        
+        for file in files_to_delete:
+            file_path = data_folder / file
+            if file_path.exists():
+                os.remove(file_path)
+                deleted.append(file)
+                logger.info(f"Deleted {file}")
+        
+        # ✅ Recreate database tables
+        init_db()
+        logger.info("Database tables recreated")
+        
+        return jsonify({
+            "status": "success",
+            "message": f"Deleted {len(deleted)} files. Database recreated."
+        }), 200
+    except Exception as e:
+        logger.error(f"Failed to clear data: {str(e)}")
         return jsonify({
             "status": "error",
             "message": str(e)
