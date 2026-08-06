@@ -31,6 +31,10 @@ container.clientWidth / container.clientHeight,
 camera.position.set(12, 8, 21);
 camera.lookAt(0, 4, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+// Cap the pixel ratio. Devtools responsive mode often reports a high
+// devicePixelRatio, which balloons the canvas buffer size and is a
+// common cause of GPU crashes (blank canvas) when zooming/resizing.
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 let currentTheme = getCurrentTheme();
 renderer.setClearColor(THEME_COLORS[currentTheme].bg);
 renderer.shadowMap.enabled = true;
@@ -206,11 +210,34 @@ renderer.render(scene, camera);
 }
 animate();
 const handleResize = () => {
-camera.aspect = container.clientWidth / container.clientHeight;
+const width = container.clientWidth;
+const height = container.clientHeight;
+// Guard against transient 0-size layouts (sidebar transitions, devtools
+// responsive zoom, etc). A 0 width/height produces an invalid aspect
+// ratio and can crash the WebGL context, which blanks the whole page.
+if (width === 0 || height === 0) return;
+camera.aspect = width / height;
 camera.updateProjectionMatrix();
-renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setSize(width, height);
 };
 window.addEventListener("resize", handleResize);
+
+// If the GPU context is lost (common during aggressive resize/zoom in
+// devtools responsive mode), stop the render loop instead of letting it
+// throw on every frame, and try to recover automatically when restored.
+renderer.domElement.addEventListener("webglcontextlost", (event) => {
+event.preventDefault();
+console.warn("3D chart: WebGL context lost, pausing render loop.");
+if (animationFrameId !== null) {
+cancelAnimationFrame(animationFrameId);
+animationFrameId = null;
+}
+}, false);
+
+renderer.domElement.addEventListener("webglcontextrestored", () => {
+console.warn("3D chart: WebGL context restored, resuming render loop.");
+animate();
+}, false);
 return {
 updateTheme() {
 currentTheme = getCurrentTheme();
