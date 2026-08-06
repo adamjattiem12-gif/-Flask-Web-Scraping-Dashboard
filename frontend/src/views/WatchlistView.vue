@@ -1,11 +1,8 @@
 <template>
   <div class="watchlist">
     <div class="watchlist-header">
-      <h3 class="section-title">⭐ Watchlist</h3>
+      <h3 class="section-title">Watchlist</h3>
       <span class="item-count">{{ watchedItems.length }} items</span>
-      <button v-if="watchedItems.length" class="clear-btn" @click="watchlistStore.clearWatchlist">
-        Clear all
-      </button>
     </div>
     
     <!-- Loading State -->
@@ -16,19 +13,16 @@
     
     <!-- Empty State -->
     <div v-else-if="watchedItems.length === 0" class="empty-state">
-      <p>📭 No items in watchlist</p>
-      <p class="hint">Click the ⭐ on items in the table to add them</p>
+      <p>No items in watchlist</p>
+      <p class="hint">Click the 👁️ on items to add them</p>
     </div>
     
-    <!-- Watchlist Items -->
+    <!-- Watchlist Items - No percentage column -->
     <div v-else class="watchlist-items">
       <div v-for="(item, index) in watchedItems" :key="item.id" class="watchlist-item">
         <span class="watch-rank">{{ String(index + 1).padStart(2, '0') }}</span>
         <span class="watch-name">{{ item.name }}</span>
-        <span class="watch-price">${{ Number(item.price || 0).toFixed(2) }}</span>
-        <span class="watch-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-          {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change || 0).toFixed(2) }}%
-        </span>
+        <span class="watch-price">${{ item.price ? item.price.toFixed(2) : '0.00' }}</span>
         <button @click="removeFromWatchlist(item.id)" class="remove-btn" title="Remove from watchlist">
           ✕
         </button>
@@ -42,29 +36,25 @@ import { ref, computed, onMounted } from 'vue'
 import { useWatchlistStore } from '@/stores/watchlistStore'
 import { useItemsStore } from '@/stores/itemsStore'
 
-// ✅ Call stores INSIDE functions, not at top level
 const loading = ref(false)
-const watchlistStore = useWatchlistStore()
-const itemsStore = useItemsStore()
 
-// ✅ Computed property calls store INSIDE the function
 const watchedItems = computed(() => {
+  const watchlistStore = useWatchlistStore()
+  const itemsStore = useItemsStore()
   return watchlistStore.getWatchedItems(itemsStore)
 })
 
-// ✅ Method calls store INSIDE the function
 const removeFromWatchlist = (id) => {
+  const watchlistStore = useWatchlistStore()
   watchlistStore.toggleWatch(id)
 }
 
-// ✅ Load data on mount
-onMounted(async () => {
+onMounted(() => {
   loading.value = true
-  try {
-    if (itemsStore.items.length === 0) await itemsStore.fetchItems()
-  } finally {
+  const itemsStore = useItemsStore()
+  itemsStore.fetchItems().finally(() => {
     loading.value = false
-  }
+  })
 })
 </script>
 
@@ -81,7 +71,7 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .section-title {
@@ -99,15 +89,22 @@ onMounted(async () => {
   border-radius: 20px;
 }
 
-.clear-btn {
-  margin-left: auto;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-surface);
-  color: var(--color-danger);
-  cursor: pointer;
-  padding: 6px 10px;
-  font-size: 12px;
+.empty-state {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--color-text-secondary);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.hint {
+  font-size: 13px !important;
+  margin-top: 4px !important;
+  color: var(--color-text-muted) !important;
 }
 
 .watchlist-items {
@@ -130,31 +127,20 @@ onMounted(async () => {
   color: var(--color-text-muted);
   font-weight: 600;
   width: 28px;
+  font-size: 13px;
 }
 
 .watch-name {
   flex: 1;
   font-weight: 500;
   color: var(--color-text);
+  font-size: 14px;
 }
 
 .watch-price {
   color: var(--color-text-secondary);
   font-weight: 500;
-}
-
-.watch-change {
-  font-weight: 600;
-  min-width: 60px;
-  text-align: right;
-}
-
-.watch-change.positive {
-  color: var(--color-success);
-}
-
-.watch-change.negative {
-  color: var(--color-danger);
+  font-size: 14px;
 }
 
 .remove-btn {
@@ -162,12 +148,14 @@ onMounted(async () => {
   border: none;
   color: var(--color-danger);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   padding: 0 4px;
   transition: all 0.2s;
+  opacity: 0.6;
 }
 
 .remove-btn:hover {
+  opacity: 1;
   color: var(--color-danger-strong);
   transform: scale(1.2);
 }
@@ -190,22 +178,5 @@ onMounted(async () => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-.empty-state {
-  text-align: center;
-  padding: 30px 0;
-  color: var(--color-text-muted);
-}
-
-.empty-state p {
-  margin: 0;
-  font-size: 15px;
-}
-
-.hint {
-  font-size: 13px !important;
-  margin-top: 4px !important;
-  color: var(--color-text-muted) !important;
 }
 </style>

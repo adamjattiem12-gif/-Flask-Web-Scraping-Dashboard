@@ -18,13 +18,14 @@
       <div v-if="recentItems && recentItems.length > 0">
         <div v-for="item in recentItems" :key="item.name" class="activity-item">
           <span class="activity-name">{{ item.name }}</span>
-          <span v-if="item.price !== null && item.price !== undefined" class="activity-price">
+          <!-- ✅ Show percentage for Digital Assets -->
+          <span v-if="item.change !== null && item.change !== undefined" class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
+            {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change).toFixed(1) }}%
+          </span>
+          <!-- ✅ Show price for Retail Goods -->
+          <span v-else-if="item.price !== null && item.price !== undefined" class="activity-price">
             ${{ Number(item.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
-          <span v-if="item.change !== null && item.change !== undefined" class="activity-change" :class="item.change >= 0 ? 'positive' : 'negative'">
-            {{ item.change >= 0 ? '+' : '' }}{{ Number(item.change).toFixed(2) }}%
-          </span>
-          <span v-else class="activity-change unavailable">—</span>
         </div>
       </div>
       <div v-else class="activity-empty">
@@ -101,6 +102,7 @@ defineProps({
 .activity-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 6px 0;
   border-bottom: 1px solid var(--color-bg);
 }
@@ -129,7 +131,6 @@ defineProps({
 }
 
 .activity-price {
-  margin-left: auto;
   color: var(--color-text);
   font-size: 14px;
   font-weight: 600;
