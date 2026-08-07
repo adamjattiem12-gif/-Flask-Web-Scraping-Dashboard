@@ -103,7 +103,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import axios from 'axios'
+import { clearAllData } from '@/services/api'
 import { useItemsStore } from '@/stores/itemsStore'
 import { useStatsStore } from '@/stores/statsStore'
 import StatCard from '@/components/StatCard.vue'
@@ -190,7 +190,7 @@ const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
   try {
-    await axios.post('/api/clear-all')
+    await clearAllData()
     itemsStore.clearItems()
     statsStore.resetStats()           // ✅ This is the fix
     await statsStore.fetchStats()

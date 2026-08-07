@@ -118,5 +118,10 @@ export function deleteWebsite(id) {
     .then((res) => res.data)
 }
 
+export function clearAllData() {
+  return api.post('/api/clear-all')
+    .then((res) => res.data)
+}
+
 // Default export for convenience
 export default api

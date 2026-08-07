@@ -14,7 +14,7 @@
     <!-- Empty State -->
     <div v-else-if="watchedItems.length === 0" class="empty-state">
       <p>No items in watchlist</p>
-      <p class="hint">Click the 👁️ on items to add them</p>
+      <p class="hint">Click "Add to Watchlist" on an item to add it</p>
     </div>
     
     <!-- Watchlist Items - No percentage column -->
