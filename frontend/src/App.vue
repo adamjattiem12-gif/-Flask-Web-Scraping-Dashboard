@@ -5,7 +5,7 @@
 <template>
   <div class="app-container">
     <div v-if="!connectivity.isOnline" class="connectivity-banner" role="alert">
-      Can't reach the Flask server. Is the backend running?
+      ⏳ Waiting to connect to server...
     </div>
 
     <!-- Hamburger button (mobile) -->

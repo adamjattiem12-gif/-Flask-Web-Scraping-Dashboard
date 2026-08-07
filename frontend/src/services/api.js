@@ -55,7 +55,7 @@ api.interceptors.response.use(
       // or unreachable.
       notifyConnectivity(false)
       normalized = {
-        error: 'No response from server. Is Flask running?',
+        error: 'Waiting to connect to server...',
         status: 0,
       }
     } else {

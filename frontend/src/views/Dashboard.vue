@@ -183,12 +183,16 @@ const loadDashboard = async () => {
   }
 }
 
+// ============================================================
+// ✅ REFRESH — Fixed: reset stats store before fetching
+// ============================================================
 const refreshAllData = async () => {
   isRefreshing.value = true
   tableLoading.value = true
   try {
     await axios.post('/api/clear-all')
     itemsStore.clearItems()
+    statsStore.resetStats()           // ✅ This is the fix
     await statsStore.fetchStats()
     chartRef.value?.reset()
     updateTimestamp()
